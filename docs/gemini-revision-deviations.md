@@ -46,6 +46,11 @@ Current status of each decision. Dated sections keep their own wording. Status t
 | D-36 | OPEN | Impulse timing. Zero-velocity conjunction versus a center crossing. |
 | D-37 | OPEN | Full suspension. The all-orientation gravity-shift target is unpassed. |
 | D-38 | WORKING | Bearing seals. Contact seals stay excluded. |
+| D-39 | OPEN | Chassis envelope. Square profile versus round extruded tube. No choice made. |
+| D-40 | WORKING | ED-03 arbor bearing pockets. Adopt H7 pockets matching the BOM miniature bearings. Pocket count versus BOM quantity stays unresolved from the PDFs. |
+| D-41 | WORKING | ED-10 yoke. Add a BOM line for the thicker top mounting block alongside the side plates. Inch-plate stock is a manufacturing note only. |
+| D-42 | WORKING | ED-05 escape wheel crest. Clip the OpenSCAD crest vertex to the table OD in derived CAD or notes. Do not edit the PDF. |
+| D-43 | WORKING | Side access hatches. Add a BOM placeholder part ID. Material, thickness, and quantity stay OPEN sub-items. |
 
 | # | Item | Approved ledger / original spec | Gemini package | Type | Resolution |
 |---|------|------|------|------|------|
@@ -153,3 +158,13 @@ Trigger: Caleb's 11:44 CT answer "Flicker is a flaw to reduce". Analysis only, n
 - D-29. Raw Smear DMX look: "No, drop it"
 
 Status: working decisions, design targets only. Nothing here is validated or a photosensitivity safety finding.
+
+## Nov 15 2026 hardware PDF conflicts from #16 (owner picks)
+
+Caleb on Nov 15 2026 (issue #16): square versus round chassis stays OPEN; the other four items are WORKING doc cleanups. Verification against the PDFs is in `docs/reviews/hardware-docs-vs-spec.md` section "Additional conflicts from #16". Sources are BP = `ed-ibs-blueprints-bom-gcode-openscad.pdf` and MAN = `ed-ibs-build-manufacturing-service-manual.pdf`. No derived BOM or CAD files exist in the repo yet, so the cleanups live in the decision record. The source PDFs are not edited.
+
+- D-39. Chassis envelope: OPEN. BP p1 square 150.00 x 150.00 mm profile versus MAN p1 round OD 120.00 mm x wall 10.00 mm tube. Affects housing and packaging of the nominal 56 mm clear through-bore [T D-02]. No choice made.
+- D-40. ED-03 arbor bearing pockets: WORKING. Adopt Dia 7.00 mm H7 pockets matching BOM HR-02 bearings 3 mm ID x 7 mm OD x 3 mm W [S BP p2-p3]. Reject the MAN p3 10.00 mm pocket sizing for those arbors. Pocket count cannot be reconciled from the PDFs: BP p3 and BP p4 list 4 arbor pockets at 7.00 mm; MAN p3 Op 20 and the ED-03 press-fit step say 7 pockets / 7 bearings; BOM HR-02 qty is 10. Count stays flagged, not invented.
+- D-41. ED-10 yoke: WORKING. Add a BOM line for the 20.00 mm top mounting block alongside the 6.00 mm side plates [S MAN p7-p8]. BP p2 currently lists only 6 mm plate. Manufacturing note from Jason (@jkbennitt): nearest stock is inch plate (about 0.25 in / 0.75 in). No size change decided.
+- D-42. ED-05 crest vertex: WORKING. BP p4 OpenSCAD uses `outer_r = 7.40` and crest `[outer_r + 0.15, 1.35]`, which sits outside Dia 14.80 mm on BP p3 (radial distance about 7.67 mm [C]). Clip the crest to the OD in derived CAD or notes. Do not edit the PDF.
+- D-43. Side access hatches: WORKING. Add BOM placeholder part ID ED-11 for the removable side access hatches called out on MAN p1 Op 30, MAN p16, and MAN p19, missing from BP p2. Material, thickness, and quantity are OPEN sub-items (unspecified in the PDFs; do not invent values).

@@ -48,6 +48,11 @@ Current status of each decision. Dated sections keep their own wording. Status t
 | D-36 | OPEN | Impulse timing. Zero-velocity conjunction versus a center crossing. |
 | D-37 | OPEN | Full suspension. The all-orientation gravity-shift target is unpassed. |
 | D-38 | WORKING | Bearing seals. Contact seals stay excluded. |
+| D-39 | OPEN | Chassis envelope. Square profile versus round extruded tube. No choice made. |
+| D-40 | WORKING | ED-03 arbor bearing pockets. Adopt H7 pockets matching the BOM miniature bearings. Pocket count versus BOM quantity stays unresolved from the PDFs. |
+| D-41 | WORKING | ED-10 yoke. Add a BOM line for the thicker top mounting block alongside the side plates. Inch-plate stock is a manufacturing note only. |
+| D-42 | WORKING | ED-05 escape wheel crest. Clip the OpenSCAD crest vertex to the table OD in derived CAD or notes. Do not edit the PDF. |
+| D-43 | WORKING | Side access hatches. Add a BOM placeholder part ID. Material, thickness, and quantity stay OPEN sub-items. |
 
 ## Authority
 
@@ -174,6 +179,17 @@ Item 7 sizing predictions that go with the 11:44 CT choice, all from `item7-blen
 - The driven winding ring Caleb asked for. The analysis says park without it starves the escapement in about 0.3-0.9 s on the control band, or 6-18 s on the whole store. The ring itself is not drawn. The stationary band in the tourbillon pass was already at about 1 mm. [T]
 - Prism length, 106.1 mm versus 103.18 mm and 105.68 mm. [T]
 - ED-05 geometry conflicts and the ED-04 envelope.
+- D-39 chassis square 150 mm profile versus round 120 OD x 10 wall tube. Affects packaging of the 56 mm clear through-bore. No choice made. [T, S]
+
+### Nov 15 2026 hardware PDF conflicts from #16
+
+Owner picks by Caleb on Nov 15 2026 (issue #16). Verification: `docs/reviews/hardware-docs-vs-spec.md` "Additional conflicts from #16". No derived BOM or CAD files exist in the repo, so these cleanups are recorded here only. Source PDFs are not edited. [S]
+
+17. **D-39 Chassis envelope.** OPEN. Blueprint p1 square 150.00 x 150.00 mm profile [S] versus manual p1 round OD 120.00 mm wall 10.00 mm tube [S]. Affects housing and packaging of the nominal 56 mm clear through-bore [T]. No choice made.
+18. **D-40 ED-03 arbor bearing pockets.** WORKING. Adopt Dia 7.00 mm H7 pockets matching BOM HR-02 3 mm ID x 7 mm OD x 3 mm W bearings [S]. Reject the manual p3 10.00 mm pocket sizing for those arbors. Pocket count cannot be reconciled from the PDFs: blueprint lists 4 arbor pockets at 7.00 mm; manual says 7 pockets and presses 7 bearings into ED-03; BOM HR-02 qty is 10. Count stays flagged. [T, S]
+19. **D-41 ED-10 yoke.** WORKING. Add a BOM line for the 20.00 mm top mounting block alongside the 6.00 mm side plates [S MAN p7-p8]. Blueprint p2 lists only 6 mm plate. Manufacturing note: nearest stock is inch plate (about 0.25 in / 0.75 in). No size change decided. [T, S]
+20. **D-42 ED-05 crest vertex.** WORKING. Clip the OpenSCAD crest at `outer_r + 0.15` to the 14.80 mm OD in derived CAD or notes. Blueprint p4 vertex radial distance is about 7.67 mm [C] against a 7.40 mm OD radius [S]. Do not edit the PDF. [T, C, S]
+21. **D-43 Side access hatches.** WORKING. BOM placeholder part ID ED-11 for the removable side access hatches on manual p1 / p16 / p19, missing from blueprint p2. Material, thickness, and quantity are OPEN sub-items (unspecified; do not invent values). [T, S]
 
 ## Historical provenance
 
