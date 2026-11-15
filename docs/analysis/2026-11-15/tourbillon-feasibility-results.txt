@@ -1,0 +1,232 @@
+
+## 0 reused step-1 values
+[C] I_ring (spec 42 g, 56/72) = 4.368e-05 kg m2
+[C] f range ring only, spec law, stress cap = 8.001 Hz
+[C]   upper = 11.46 Hz
+[C] step-1 indexed set (61813) I = 0.0003581 kg m2
+[C]   mass = 470.3 g
+[C] step-1 light indexed set I = 0.0002057 kg m2
+[C]   mass = 342.7 g
+
+## 1 cage concept: annular cage at its own Z station, around the 56 mm bore
+[T] cage envelope OD = 90 mm
+[C] radial room cage OD to tube ID = 6 mm
+[C] radial room stationary band to tube ID = 1 mm
+[C] 61813 housing OD at 4 mm wall (step 1) = 93 mm
+[C] radial room 61813 housing to tube ID = 4.5 mm
+[C] Kaydon KA025 housing OD at 4 mm wall = 84.2 mm
+[C] balance ring OD 72 to cage OD radial room for escapement/pillars = 9 mm
+[C] cage axial length incl journals and housing lips (61813) = 74 mm
+[C] cage + step-1 prism carrier (120 mm) axial = 194 mm
+[C] left in 280 mm chassis for light engine, optics, chopper = 86 mm
+-- V1 7075 cage, 61813, balance+escapement (carousel)
+   [C] 2 flanges 90/56 x 3: 65.7 g, I 9.232e-05
+   [C] 3 pillars 5x5x40 at r42: 8.4 g, I 1.487e-05
+   [C] 2 journals: 48.1 g, I 4.423e-05
+   [C] inner races 40% of bearing mass (step-1 assumption): 104.0 g, I 1.311e-04
+   [C] balance ring (spec reference 42 g, 56/72): 42.0 g, I 4.368e-05
+   [C] flexure suspension frame + leaves (assumed): 15.0 g, I 2.400e-05
+   [C] escapement: pallet fork, escape wheel, pinion, bridges (assumed): 12.0 g, I 2.017e-05
+   [C] release linkage (assumed): 3.0 g, I 5.043e-06
+   [C] cage-side escapement remontoire + clutch (assumed, carousel only): 8.0 g, I 1.345e-05
+   [C] counterweight for off-axis payload at r43: 35.9 g, I 6.635e-05
+[C] V1 7075 cage, 61813, balance+escapement (carousel): TOTAL mass 342 g, polar I 4.552e-04 kg m2, I/I_ring 10.4x
+-- V2 Ti cage, 61813, balance+escapement (carousel)
+   [C] 2 flanges 90/56 x 3: 103.6 g, I 1.455e-04
+   [C] 3 pillars 5x5x40 at r42: 13.3 g, I 2.344e-05
+   [C] 2 journals: 75.8 g, I 6.973e-05
+   [C] inner races 40% of bearing mass (step-1 assumption): 104.0 g, I 1.311e-04
+   [C] balance ring (spec reference 42 g, 56/72): 42.0 g, I 4.368e-05
+   [C] flexure suspension frame + leaves (assumed): 15.0 g, I 2.400e-05
+   [C] escapement: pallet fork, escape wheel, pinion, bridges (assumed): 12.0 g, I 2.017e-05
+   [C] release linkage (assumed): 3.0 g, I 5.043e-06
+   [C] cage-side escapement remontoire + clutch (assumed, carousel only): 8.0 g, I 1.345e-05
+   [C] counterweight for off-axis payload at r43: 35.9 g, I 6.635e-05
+[C] V2 Ti cage, 61813, balance+escapement (carousel): TOTAL mass 413 g, polar I 5.425e-04 kg m2, I/I_ring 12.4x
+-- V3 7075 cage, Kaydon KA025, balance+escapement (carousel)
+   [C] 2 flanges 90/56 x 3: 65.7 g, I 9.232e-05
+   [C] 3 pillars 5x5x40 at r42: 8.4 g, I 1.487e-05
+   [C] 2 journals: 25.1 g, I 2.251e-05
+   [C] inner races 40% of bearing mass (step-1 assumption): 47.2 g, I 5.537e-05
+   [C] balance ring (spec reference 42 g, 56/72): 42.0 g, I 4.368e-05
+   [C] flexure suspension frame + leaves (assumed): 15.0 g, I 2.400e-05
+   [C] escapement: pallet fork, escape wheel, pinion, bridges (assumed): 12.0 g, I 2.017e-05
+   [C] release linkage (assumed): 3.0 g, I 5.043e-06
+   [C] cage-side escapement remontoire + clutch (assumed, carousel only): 8.0 g, I 1.345e-05
+   [C] counterweight for off-axis payload at r43: 35.9 g, I 6.635e-05
+[C] V3 7075 cage, Kaydon KA025, balance+escapement (carousel): TOTAL mass 262 g, polar I 3.578e-04 kg m2, I/I_ring 8.2x
+-- V4 7075 cage, 61813, + indexer + prism carrier
+   [C] 2 flanges 90/56 x 3: 65.7 g, I 9.232e-05
+   [C] 3 pillars 5x5x40 at r42: 8.4 g, I 1.487e-05
+   [C] 2 journals: 48.1 g, I 4.423e-05
+   [C] inner races 40% of bearing mass (step-1 assumption): 104.0 g, I 1.311e-04
+   [C] balance ring (spec reference 42 g, 56/72): 42.0 g, I 4.368e-05
+   [C] flexure suspension frame + leaves (assumed): 15.0 g, I 2.400e-05
+   [C] escapement: pallet fork, escape wheel, pinion, bridges (assumed): 12.0 g, I 2.017e-05
+   [C] release linkage (assumed): 3.0 g, I 5.043e-06
+   [C] cage-side escapement remontoire + clutch (assumed, carousel only): 8.0 g, I 1.345e-05
+   [C] step-1 indexed set (carrier+prism+index ring): 470.3 g, I 3.581e-04
+   [C] indexer spring + cam/Geneva (assumed): 40.0 g, I 6.400e-05
+   [C] counterweight for off-axis payload at r43: 73.1 g, I 1.351e-04
+[C] V4 7075 cage, 61813, + indexer + prism carrier: TOTAL mass 890 g, polar I 9.460e-04 kg m2, I/I_ring 21.7x
+-- V1T 7075 cage, 61813, true tourbillon (no cage remontoire)
+   [C] 2 flanges 90/56 x 3: 65.7 g, I 9.232e-05
+   [C] 3 pillars 5x5x40 at r42: 8.4 g, I 1.487e-05
+   [C] 2 journals: 48.1 g, I 4.423e-05
+   [C] inner races 40% of bearing mass (step-1 assumption): 104.0 g, I 1.311e-04
+   [C] balance ring (spec reference 42 g, 56/72): 42.0 g, I 4.368e-05
+   [C] flexure suspension frame + leaves (assumed): 15.0 g, I 2.400e-05
+   [C] escapement: pallet fork, escape wheel, pinion, bridges (assumed): 12.0 g, I 2.017e-05
+   [C] release linkage (assumed): 3.0 g, I 5.043e-06
+   [C] counterweight for off-axis payload at r43: 28.3 g, I 5.225e-05
+[C] V1T 7075 cage, 61813, true tourbillon (no cage remontoire): TOTAL mass 326 g, polar I 4.276e-04 kg m2, I/I_ring 9.8x
+
+## 2 rotation rates, drive torque and power (motor-driven carousel)
+-- V1 7075 cage, 61813, balance+escapement (carousel): weight 3.35 N
+[C]   load-dependent friction 0.5 mu W d (both bearings, lower bound) = 0.0001636 N m
+[C]   planning drag range, 2 bearings, non-contact seals (step 1) = 0.002 N m
+[C]     to = 0.02 N m
+[C]   unbalance gravity torque, e 0.02 mm = 6.71e-05 N m
+[C]   unbalance gravity torque, e 0.05 mm = 0.0001677 N m
+[C]   unbalance gravity torque, e 0.10 mm = 0.0003355 N m
+   [C] 1 rev / 15 min: Omega 0.0070 rad/s (0.0667 rpm); accel torque (1 s spin-up) 3.18e-06 N m; worst steady torque 2.03e-02 N m; power 0.142 mW; unbalance force @0.1 mm 1.67e-09 N
+   [C] 1 rev / 5 min: Omega 0.0209 rad/s (0.2 rpm); accel torque (1 s spin-up) 9.53e-06 N m; worst steady torque 2.03e-02 N m; power 0.426 mW; unbalance force @0.1 mm 1.50e-08 N
+   [C] 1 rev / 2 min: Omega 0.0524 rad/s (0.5 rpm); accel torque (1 s spin-up) 2.38e-05 N m; worst steady torque 2.03e-02 N m; power 1.07 mW; unbalance force @0.1 mm 9.38e-08 N
+   [C] 1 rev / min (watch): Omega 0.1047 rad/s (1 rpm); accel torque (1 s spin-up) 4.77e-05 N m; worst steady torque 2.03e-02 N m; power 2.13 mW; unbalance force @0.1 mm 3.75e-07 N
+   [C] prism mean speed @8.00 Hz (32 rpm): Omega 3.3516 rad/s (32 rpm); accel torque (1 s spin-up) 1.53e-03 N m; worst steady torque 2.03e-02 N m; power 73.3 mW; unbalance force @0.1 mm 3.84e-04 N
+   [C] 1 rev per 15-beat star @8.00 Hz: Omega 6.7032 rad/s (64 rpm); accel torque (1 s spin-up) 3.05e-03 N m; worst steady torque 2.03e-02 N m; power 157 mW; unbalance force @0.1 mm 1.54e-03 N
+   [C] 1 rev per 15-beat star @11.46 Hz: Omega 9.5989 rad/s (91.7 rpm); accel torque (1 s spin-up) 4.37e-03 N m; worst steady torque 2.03e-02 N m; power 237 mW; unbalance force @0.1 mm 3.15e-03 N
+-- V4 7075 cage, 61813, + indexer + prism carrier: weight 8.72 N
+[C]   load-dependent friction 0.5 mu W d (both bearings, lower bound) = 0.0004253 N m
+[C]   planning drag range, 2 bearings, non-contact seals (step 1) = 0.002 N m
+[C]     to = 0.02 N m
+[C]   unbalance gravity torque, e 0.02 mm = 0.0001745 N m
+[C]   unbalance gravity torque, e 0.05 mm = 0.0004362 N m
+[C]   unbalance gravity torque, e 0.10 mm = 0.0008724 N m
+   [C] 1 rev / 15 min: Omega 0.0070 rad/s (0.0667 rpm); accel torque (1 s spin-up) 6.60e-06 N m; worst steady torque 2.09e-02 N m; power 0.146 mW; unbalance force @0.1 mm 4.34e-09 N
+   [C] 1 rev / 5 min: Omega 0.0209 rad/s (0.2 rpm); accel torque (1 s spin-up) 1.98e-05 N m; worst steady torque 2.09e-02 N m; power 0.438 mW; unbalance force @0.1 mm 3.90e-08 N
+   [C] 1 rev / 2 min: Omega 0.0524 rad/s (0.5 rpm); accel torque (1 s spin-up) 4.95e-05 N m; worst steady torque 2.09e-02 N m; power 1.1 mW; unbalance force @0.1 mm 2.44e-07 N
+   [C] 1 rev / min (watch): Omega 0.1047 rad/s (1 rpm); accel torque (1 s spin-up) 9.91e-05 N m; worst steady torque 2.09e-02 N m; power 2.2 mW; unbalance force @0.1 mm 9.76e-07 N
+   [C] prism mean speed @8.00 Hz (32 rpm): Omega 3.3516 rad/s (32 rpm); accel torque (1 s spin-up) 3.17e-03 N m; worst steady torque 2.09e-02 N m; power 80.6 mW; unbalance force @0.1 mm 9.99e-04 N
+   [C] 1 rev per 15-beat star @8.00 Hz: Omega 6.7032 rad/s (64 rpm); accel torque (1 s spin-up) 6.34e-03 N m; worst steady torque 2.09e-02 N m; power 182 mW; unbalance force @0.1 mm 4.00e-03 N
+   [C] 1 rev per 15-beat star @11.46 Hz: Omega 9.5989 rad/s (91.7 rpm); accel torque (1 s spin-up) 9.08e-03 N m; worst steady torque 2.09e-02 N m; power 288 mW; unbalance force @0.1 mm 8.20e-03 N
+[C] escapement power at 8.00 Hz (step-1 torque) = 2.236 mW
+[C] escapement power at 11.46 Hz (8.5 mm torque, upper) = 6.767 mW
+[C] extra cage torque to wind cage remontoire at 1 rev / 5 min: 1.067e-01 (8 Hz) to 3.231e-01 (11.46 Hz) N m
+[C] extra cage torque to wind cage remontoire at 1 rev / min (watch): 2.135e-02 (8 Hz) to 6.462e-02 (11.46 Hz) N m
+
+## 2b rewind motor double duty (Gemini Maxon DCX 22 S + GPX 22 16:1)
+[C] rewind arbor mean speed (= prism mean) @8.00 Hz = 32.01 rpm
+[C] rewind arbor mean speed @11.46 Hz = 45.83 rpm
+[C] branch ratio rewind arbor -> cage for 1 rpm at 8.00 Hz = 32.01 :1
+[C] cage rate on that branch at 11.46 Hz = 1.432 rpm
+[C] worst cage torque incl. self-winding (V1) = 0.06546 N m
+[C] added torque at rewind arbor via branch (eta 0.7 assumed) = 0.002922 N m
+[C] rewind arbor torque total (0.12 indexer + cage branch) = 0.1229 N m
+[S] GPX 22 HP 16:1 max continuous torque = 2.4 N m
+[C] motor torque needed at 16:1, eta 0.75 = 10.24 mN m
+[S] DCX 22 S nominal torque (12 V) = 14.6 mN m
+[C] motor speed at 8.00 Hz mean (16:1) = 512.1 rpm
+[S] GPX 22 16:1 average backlash = 1.05 deg
+[C] backlash seen at cage via branch = 0.03281 deg
+
+## 2c true tourbillon: escapement steps the cage via a fixed fourth-wheel ring
+[C] balance time to cross +/-3.5 deg lift at 8.00 Hz, 18 deg = 7.735 ms
+[C] balance time to cross +/-3.5 deg lift at 11.46 Hz, 18 deg = 5.402 ms
+[C] V1T 1 rev/60 s @8.00 Hz: R 32:1, cage step 0.375 deg/beat, cage torque 0.021 N m (18 mm), train time for 12 deg wheel step 16.2 ms, drag 2e-2 N m = 94% of drive, unbalance 0.05 mm = 0.7%
+[C] V1T 1 rev/60 s @8.00 Hz: R 32:1, cage step 0.375 deg/beat, cage torque 0.045 N m (8.5 mm), train time for 12 deg wheel step 11.1 ms, drag 2e-2 N m = 44% of drive, unbalance 0.05 mm = 0.4%
+[C] V1T 1 rev/120 s @8.00 Hz: R 64:1, cage step 0.187 deg/beat, cage torque 0.043 N m (18 mm), train time for 12 deg wheel step 8.1 ms, drag 2e-2 N m = 47% of drive, unbalance 0.05 mm = 0.4%
+[C] V1T 1 rev/120 s @8.00 Hz: R 64:1, cage step 0.187 deg/beat, cage torque 0.090 N m (8.5 mm), train time for 12 deg wheel step 5.6 ms, drag 2e-2 N m = 22% of drive, unbalance 0.05 mm = 0.2%
+[C] V1T 1 rev/300 s @8.00 Hz: R 160:1, cage step 0.075 deg/beat, cage torque 0.107 N m (18 mm), train time for 12 deg wheel step 3.2 ms, drag 2e-2 N m = 19% of drive, unbalance 0.05 mm = 0.1%
+[C] V1T 1 rev/300 s @8.00 Hz: R 160:1, cage step 0.075 deg/beat, cage torque 0.226 N m (8.5 mm), train time for 12 deg wheel step 2.2 ms, drag 2e-2 N m = 9% of drive, unbalance 0.05 mm = 0.1%
+[C] V1T 1 rev/900 s @8.00 Hz: R 480:1, cage step 0.025 deg/beat, cage torque 0.320 N m (18 mm), train time for 12 deg wheel step 1.1 ms, drag 2e-2 N m = 6% of drive, unbalance 0.05 mm = 0.0%
+[C] V1T 1 rev/900 s @8.00 Hz: R 480:1, cage step 0.025 deg/beat, cage torque 0.677 N m (8.5 mm), train time for 12 deg wheel step 0.7 ms, drag 2e-2 N m = 3% of drive, unbalance 0.05 mm = 0.0%
+[C] V4 (prism on cage) 1 rev/60 s @8.00 Hz: R 32:1, cage step 0.375 deg/beat, cage torque 0.021 N m (18 mm), train time for 12 deg wheel step 24.1 ms, drag 2e-2 N m = 94% of drive, unbalance 0.05 mm = 0.7%
+[C] V4 (prism on cage) 1 rev/60 s @8.00 Hz: R 32:1, cage step 0.375 deg/beat, cage torque 0.045 N m (8.5 mm), train time for 12 deg wheel step 16.6 ms, drag 2e-2 N m = 44% of drive, unbalance 0.05 mm = 0.4%
+[C] V4 (prism on cage) 1 rev/120 s @8.00 Hz: R 64:1, cage step 0.187 deg/beat, cage torque 0.043 N m (18 mm), train time for 12 deg wheel step 12.0 ms, drag 2e-2 N m = 47% of drive, unbalance 0.05 mm = 0.4%
+[C] V4 (prism on cage) 1 rev/120 s @8.00 Hz: R 64:1, cage step 0.187 deg/beat, cage torque 0.090 N m (8.5 mm), train time for 12 deg wheel step 8.3 ms, drag 2e-2 N m = 22% of drive, unbalance 0.05 mm = 0.2%
+[C] V4 (prism on cage) 1 rev/300 s @8.00 Hz: R 160:1, cage step 0.075 deg/beat, cage torque 0.107 N m (18 mm), train time for 12 deg wheel step 4.8 ms, drag 2e-2 N m = 19% of drive, unbalance 0.05 mm = 0.1%
+[C] V4 (prism on cage) 1 rev/300 s @8.00 Hz: R 160:1, cage step 0.075 deg/beat, cage torque 0.226 N m (8.5 mm), train time for 12 deg wheel step 3.3 ms, drag 2e-2 N m = 9% of drive, unbalance 0.05 mm = 0.1%
+[C] V4 (prism on cage) 1 rev/900 s @8.00 Hz: R 480:1, cage step 0.025 deg/beat, cage torque 0.320 N m (18 mm), train time for 12 deg wheel step 1.6 ms, drag 2e-2 N m = 6% of drive, unbalance 0.05 mm = 0.0%
+[C] V4 (prism on cage) 1 rev/900 s @8.00 Hz: R 480:1, cage step 0.025 deg/beat, cage torque 0.677 N m (8.5 mm), train time for 12 deg wheel step 1.1 ms, drag 2e-2 N m = 3% of drive, unbalance 0.05 mm = 0.0%
+[C] cage step per beat at 1 rev/60 s vs 18 deg amplitude = 2.083 % of amplitude
+[C] cage step per beat at 1 rev/300 s vs 18 deg amplitude = 0.4166 % of amplitude
+[C] indexer peak torque, light set, 15 ms step (step 1) = 0.766 N m
+[C] indexer reaction reflected to escape wheel at 1 rev/60 s = 0.02393 N m
+[C]   ratio to escape drive torque 6.67e-04 = 35.88 x
+[C] indexer reaction reflected to escape wheel at 1 rev/300 s = 0.004786 N m
+[C]   ratio to escape drive torque 6.67e-04 = 7.176 x
+
+## 3 does a tourbillon help this flexure oscillator's rate?
+[C] poise error, ring CoM offset 5 um, axis horizontal, 18 mm: df/f 9.33e-06, 7.46e-05 Hz at 8 Hz, 0.8 s/day
+[C] poise error, ring CoM offset 5 um, axis horizontal, 8.78 mm: df/f 4.55e-06, 3.64e-05 Hz at 8 Hz, 0.4 s/day
+[C] poise error, ring CoM offset 20 um, axis horizontal, 18 mm: df/f 3.73e-05, 2.99e-04 Hz at 8 Hz, 3.2 s/day
+[C] poise error, ring CoM offset 20 um, axis horizontal, 8.78 mm: df/f 1.82e-05, 1.46e-04 Hz at 8 Hz, 1.6 s/day
+[C] poise error, ring CoM offset 50 um, axis horizontal, 18 mm: df/f 9.33e-05, 7.46e-04 Hz at 8 Hz, 8.1 s/day
+[C] poise error, ring CoM offset 50 um, axis horizontal, 8.78 mm: df/f 4.55e-05, 3.64e-04 Hz at 8 Hz, 3.9 s/day
+[C] leaf axial-load stiffness change, c 0.033, P/leaf 0.291 N, L 18 mm: dK 1.75e-04 N m/rad, dK/K 0.158%, df 0.0063 Hz at 8 Hz
+[C] leaf axial-load stiffness change, c 0.133, P/leaf 0.291 N, L 18 mm: dK 6.99e-04 N m/rad, dK/K 0.633%, df 0.0253 Hz at 8 Hz
+[C] Ti thermoelastic rate coefficient 0.5 dE/E per K = -0.0001711 1/K
+[C] rate change for 10 K stage swing at 8 Hz = -0.01369 Hz
+[C] DMX 8-bit freq step (step 1) = 0.01355 Hz
+[C] DMX 16-bit freq step (step 1) = 5.274e-05 Hz
+[C] averaged poise error (50 um) phase wobble amplitude at 1 rev/60 s = 2.566 deg of balance phase
+[C] averaged poise error (50 um) phase wobble amplitude at 1 rev/300 s = 12.83 deg of balance phase
+[C] same 50 um poise error unaveraged phase drift = 16.12 deg/min
+[C] optical axis tilt from vertical 90 deg: gravity component the cage can average = 100% of g
+[C] optical axis tilt from vertical 45 deg: gravity component the cage can average = 71% of g
+[C] optical axis tilt from vertical 0 deg: gravity component the cage can average = 0% of g
+
+## 4 gravity-induced radial center shift
+[C] V1 7075 cage, 61813, balance+escapement (carousel): per-bearing load 1.68 N, Hertz radial deflection 0.09-0.13 um
+[C]   at 5 g: 8.4 N/bearing, 0.27-0.37 um; load/C0 8.69e-04
+[C]   at 30 g drop [T]: 50 N/bearing, load/C0 5.22e-03
+[C] V4 7075 cage, 61813, + indexer + prism carrier: per-bearing load 4.36 N, Hertz radial deflection 0.18-0.24 um
+[C]   at 5 g: 21.8 N/bearing, 0.51-0.71 um; load/C0 2.26e-03
+[C]   at 30 g drop [T]: 131 N/bearing, load/C0 1.36e-02
+[S] radial clearance C2: 1-15 um -> [C] gravity shift from centered <= 7.5 um, orientation flip <= 15 um
+[S] radial clearance CN: 8-28 um -> [C] gravity shift from centered <= 14.0 um, orientation flip <= 28 um
+[S] radial clearance C3: 23-43 um -> [C] gravity shift from centered <= 21.5 um, orientation flip <= 43 um
+[T] preloaded pair (wave spring) removes clearance; then shift = Hertz only
+[C] cage drum deflection, 65/56 7075 tube, 60 mm span, V4 weight = 1.391 nm
+[S] inner ring radial runout Kia Normal: 20 um -> periodic bore-center wobble at 1x cage rate (not gravity)
+[S] inner ring radial runout Kia P6: 11 um -> periodic bore-center wobble at 1x cage rate (not gravity)
+[S] inner ring radial runout Kia P5: 6 um -> periodic bore-center wobble at 1x cage rate (not gravity)
+[T] journal TIR to bearing seat = 10 um
+[C] reference suspension sag 42 g at 1647.52 N/m = 0.25 mm
+[S] QEXT-200 nonlinear endpoint gravity shift (rejected specimen) = 1.952 mm
+[C] suspension stiffness anisotropy 1.0: sag varies 0.250-0.250 mm at 2x cage rate in world frame
+[C] suspension stiffness anisotropy 1.2: sag varies 0.208-0.250 mm at 2x cage rate in world frame
+[C] suspension stiffness anisotropy 2.0: sag varies 0.125-0.250 mm at 2x cage rate in world frame
+[C] ring ID needed to keep 56 mm clear with 0.25 mm sag = 56.5 mm
+
+## 5 dynamic coupling
+[C] 1 rev/5 min: Coriolis per-element accel 0.021 m/s2 (0.22% of g, symmetric breathing, no net shift); net Coriolis force with 50 um ring offset 1.39e-06 N (0.0003% of ring weight), at f; centrifugal per-element 0.000% of g (symmetric hoop)
+[C] 1 rev/min: Coriolis per-element accel 0.107 m/s2 (1.09% of g, symmetric breathing, no net shift); net Coriolis force with 50 um ring offset 6.95e-06 N (0.0017% of ring weight), at f; centrifugal per-element 0.004% of g (symmetric hoop)
+[C] 64 rpm (1 rev per star): Coriolis per-element accel 6.828 m/s2 (69.63% of g, symmetric breathing, no net shift); net Coriolis force with 50 um ring offset 4.45e-04 N (0.1080% of ring weight), at f; centrifugal per-element 14.776% of g (symmetric hoop)
+[C] gyroscopic tilt torque on balance flexures, 0.1 deg misalignment, 1 rev/min: 1.26e-07 N m
+[C] gyroscopic tilt torque on balance flexures, 0.1 deg misalignment, 64 rpm: 8.07e-06 N m
+[C] gyroscopic torque balance oscillation x 1 rad/s yoke move (exists without tourbillon) = 0.0006899 N m
+[C] gyroscopic torque V4 cage at 64 rpm x 1 rad/s yoke move, on bearings = 0.006342 N m
+[C] coaxial constant-rate rotation: relative restoring torque unchanged, beat frequency in cage frame unchanged (no added rate term)
+[C] V1 7075 cage, 61813, balance+escapement (carousel): unbalance torque at 5 g, e 0.1 mm 1.68e-03 N m; at 30 g 1.01e-02 N m; angular shock 1000 rad/s2 [T] 4.55e-01 N m
+[C] V4 7075 cage, 61813, + indexer + prism carrier: unbalance torque at 5 g, e 0.1 mm 4.36e-03 N m; at 30 g 2.62e-02 N m; angular shock 1000 rad/s2 [T] 9.46e-01 N m
+[C] 1000 rad/s2 angular shock on V1T reflected to pallet lock at R 32 (1 rev/min) = 0.01336 N m
+[C]   ratio to escape drive torque = 20.03 x
+[C] ring inertial load at 5 g (needs transit lock regardless) = 2.059 N
+
+## 6 power and signals across rotation
+[S] 60 mm bore slip ring OD (SVTS C 07 / REC RH60) = 135 mm
+[C] excess over 102 mm tube ID = 33 mm
+[S] RH60 slip ring drag torque (6 rings) = 0.1 N m
+[C] slip ring drag vs worst V1 bearing drag 2e-2 = 5 x
+[C] slip ring revs per touring year at 1 rpm (10 h x 300 d [T]): 1.80e+05; years to 1e8 [S] 556
+[C] slip ring revs per touring year at 64 rpm (10 h x 300 d [T]): 1.15e+07; years to 1e8 [S] 9
+[C] fraction of ring rim hidden by 3 x 5 mm pillars (stationary optical read) = 5.684 %
+
+## 7 projected pattern precession
+[C] 1 rev/15 min: cage 0.400 deg/s; facets on cage, prism stationary -> pattern -0.400 deg/s, one 24 deg spoke spacing every 60 s; prism on cage, facets stationary -> 0.800 deg/s (30 s per spoke)
+[C] 1 rev/5 min: cage 1.200 deg/s; facets on cage, prism stationary -> pattern -1.200 deg/s, one 24 deg spoke spacing every 20 s; prism on cage, facets stationary -> 2.400 deg/s (10 s per spoke)
+[C] 1 rev/min: cage 6.000 deg/s; facets on cage, prism stationary -> pattern -6.000 deg/s, one 24 deg spoke spacing every 4 s; prism on cage, facets stationary -> 12.000 deg/s (2 s per spoke)
+[C] true tourbillon 1 rev/60 s @8 Hz: pattern advance 0.3749 deg per beat, 5.624 deg per 15-beat star
+[C] true tourbillon 1 rev/300 s @8 Hz: pattern advance 0.0750 deg per beat, 1.125 deg per 15-beat star

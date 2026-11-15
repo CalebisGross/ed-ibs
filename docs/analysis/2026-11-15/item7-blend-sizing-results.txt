@@ -1,0 +1,224 @@
+
+## 1 release budget on the balance
+-- 8.00 Hz (L 18.00 mm): f 8.001 Hz, beat 62.5 ms
+[C]   balance energy at 18 deg = 0.005448 J
+[C]   loss per beat at Q 350 (pi E / Q) = 4.89e-05 J
+[C]   escape-wheel torque to cover it (eta 0.35) = 0.0006671 N m
+[C]   release budget 5% of loss: 2.45e-06 J; = 7.00e-05 N m at balance over 2 deg (1.95 mN at 36 mm rim); = 1.17e-05 N m at escape wheel over 12 deg
+[C]   release budget 10% of loss: 4.89e-06 J; = 1.40e-04 N m at balance over 2 deg (3.89 mN at 36 mm rim); = 2.33e-05 N m at escape wheel over 12 deg
+[C]   release budget 25% of loss: 1.22e-05 J; = 3.50e-04 N m at balance over 2 deg (9.73 mN at 36 mm rim); = 5.84e-05 N m at escape wheel over 12 deg
+-- 11.46 Hz (L 8.78 mm): f 11.458 Hz, beat 43.6 ms
+[C]   balance energy at 18 deg = 0.01117 J
+[C]   loss per beat at Q 350 (pi E / Q) = 0.0001003 J
+[C]   escape-wheel torque to cover it (eta 0.35) = 0.001368 N m
+[C]   release budget 5% of loss: 5.01e-06 J; = 1.44e-04 N m at balance over 2 deg (3.99 mN at 36 mm rim); = 2.39e-05 N m at escape wheel over 12 deg
+[C]   release budget 10% of loss: 1.00e-05 J; = 2.87e-04 N m at balance over 2 deg (7.98 mN at 36 mm rim); = 4.79e-05 N m at escape wheel over 12 deg
+[C]   release budget 25% of loss: 2.51e-05 J; = 7.18e-04 N m at balance over 2 deg (19.95 mN at 36 mm rim); = 1.20e-04 N m at escape wheel over 12 deg
+-- isochronism effect of the trip (Airy). Rate error: + = loses time
+[C] 8.00 Hz (L 18.00 mm): 10% budget, trip torque 1.40e-04 N m over 2 deg before centre: rate 7.96e-06 (0.69 s/day); 16-bit DMX freq step = 6.59e-06 relative
+[C]   same trip at amplitude 12 deg: rate 2.70e-05 (2.3 s/day)
+[C]   same trip at amplitude 6 deg: rate 2.21e-04 (19.1 s/day)
+[C] 11.46 Hz (L 8.78 mm): 10% budget, trip torque 2.87e-04 N m over 2 deg before centre: rate 7.96e-06 (0.69 s/day); 16-bit DMX freq step = 4.60e-06 relative
+[C]   same trip at amplitude 12 deg: rate 2.70e-05 (2.3 s/day)
+[C]   same trip at amplitude 6 deg: rate 2.21e-04 (19.1 s/day)
+[C] RK4 8.00 Hz, 10% trip before centre (0..+2 deg): rate +7.96e-06, amplitude loss 8.081 mdeg
+[C] RK4 8.00 Hz, 10% trip centred (-1..+1 deg): rate -2.00e-09, amplitude loss 8.076 mdeg
+[C] RK4 8.00 Hz, 10% trip after centre (-2..0 deg): rate -7.97e-06, amplitude loss 8.081 mdeg
+[C]   Airy formula, before centre, same case = 7.961e-06
+[C] 8.00 Hz (L 18.00 mm): +/-30% per-beat scatter of a 10% trip -> amplitude noise 18.1 mdeg rms -> 80 mm rms radial at 50 m
+[C] 11.46 Hz (L 8.78 mm): +/-30% per-beat scatter of a 10% trip -> amplitude noise 18.1 mdeg rms -> 80 mm rms radial at 50 m
+
+## 4 indexer: Geneva vs cam, 30 stations, 12 deg
+[C] Geneva n=30: lambda = sin(pi/n) = 0.1045
+[C] Geneva driver motion angle = 168 deg
+[C] Geneva driver dwell angle = 192 deg
+[C] Geneva wheel index (check) = 12 deg
+[C] Geneva equivalent Cv (constant driver speed) = 1.634
+[C] Geneva equivalent Ca = 4.524
+[C] Geneva wheel accel at pin entry / peak (acceleration jump, infinite jerk) = 0.9537
+[C] Geneva at 40 mm wheel radius: centre distance = 40.22 mm
+[C]   crank (pin) radius = 4.204 mm
+-- peak output torque and peak KE for 12 deg in t_s (output inertia only, no friction)
+[C] modified sine [S], baseline 61813 set: 10 ms 4.15 N m / 243 mJ; 15 ms 1.84 N m / 108 mJ; 20 ms 1.04 N m / 61 mJ; 25 ms 0.66 N m / 39 mJ
+[C] modified sine [S], light KA025 set: 10 ms 2.38 N m / 140 mJ; 15 ms 1.06 N m / 62 mJ; 20 ms 0.60 N m / 35 mJ; 25 ms 0.38 N m / 22 mJ
+[C] cycloidal [S], baseline 61813 set: 10 ms 4.71 N m / 314 mJ; 15 ms 2.09 N m / 140 mJ; 20 ms 1.18 N m / 79 mJ; 25 ms 0.75 N m / 50 mJ
+[C] cycloidal [S], light KA025 set: 10 ms 2.71 N m / 180 mJ; 15 ms 1.20 N m / 80 mJ; 20 ms 0.68 N m / 45 mJ; 25 ms 0.43 N m / 29 mJ
+[C] modified trapezoid [S], baseline 61813 set: 10 ms 3.67 N m / 314 mJ; 15 ms 1.63 N m / 140 mJ; 20 ms 0.92 N m / 79 mJ; 25 ms 0.59 N m / 50 mJ
+[C] modified trapezoid [S], light KA025 set: 10 ms 2.11 N m / 180 mJ; 15 ms 0.94 N m / 80 mJ; 20 ms 0.53 N m / 45 mJ; 25 ms 0.34 N m / 29 mJ
+[C] bang-bang (step-1 reference) [C], baseline 61813 set: 10 ms 3.00 N m / 314 mJ; 15 ms 1.33 N m / 140 mJ; 20 ms 0.75 N m / 79 mJ; 25 ms 0.48 N m / 50 mJ
+[C] bang-bang (step-1 reference) [C], light KA025 set: 10 ms 1.72 N m / 180 mJ; 15 ms 0.77 N m / 80 mJ; 20 ms 0.43 N m / 45 mJ; 25 ms 0.28 N m / 29 mJ
+[C] harmonic half-swing (spring) [C], baseline 61813 set: 10 ms 3.70 N m / 194 mJ; 15 ms 1.64 N m / 86 mJ; 20 ms 0.93 N m / 48 mJ; 25 ms 0.59 N m / 31 mJ
+[C] harmonic half-swing (spring) [C], light KA025 set: 10 ms 2.13 N m / 111 mJ; 15 ms 0.94 N m / 49 mJ; 20 ms 0.53 N m / 28 mJ; 25 ms 0.34 N m / 18 mJ
+[C] Geneva n=30, constant driver [C], baseline 61813 set: 10 ms 3.39 N m / 210 mJ; 15 ms 1.51 N m / 93 mJ; 20 ms 0.85 N m / 52 mJ; 25 ms 0.54 N m / 34 mJ
+[C] Geneva n=30, constant driver [C], light KA025 set: 10 ms 1.95 N m / 120 mJ; 15 ms 0.87 N m / 54 mJ; 20 ms 0.49 N m / 30 mJ; 25 ms 0.31 N m / 19 mJ
+-- D1: cam or Geneva input driven one turn per step by a constant-torque spring, then arrested
+[T] input flywheel KE = 5 x output peak KE (about 11% speed dip while it drives the output)
+[C] baseline 61813 set, 15 ms modified sine: arrest energy per step 0.541 J; dissipated 8.7 W at 8.00 Hz, 12.4 W at 11.46 Hz (all of it must come from the rewind motor)
+[C] light KA025 set, 15 ms modified sine: arrest energy per step 0.311 J; dissipated 5.0 W at 8.00 Hz, 7.1 W at 11.46 Hz (all of it must come from the rewind motor)
+-- D2: resonant half-swing spring indexer (recommended). Spring between a motor-driven arm and the carrier.
+[T] arm turns continuously at the mean step rate (12 deg per beat), phase-locked to the beat by the encoder
+[C] nominal cock angle (half step, arm stationary) = 6 deg
+[C] baseline 61813 set, step target 10 ms, 8.00 Hz: k 43.32 N m/rad (half period 9.0 ms), cock 5.10 deg, cocked torque 3.86 N m (latch 96.4 N at r 40 mm), step to 12 deg 9.7 ms, spring energy 171.6 mJ (recycled), rel at catch -5.05 deg, catch residual 3.18 mJ (low drag), 16.75 mJ (low drag + 0.1 deg phase error)
+[C] baseline 61813 set, step target 10 ms, 11.46 Hz: k 43.32 N m/rad (half period 9.0 ms), cock 4.65 deg, cocked torque 3.52 N m (latch 87.9 N at r 40 mm), step to 12 deg 10.0 ms, spring energy 142.7 mJ (recycled), rel at catch -4.60 deg, catch residual 2.87 mJ (low drag), 15.23 mJ (low drag + 0.1 deg phase error)
+[C] baseline 61813 set, step target 15 ms, 8.00 Hz: k 21.72 N m/rad (half period 12.8 ms), cock 4.70 deg, cocked torque 1.78 N m (latch 44.5 N at r 40 mm), step to 12 deg 14.1 ms, spring energy 73.0 mJ (recycled), rel at catch -4.59 deg, catch residual 2.90 mJ (low drag), 9.17 mJ (low drag + 0.1 deg phase error)
+[C] baseline 61813 set, step target 15 ms, 11.46 Hz: k 21.72 N m/rad (half period 12.8 ms), cock 3.99 deg, cocked torque 1.51 N m (latch 37.8 N at r 40 mm), step to 12 deg 15.0 ms, spring energy 52.7 mJ (recycled), rel at catch -3.89 deg, catch residual 2.38 mJ (low drag), 7.64 mJ (low drag + 0.1 deg phase error)
+[C] baseline 61813 set, step target 20 ms, 8.00 Hz: k 13.97 N m/rad (half period 15.9 ms), cock 4.34 deg, cocked torque 1.06 N m (latch 26.4 N at r 40 mm), step to 12 deg 18.2 ms, spring energy 40.0 mJ (recycled), rel at catch -4.17 deg, catch residual 2.64 mJ (low drag), 6.35 mJ (low drag + 0.1 deg phase error)
+[C] baseline 61813 set, step target 20 ms, 11.46 Hz: k 13.97 N m/rad (half period 15.9 ms), cock 3.33 deg, cocked torque 0.81 N m (latch 20.3 N at r 40 mm), step to 12 deg 20.0 ms, spring energy 23.6 mJ (recycled), rel at catch -3.17 deg, catch residual 1.87 mJ (low drag), 4.60 mJ (low drag + 0.1 deg phase error)
+[C] baseline 61813 set, step target 25 ms, 8.00 Hz: k 10.32 N m/rad (half period 18.5 ms), cock 4.01 deg, cocked torque 0.72 N m (latch 18.1 N at r 40 mm), step to 12 deg 21.8 ms, spring energy 25.3 mJ (recycled), rel at catch -3.79 deg, catch residual 2.40 mJ (low drag), 4.93 mJ (low drag + 0.1 deg phase error)
+[C] baseline 61813 set, step target 25 ms, 11.46 Hz: k 10.32 N m/rad (half period 18.5 ms), cock 2.64 deg, cocked torque 0.48 N m (latch 11.9 N at r 40 mm), step to 12 deg 25.2 ms, spring energy 11.0 mJ (recycled), rel at catch -2.42 deg, catch residual 1.31 mJ (low drag), 2.80 mJ (low drag + 0.1 deg phase error)
+[C] light KA025 set, step target 10 ms, 8.00 Hz: k 24.89 N m/rad (half period 9.0 ms), cock 5.12 deg, cocked torque 2.22 N m (latch 55.6 N at r 40 mm), step to 12 deg 9.7 ms, spring energy 99.3 mJ (recycled), rel at catch -5.03 deg, catch residual 3.19 mJ (low drag), 11.01 mJ (low drag + 0.1 deg phase error)
+[C] light KA025 set, step target 10 ms, 11.46 Hz: k 24.89 N m/rad (half period 9.0 ms), cock 4.67 deg, cocked torque 2.03 N m (latch 50.7 N at r 40 mm), step to 12 deg 10.0 ms, spring energy 82.7 mJ (recycled), rel at catch -4.58 deg, catch residual 2.88 mJ (low drag), 10.02 mJ (low drag + 0.1 deg phase error)
+[C] light KA025 set, step target 15 ms, 8.00 Hz: k 12.48 N m/rad (half period 12.8 ms), cock 4.74 deg, cocked torque 1.03 N m (latch 25.8 N at r 40 mm), step to 12 deg 14.1 ms, spring energy 42.6 mJ (recycled), rel at catch -4.55 deg, catch residual 2.92 mJ (low drag), 6.55 mJ (low drag + 0.1 deg phase error)
+[C] light KA025 set, step target 15 ms, 11.46 Hz: k 12.48 N m/rad (half period 12.8 ms), cock 4.03 deg, cocked torque 0.88 N m (latch 21.9 N at r 40 mm), step to 12 deg 15.0 ms, spring energy 30.8 mJ (recycled), rel at catch -3.85 deg, catch residual 2.42 mJ (low drag), 5.48 mJ (low drag + 0.1 deg phase error)
+[C] light KA025 set, step target 20 ms, 8.00 Hz: k 8.02 N m/rad (half period 15.9 ms), cock 4.40 deg, cocked torque 0.62 N m (latch 15.4 N at r 40 mm), step to 12 deg 18.2 ms, spring energy 23.6 mJ (recycled), rel at catch -4.11 deg, catch residual 2.68 mJ (low drag), 4.84 mJ (low drag + 0.1 deg phase error)
+[C] light KA025 set, step target 20 ms, 11.46 Hz: k 8.02 N m/rad (half period 15.9 ms), cock 3.39 deg, cocked torque 0.47 N m (latch 11.9 N at r 40 mm), step to 12 deg 20.0 ms, spring energy 14.1 mJ (recycled), rel at catch -3.11 deg, catch residual 1.92 mJ (low drag), 3.54 mJ (low drag + 0.1 deg phase error)
+[C] light KA025 set, step target 25 ms, 8.00 Hz: k 5.92 N m/rad (half period 18.5 ms), cock 4.09 deg, cocked torque 0.42 N m (latch 10.6 N at r 40 mm), step to 12 deg 21.9 ms, spring energy 15.1 mJ (recycled), rel at catch -3.71 deg, catch residual 2.45 mJ (low drag), 3.93 mJ (low drag + 0.1 deg phase error)
+[C] light KA025 set, step target 25 ms, 11.46 Hz: k 5.92 N m/rad (half period 18.5 ms), cock 2.72 deg, cocked torque 0.28 N m (latch 7.0 N at r 40 mm), step to 12 deg 25.2 ms, spring energy 6.7 mJ (recycled), rel at catch -2.33 deg, catch residual 1.38 mJ (low drag), 2.28 mJ (low drag + 0.1 deg phase error)
+-- D2 per-step loss (drag only) and recycled share
+[C] baseline 61813 set 15 ms: drag work 0.42-4.19 mJ/step = 0.6-5.7% of swing energy
+[C] light KA025 set 15 ms: drag work 0.42-4.19 mJ/step = 1.0-9.8% of swing energy
+-- spring sizing: arc spring in pure bending (k = E b t^3 / 12 L, sigma = E t theta / 2 L), fully reversed
+[T] baseline 61813 set 15 ms: design swing +/-5.80 deg relative, k 21.72 N m/rad, allowable 500 MPa fully reversed
+[C]   Nivaflex 45/18: t 1.5 mm -> L 33.4 mm, b 11.7 mm, peak moment 2.20 N m
+[C]   Nivaflex 45/18: t 2.0 mm -> L 44.5 mm, b 6.6 mm, peak moment 2.20 N m
+[C]   Nivaflex 45/18: t 2.5 mm -> L 55.7 mm, b 4.2 mm, peak moment 2.20 N m
+[C]   carbon spring steel: t 1.5 mm -> L 31.1 mm, b 11.7 mm, peak moment 2.20 N m
+[C]   carbon spring steel: t 2.0 mm -> L 41.5 mm, b 6.6 mm, peak moment 2.20 N m
+[C]   carbon spring steel: t 2.5 mm -> L 51.9 mm, b 4.2 mm, peak moment 2.20 N m
+[T] light KA025 set 15 ms: design swing +/-5.84 deg relative, k 12.48 N m/rad, allowable 500 MPa fully reversed
+[C]   Nivaflex 45/18: t 1.5 mm -> L 33.6 mm, b 6.8 mm, peak moment 1.27 N m
+[C]   Nivaflex 45/18: t 2.0 mm -> L 44.8 mm, b 3.8 mm, peak moment 1.27 N m
+[C]   Nivaflex 45/18: t 2.5 mm -> L 56.0 mm, b 2.4 mm, peak moment 1.27 N m
+[C]   carbon spring steel: t 1.5 mm -> L 31.3 mm, b 6.8 mm, peak moment 1.27 N m
+[C]   carbon spring steel: t 2.0 mm -> L 41.8 mm, b 3.8 mm, peak moment 1.27 N m
+[C]   carbon spring steel: t 2.5 mm -> L 52.2 mm, b 2.4 mm, peak moment 1.27 N m
+[C] indexer spring cycles per touring year at 8.00 Hz (3000 h [T]) = 1.728e+08 cycles
+[C] indexer spring cycles per touring year at 11.46 Hz (3000 h [T]) = 2.475e+08 cycles
+-- stop and lock: pawl drops into 30-notch ring at r 40 mm and catches near zero speed
+[C] baseline 61813 set: residual 9.17 mJ, arrival 7.16 rad/s; hard steel pawl/notch [T 2e7 N/m]: peak force 606 N, stop travel 30 um
+[C] baseline 61813 set: residual 9.17 mJ, arrival 7.16 rad/s; elastomer-backed stop [T 2e5 N/m]: peak force 61 N, stop travel 303 um
+[C] baseline 61813 set: if the catch misses and the carrier hits the next notch at full swing speed: 86 mJ, peak force on hard stop 1856 N
+[C] light KA025 set: residual 6.55 mJ, arrival 7.98 rad/s; hard steel pawl/notch [T 2e7 N/m]: peak force 512 N, stop travel 26 um
+[C] light KA025 set: residual 6.55 mJ, arrival 7.98 rad/s; elastomer-backed stop [T 2e5 N/m]: peak force 51 N, stop travel 256 um
+[C] light KA025 set: if the catch misses and the carrier hits the next notch at full swing speed: 49 mJ, peak force on hard stop 1407 N
+-- reaction torque into the chassis and back into the balance (stationary indexer, fixed balance)
+[C] baseline 61813 set, 8.00 Hz, frame I 0.05 kg m2 [T]: frame peak accel 35.6 rad/s2, that beat's half-period shift +1.44e-03 (+0.090 ms), one-side amplitude change -42.0 mdeg
+[C] baseline 61813 set, 8.00 Hz, frame I 0.5 kg m2 [T]: frame peak accel 3.6 rad/s2, that beat's half-period shift +1.44e-04 (+0.009 ms), one-side amplitude change -4.2 mdeg
+[C] light KA025 set, 8.00 Hz, frame I 0.05 kg m2 [T]: frame peak accel 20.6 rad/s2, that beat's half-period shift +8.36e-04 (+0.052 ms), one-side amplitude change -24.4 mdeg
+[C] light KA025 set, 8.00 Hz, frame I 0.5 kg m2 [T]: frame peak accel 2.1 rad/s2, that beat's half-period shift +8.35e-05 (+0.005 ms), one-side amplitude change -2.4 mdeg
+-- same, baseline set, frame I 0.05 [T]: release delay after the balance zero crossing (electric latch can choose it)
+[C]   the carrier always steps the same way while the balance alternates, so beat n and beat n+1 see opposite effects:
+[C]   step centred on zero crossing (needs predictive fire), start -7.5 ms: net rate over a full period +2.0e-12; beat error 0.203 ms; left/right amplitude asymmetry 0.4 mdeg (2 mm radial at 50 m)
+[C]   starts at zero crossing, start +0.0 ms: net rate over a full period -1.4e-07; beat error 0.189 ms; left/right amplitude asymmetry 67.2 mdeg (296 mm radial at 50 m)
+[C]   mechanical cascade delay ~3 ms, start +3.0 ms: net rate over a full period -1.9e-07; beat error 0.176 ms; left/right amplitude asymmetry 92.2 mdeg (406 mm radial at 50 m)
+[S] Gemini beat error target = 0.15 ms
+[C] amplitude lost per beat to Q 350 alone (A pi / 2Q), for comparison = 80.78 mdeg
+[C] quarter period at 8.00 Hz (zero crossing to turning point) = 31.24 ms
+
+## 2 mechanical release options
+[C] 10% release budget (8.00 Hz, the tighter end) = 4.89e-06 J
+-- 2a fixed balance: escape-wheel trip cam -> sear cascade -> main pawl on the indexer
+[C] baseline 61813 set, sliding main sear: main latch load 44.5 N; stage 1: load 44.5 N, trip 2.00e-03 J; stage 2: load 6.68 N, trip 3.00e-04 J; stage 3: load 1 N, trip 4.51e-05 J; stage 4: load 0.15 N, trip 6.76e-06 J; stage 5: load 0.0225 N, trip 1.01e-06 J
+[C]   -> 5 stages to get under the 10% budget, cascade fall time about 5.82 ms, mass about 5 g [T 1 g per stage]
+[C] baseline 61813 set, rolling main sear: main latch load 44.5 N; stage 1: load 44.5 N, trip 1.34e-04 J; stage 2: load 0.445 N, trip 2.00e-05 J; stage 3: load 0.0668 N, trip 3.00e-06 J
+[C]   -> 3 stages to get under the 10% budget, cascade fall time about 2.94 ms, mass about 3 g [T 1 g per stage]
+[C] light KA025 set, sliding main sear: main latch load 25.8 N; stage 1: load 25.8 N, trip 1.16e-03 J; stage 2: load 3.87 N, trip 1.74e-04 J; stage 3: load 0.58 N, trip 2.61e-05 J; stage 4: load 0.087 N, trip 3.92e-06 J
+[C]   -> 4 stages to get under the 10% budget, cascade fall time about 2.85 ms, mass about 4 g [T 1 g per stage]
+[C] light KA025 set, rolling main sear: main latch load 25.8 N; stage 1: load 25.8 N, trip 7.74e-05 J; stage 2: load 0.258 N, trip 1.16e-05 J; stage 3: load 0.0387 N, trip 1.74e-06 J
+[C]   -> 3 stages to get under the 10% budget, cascade fall time about 3.86 ms, mass about 3 g [T 1 g per stage]
+[C] trip energy comes from the escape wheel during its 12 deg impulse motion, i.e. inside the +/-3.5 deg lift zone
+-- 2b carousel: axial push ring lifted by the cage escapement, read by a stationary trip lever
+[C] ring 7075 70/62 x 1.0: 2.33 g; return in 2 ms needs 466 mN; energy per beat 1.44e-04 J = 29.5x the 10% budget at 8.00 Hz (before the stationary hair trigger is added)
+[C] ring 7075 70/62 x 1.0: 2.33 g; return in 5 ms needs 75 mN; energy per beat 6.61e-05 J = 13.5x the 10% budget at 8.00 Hz (before the stationary hair trigger is added)
+[C] ring Ti-6Al-4V 70/62 x 0.6: 2.20 g; return in 2 ms needs 441 mN; energy per beat 1.37e-04 J = 27.9x the 10% budget at 8.00 Hz (before the stationary hair trigger is added)
+[C] ring Ti-6Al-4V 70/62 x 0.6: 2.20 g; return in 5 ms needs 71 mN; energy per beat 6.25e-05 J = 12.8x the 10% budget at 8.00 Hz (before the stationary hair trigger is added)
+[C] ring CFRP 70/62 x 1.0 [T rho 1550]: 1.29 g; return in 2 ms needs 257 mN; energy per beat 7.97e-05 J = 16.3x the 10% budget at 8.00 Hz (before the stationary hair trigger is added)
+[C] ring CFRP 70/62 x 1.0 [T rho 1550]: 1.29 g; return in 5 ms needs 41 mN; energy per beat 3.65e-05 J = 7.5x the 10% budget at 8.00 Hz (before the stationary hair trigger is added)
+[T] thrust interface: one ruby point on the stationary lever riding the ring face; its sliding friction is tangential and paid by the cage motor, not the balance
+
+## 3 optical sensor + electric latch
+[S] Omron EE-SX1041 rise/fall time = 4 us
+[S] Vishay TCST1103 turn-on time = 10 us
+[C] balance rim speed at centre, 8.00 Hz, r 36 mm = 0.5686 m/s
+[C] edge timing jitter for 5 um position noise [T] on the rim = 8.794 us
+-- voice coil H2W NCC03-07-001-1V tripping the main pawl directly (rolling sear) or a 1-stage cascade
+[C] baseline 61813 set, 1.0 A (2.6 N), rolling main sear: friction 0.45 N, open in 2.56 ms, coil heat 0.39 W at 8.00 Hz / 0.56 W at 11.46 Hz vs 0.4 W continuous rating
+[C] baseline 61813 set, 1.0 A (2.6 N), via 1 cascade stage: friction 0.07 N, open in 2.37 ms, coil heat 0.36 W at 8.00 Hz / 0.52 W at 11.46 Hz vs 0.4 W continuous rating
+[C] baseline 61813 set, 2.5 A (6.5 N), rolling main sear: friction 0.45 N, open in 1.64 ms, coil heat 1.57 W at 8.00 Hz / 2.25 W at 11.46 Hz vs 0.4 W continuous rating
+[C] baseline 61813 set, 2.5 A (6.5 N), via 1 cascade stage: friction 0.07 N, open in 1.60 ms, coil heat 1.53 W at 8.00 Hz / 2.20 W at 11.46 Hz vs 0.4 W continuous rating
+[C] light KA025 set, 1.0 A (2.6 N), rolling main sear: friction 0.26 N, open in 2.46 ms, coil heat 0.38 W at 8.00 Hz / 0.54 W at 11.46 Hz vs 0.4 W continuous rating
+[C] light KA025 set, 1.0 A (2.6 N), via 1 cascade stage: friction 0.04 N, open in 2.36 ms, coil heat 0.36 W at 8.00 Hz / 0.52 W at 11.46 Hz vs 0.4 W continuous rating
+[C] light KA025 set, 2.5 A (6.5 N), rolling main sear: friction 0.26 N, open in 1.62 ms, coil heat 1.55 W at 8.00 Hz / 2.22 W at 11.46 Hz vs 0.4 W continuous rating
+[C] light KA025 set, 2.5 A (6.5 N), via 1 cascade stage: friction 0.04 N, open in 1.59 ms, coil heat 1.53 W at 8.00 Hz / 2.19 W at 11.46 Hz vs 0.4 W continuous rating
+-- Ledex 50 STA push solenoid, 24 V intermittent
+[S] force at 0.010 in stroke = 3.503 N
+[S] force at 0.100 in stroke = 0.6672 N
+[C] baseline 61813 set: mechanical travel time 0.25 mm at full force 0.70 ms (plus flux build-up, not on the sheet; planning 5-20 ms [T], temperature dependent)
+[C] light KA025 set: mechanical travel time 0.25 mm at full force 0.68 ms (plus flux build-up, not on the sheet; planning 5-20 ms [T], temperature dependent)
+[C] solenoid heat at 24 V, 5 ms pulse, 11.46 Hz = 1.444 W
+
+## 5 rewind motor (cocks the indexer spring each beat)
+[S] DCX 22 S 24 V nominal (max continuous) torque = 15.3 mN m
+[S] DCX 22 S 24 V stall torque = 120 mN m
+[S] DCX 22 S nominal speed = 1.08e+04 rpm
+[S] GPX 22 HP 3-stage max continuous output torque = 3.3 N m
+[S]   max efficiency = 65 %
+[S]   max continuous input speed = 1e+04 rpm
+[S]   average backlash, no load = 1.2 deg
+[C] baseline 61813 set, 8.00 Hz, GPX 22 HP 103:1: arm peak 1.80 N m, rms 1.13 N m; motor peak 27.0 mN m, rms 16.8 mN m vs 15.3 nominal, speed 3297 rpm; power 6.91 W (mech 3.83 + copper 3.09); with 4-quadrant regen [T] 6.38 W -> over
+[C] baseline 61813 set, 8.00 Hz, GPX 22 HP 150:1: arm peak 1.80 N m, rms 1.13 N m; motor peak 18.5 mN m, rms 11.6 mN m vs 15.3 nominal, speed 4801 rpm; power 5.28 W (mech 3.83 + copper 1.46); with 4-quadrant regen [T] 4.75 W -> OK
+[C] baseline 61813 set, 8.00 Hz, GPX 22 HP 186:1: arm peak 1.80 N m, rms 1.13 N m; motor peak 14.9 mN m, rms 9.3 mN m vs 15.3 nominal, speed 5953 rpm; power 4.77 W (mech 3.83 + copper 0.95); with 4-quadrant regen [T] 4.24 W -> OK
+[C] baseline 61813 set, 11.46 Hz, GPX 22 HP 103:1: arm peak 1.57 N m, rms 1.09 N m; motor peak 23.5 mN m, rms 16.3 mN m vs 15.3 nominal, speed 4721 rpm; power 8.36 W (mech 5.45 + copper 2.91); with 4-quadrant regen [T] 7.48 W -> over
+[C] baseline 61813 set, 11.46 Hz, GPX 22 HP 150:1: arm peak 1.57 N m, rms 1.09 N m; motor peak 16.1 mN m, rms 11.2 mN m vs 15.3 nominal, speed 6875 rpm; power 6.82 W (mech 5.45 + copper 1.37); with 4-quadrant regen [T] 5.94 W -> OK
+[C] baseline 61813 set, 11.46 Hz, GPX 22 HP 186:1: arm peak 1.57 N m, rms 1.09 N m; motor peak 13.0 mN m, rms 9.0 mN m vs 15.3 nominal, speed 8525 rpm; power 6.34 W (mech 5.45 + copper 0.89); with 4-quadrant regen [T] 5.46 W -> OK
+[C] light KA025 set, 8.00 Hz, GPX 22 HP 103:1: arm peak 1.05 N m, rms 0.65 N m; motor peak 15.6 mN m, rms 9.7 mN m vs 15.3 nominal, speed 3297 rpm; power 3.30 W (mech 2.27 + copper 1.03); with 4-quadrant regen [T] 3.01 W -> OK
+[C] light KA025 set, 8.00 Hz, GPX 22 HP 150:1: arm peak 1.05 N m, rms 0.65 N m; motor peak 10.7 mN m, rms 6.7 mN m vs 15.3 nominal, speed 4801 rpm; power 2.76 W (mech 2.27 + copper 0.49); with 4-quadrant regen [T] 2.46 W -> OK
+[C] light KA025 set, 8.00 Hz, GPX 22 HP 186:1: arm peak 1.05 N m, rms 0.65 N m; motor peak 8.6 mN m, rms 5.4 mN m vs 15.3 nominal, speed 5953 rpm; power 2.59 W (mech 2.27 + copper 0.32); with 4-quadrant regen [T] 2.29 W -> OK
+[C] light KA025 set, 11.46 Hz, GPX 22 HP 103:1: arm peak 0.91 N m, rms 0.63 N m; motor peak 13.6 mN m, rms 9.4 mN m vs 15.3 nominal, speed 4721 rpm; power 4.21 W (mech 3.24 + copper 0.97); with 4-quadrant regen [T] 3.71 W -> OK
+[C] light KA025 set, 11.46 Hz, GPX 22 HP 150:1: arm peak 0.91 N m, rms 0.63 N m; motor peak 9.3 mN m, rms 6.5 mN m vs 15.3 nominal, speed 6875 rpm; power 3.70 W (mech 3.24 + copper 0.46); with 4-quadrant regen [T] 3.20 W -> OK
+[C] light KA025 set, 11.46 Hz, GPX 22 HP 186:1: arm peak 0.91 N m, rms 0.63 N m; motor peak 7.5 mN m, rms 5.2 mN m vs 15.3 nominal, speed 8525 rpm; power 3.54 W (mech 3.24 + copper 0.30); with 4-quadrant regen [T] 3.04 W -> OK
+-- power-cut reserve
+[C] beats from 18 deg down to the 3.5 deg unlock threshold, free decay (2Q/pi ln(A0/3.5)) = 364.9 beats
+[C] 8.00 Hz: time to unlock threshold 22.8 s; amplitude after 15 s 6.13 deg; steps in 15 s 240
+[C] 11.46 Hz: time to unlock threshold 15.9 s; amplitude after 15 s 3.85 deg; steps in 15 s 344
+[C] baseline 61813 set: cocked spring alone = 1 step. With a step-1 option-B barrel (0.80 J total) feeding the arm through reversible gearing: 71.3 mJ/step net -> 11 steps; full decay needs 26.0 J
+[C] baseline 61813 set: electrical hold-up for 15 s of cocking at 8.00 Hz: 79 J -> 0.37 F at 24 V discharging to 12 V
+[C] light KA025 set: cocked spring alone = 1 step. With a step-1 option-B barrel (0.80 J total) feeding the arm through reversible gearing: 44.3 mJ/step net -> 18 steps; full decay needs 16.2 J
+[C] light KA025 set: electrical hold-up for 15 s of cocking at 8.00 Hz: 41 J -> 0.19 F at 24 V discharging to 12 V
+[C] 150 W COB for 15 s (light also needs hold-up for a visible decay) = 2250 J
+
+## 6 dark time and duty cycle
+[C] spec/measured blanking 2.20 ms (reference, no indexer): 3.5% at 8.00 Hz, 5.0% at 11.46 Hz
+[C] spec/measured blanking 4.65 ms (reference, no indexer): 7.4% at 8.00 Hz, 10.7% at 11.46 Hz
+[C] design t_s 10 ms, electric VCA, predictive fire [T jitter +/-0.1 ms]: 8.00 Hz: step 9.7 + settle + jitter = dark 11.9 ms = 19.0%, light 81%; 11.46 Hz: step 10.0 + settle + jitter = dark 12.2 ms = 28.0%, light 72%
+[C] design t_s 10 ms, mechanical cascade [T jitter +/-0.5 ms]: 8.00 Hz: step 9.7 + settle + jitter = dark 12.7 ms = 20.3%, light 80%; 11.46 Hz: step 10.0 + settle + jitter = dark 13.0 ms = 29.8%, light 70%
+[C] design t_s 10 ms, solenoid, predictive fire [T jitter +/-2 ms]: 8.00 Hz: step 9.7 + settle + jitter = dark 15.7 ms = 25.1%, light 75%; 11.46 Hz: step 10.0 + settle + jitter = dark 16.0 ms = 36.7%, light 63%
+[C] design t_s 15 ms, electric VCA, predictive fire [T jitter +/-0.1 ms]: 8.00 Hz: step 14.1 + settle + jitter = dark 16.3 ms = 26.1%, light 74%; 11.46 Hz: step 15.0 + settle + jitter = dark 17.2 ms = 39.4%, light 61%
+[C] design t_s 15 ms, mechanical cascade [T jitter +/-0.5 ms]: 8.00 Hz: step 14.1 + settle + jitter = dark 17.1 ms = 27.4%, light 73%; 11.46 Hz: step 15.0 + settle + jitter = dark 18.0 ms = 41.2%, light 59%
+[C] design t_s 15 ms, solenoid, predictive fire [T jitter +/-2 ms]: 8.00 Hz: step 14.1 + settle + jitter = dark 20.1 ms = 32.2%, light 68%; 11.46 Hz: step 15.0 + settle + jitter = dark 21.0 ms = 48.1%, light 52%
+[C] design t_s 20 ms, electric VCA, predictive fire [T jitter +/-0.1 ms]: 8.00 Hz: step 18.2 + settle + jitter = dark 20.4 ms = 32.6%, light 67%; 11.46 Hz: step 20.0 + settle + jitter = dark 22.2 ms = 50.9%, light 49%
+[C] design t_s 20 ms, mechanical cascade [T jitter +/-0.5 ms]: 8.00 Hz: step 18.2 + settle + jitter = dark 21.2 ms = 33.9%, light 66%; 11.46 Hz: step 20.0 + settle + jitter = dark 23.0 ms = 52.7%, light 47%
+[C] design t_s 20 ms, solenoid, predictive fire [T jitter +/-2 ms]: 8.00 Hz: step 18.2 + settle + jitter = dark 24.2 ms = 38.7%, light 61%; 11.46 Hz: step 20.0 + settle + jitter = dark 26.0 ms = 59.6%, light 40%
+[C] design t_s 25 ms, electric VCA, predictive fire [T jitter +/-0.1 ms]: 8.00 Hz: step 21.8 + settle + jitter = dark 24.0 ms = 38.5%, light 62%; 11.46 Hz: step 25.2 + settle + jitter = dark 27.4 ms = 62.8%, light 37%
+[C] design t_s 25 ms, mechanical cascade [T jitter +/-0.5 ms]: 8.00 Hz: step 21.8 + settle + jitter = dark 24.8 ms = 39.7%, light 60%; 11.46 Hz: step 25.2 + settle + jitter = dark 28.2 ms = 64.6%, light 35%
+[C] design t_s 25 ms, solenoid, predictive fire [T jitter +/-2 ms]: 8.00 Hz: step 21.8 + settle + jitter = dark 27.8 ms = 44.5%, light 55%; 11.46 Hz: step 25.2 + settle + jitter = dark 31.2 ms = 71.5%, light 28%
+[C] beat (chop) rate range = 16 Hz
+[C]   upper = 22.92 Hz
+[S] cone flicker fusion plateau (chop rate is below it, so blanking reads as flicker, not dimming) = 60 Hz
+[C] baseline 61813 set: 10 ms -> spring 43.3 N m/rad, latch load 96 N; 15 ms -> spring 21.7 N m/rad, latch load 45 N; 20 ms -> spring 14.0 N m/rad, latch load 26 N; 25 ms -> spring 10.3 N m/rad, latch load 18 N
+[C] light KA025 set: 10 ms -> spring 24.9 N m/rad, latch load 56 N; 15 ms -> spring 12.5 N m/rad, latch load 26 N; 20 ms -> spring 8.0 N m/rad, latch load 15 N; 25 ms -> spring 5.9 N m/rad, latch load 11 N
+
+## 7 escapement remontoire torque (item 12)
+[C] 8.00 Hz (L 18.00 mm): escapement 6.67e-04 + mechanical trip (10%) 2.33e-05 N m; x2 headroom -> 1.38e-03 N m nominal max
+[C] 11.46 Hz (L 8.78 mm): escapement 1.37e-03 + mechanical trip (10%) 4.79e-05 N m; x2 headroom -> 2.83e-03 N m nominal max
+[C] nominal max escape-arbor torque = 0.002832 N m
+[C] clutch torque (Gemini 1.5x ratio) = 0.004248 N m
+[C] Gemini 0.12 N m vs need = 42.38 x too high
+[C] required b t^2 at clutch torque, 1000 MPa = 0.02549 mm3
+[C] Nivaflex pre-wound (2 turns + 45 deg band): t 0.05 b 10.2 L 110 mm, k 2.12e-04 N m/rad, ripple +/-2 deg 0.26%, ripple per 12 deg beat 1.57%
+[C] Nivaflex pre-wound (2 turns + 45 deg band): t 0.08 b 4.0 L 177 mm, k 2.12e-04 N m/rad, ripple +/-2 deg 0.26%, ripple per 12 deg beat 1.57%
+[C] Nivaflex pre-wound (2 turns + 45 deg band): t 0.10 b 2.6 L 225 mm, k 2.12e-04 N m/rad, ripple +/-2 deg 0.26%, ripple per 12 deg beat 1.57%
+[C] Gemini 0.08 x 1.2 ribbon, max torque at 1000 MPa = 0.00128 N m
+[C]   share of needed clutch torque = 0.3014
+[C] 8.00 Hz (L 18.00 mm): escapement + trip power 2.31 mW; pre-wound spring total store 42.5 mJ at clutch wind; band 45 deg holds 2.16 mJ -> 0.9 s of running inside the band, 18 s on the whole store at falling torque (carousel parked, nothing winding)
+[C] 11.46 Hz (L 8.78 mm): escapement + trip power 6.80 mW; pre-wound spring total store 42.5 mJ at clutch wind; band 45 deg holds 2.16 mJ -> 0.3 s of running inside the band, 6 s on the whole store at falling torque (carousel parked, nothing winding)

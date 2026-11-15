@@ -1,0 +1,132 @@
+
+## A1 ring reference and spec law
+[C] I_ring (spec 42 g, 56/72 mm) = 4.368e-05 kg m2
+[C] f spec law @18 mm, ring only = 8.001 Hz
+[C] f spec law @8.5 mm, ring only = 11.64 Hz
+
+## A2 bearings (catalog) and carrier walls over 56 mm bore
+[S] SKF 61812-2RZ/-2RS1: 60.00 x 78.00 x 10.00 mm, 110 g (SKF table); [C] journal wall over 56 mm bore = 2.00 mm
+[S] SKF 61813-2RZ: 65.00 x 85.00 x 10.00 mm, 130 g (SKF table); [C] journal wall over 56 mm bore = 4.50 mm
+[S] Kaydon KA025XP0 (also KA025CP0/AR0 same envelope): 63.50 x 76.20 x 6.35 mm, 59 g (Kaydon table); [C] journal wall over 56 mm bore = 3.75 mm
+
+## A3 Dove prism fit and mass properties
+[C] prism cross-section diagonal = 35.36 mm
+[C] radial clearance prism corner to 56 mm bore = 10.32 mm
+[C] prism top face length = 56.1 mm
+[C] prism volume = 50.69 cm3
+[C] prism mass = 127.2 g
+[C] prism I about optical (square-center) axis = 1.325e-05 kg m2
+[C] prism CoM offset from axis (toward base) = 1.284 mm
+[C] prism static imbalance = 163.4 g mm
+[C] prism worst gravity torque on axis = 0.001603 N m
+
+## A4 carrier (design target geometry)
+[C] 7075 body tube 60/56 x 100: m = 102.4 g, I = 8.622e-05 kg m2
+[C] 7075 journals 65/56 x 10 (x2): m = 48.1 g, I = 4.423e-05 kg m2
+[C] prism N-BK7: m = 127.2 g, I = 1.325e-05 kg m2
+[C] prism mount rails (assumed): m = 35.0 g, I = 1.852e-05 kg m2
+[C] counterweight for prism CoM: m = 6.3 g, I = 4.249e-06 kg m2
+[C] bearing inner races (assumed 40% of 61813 mass): m = 104.0 g, I = 1.311e-04 kg m2
+[C] indexed carrier set WITHOUT index ring, mass = 423 g
+[C] indexed carrier set WITHOUT index ring, I = 0.0002975 kg m2
+[C] steel index ring 80/62 x 3, mass = 47.28 g
+[C] steel index ring I = 6.054e-05 kg m2
+[C] TOTAL indexed I (carrier+prism+ring) = 0.0003581 kg m2
+[C] TOTAL indexed mass = 470.3 g
+[C] indexed I / ring I = 8.198 x
+[C] Gemini 303SS carrier 46/28.2x112 mass = 929.4 g
+[C] Gemini 303SS carrier I = 0.0003382 kg m2
+
+## A5 indexing demands: 12 deg mech per beat
+[C] f = 8.00 Hz: beat interval 62.5 ms, mean prism speed 192 deg/s = 32.0 rpm
+[C] f = 11.64 Hz: beat interval 42.9 ms, mean prism speed 279 deg/s = 46.6 rpm
+[C] f = 20.00 Hz: beat interval 25.0 ms, mean prism speed 480 deg/s = 80.0 rpm
+[C] step 12 deg in 2.20 ms: peak torque 61.98 N m, peak speed 190 rad/s, peak KE 6.490 J
+[C] step 12 deg in 4.65 ms: peak torque 13.87 N m, peak speed 90 rad/s, peak KE 1.453 J
+[C] step 12 deg in 10.00 ms: peak torque 3.00 N m, peak speed 42 rad/s, peak KE 0.314 J
+[C] step 12 deg in 20.00 ms: peak torque 0.75 N m, peak speed 21 rad/s, peak KE 0.079 J
+[C] time to step 12 deg under 0.12 N m (free accel, no friction) = 35.35 ms
+[C] impact energy per beat at 0.12 N m (tau x 12 deg) = 0.02513 J
+[C] wheel/balance angle ratio during lift (12 deg / 7 deg, crude) = 1.714
+[C] carrier inertia reflected to balance = 0.001052 kg m2
+[C] reflected / balance ring = 24.09 x
+[C] balance energy at 18 deg, 18 mm = 0.005448 J
+[C] carrier KE if dragged at balance center speed x ratio = 0.1312 J
+[C] prism-only reflected / ring (lower bound) = 0.8916 x
+[C] bearing drag, rough: contact-sealed (2RS) 60-65 mm bore bearings are expected in the 0.05-0.4 N m range each (seal-dominated, order of magnitude only); non-contact (2RZ/2Z) or open lightly oiled: ~1e-3 to 1e-2 N m. Not a datasheet value.
+
+## B remontoire ribbon
+[C] Gemini ribbon 0.08x1.2x180 stiffness = 6.258e-05 N m/rad
+[C] Gemini ribbon torque at 45 deg = 4.915e-05 N m
+[C] shortfall vs 0.12 N m = 2442 x
+[T] ribbon bending allowable at MAX torque (0.18 N m clutch) = 1000 MPa
+[C] required k for 0.12 N m at 45 deg (no preload) = 0.1528 N m/rad
+[C] required b t^2 (sigma = 6M/(b t^2) at 0.18 N m) = 1.08 mm3
+Option A: unpreloaded leaf, torque = k*theta, 45 deg nominal, 67.5 deg at clutch torque
+[C] Nivaflex 45/18: t 0.30 b 12.1 L 39.2 mm, sigma nom 661 MPa, at 0.18 N m 992 MPa (check 992)
+[C] Nivaflex 45/18: t 0.40 b 6.8 L 52.2 mm, sigma nom 662 MPa, at 0.18 N m 993 MPa (check 993)
+[C] Nivaflex 45/18: t 0.50 b 4.4 L 66.0 mm, sigma nom 655 MPa, at 0.18 N m 982 MPa (check 982)
+[C] carbon spring steel: t 0.30 b 12.1 L 36.5 mm, sigma nom 661 MPa, at 0.18 N m 992 MPa (check 992)
+[C] carbon spring steel: t 0.40 b 6.8 L 48.7 mm, sigma nom 662 MPa, at 0.18 N m 993 MPa (check 993)
+[C] carbon spring steel: t 0.50 b 4.4 L 61.5 mm, sigma nom 655 MPa, at 0.18 N m 982 MPa (check 982)
+[C] Option A torque variation for +/-2 deg control band = 4.444 %
+Option B: pre-wound spiral, theta_total = 2 turns preset + 45 deg operating
+[C] Nivaflex 45/18: t 0.20 b 27.0 L 441 mm, k 0.0090 N m/rad, sigma at 0.18 N m 1000 MPa, wind for 0.18 = 1148 deg total
+[C] Nivaflex 45/18: t 0.30 b 12.1 L 666 mm, k 0.0090 N m/rad, sigma at 0.18 N m 992 MPa, wind for 0.18 = 1148 deg total
+[C] carbon spring steel: t 0.20 b 27.0 L 411 mm, k 0.0090 N m/rad, sigma at 0.18 N m 1000 MPa, wind for 0.18 = 1148 deg total
+[C] carbon spring steel: t 0.30 b 12.1 L 621 mm, k 0.0090 N m/rad, sigma at 0.18 N m 992 MPa, wind for 0.18 = 1148 deg total
+[C] Option B torque variation for +/-2 deg band = 0.2614 %
+[C] wind needed for Gemini +/-2.5% at +/-2 deg (linear spring) = 80 deg total
+
+## B2 drive torque the oscillator actually needs (ring only, escapement drives balance only)
+[C] L 18.0 mm: E_osc 5.448e-03 J, loss/beat at Q350 4.890e-05 J, escape-wheel torque needed at eta 0.35: 6.67e-04 N m (180x below 0.12)
+[C] L 8.5 mm: E_osc 1.154e-02 J, loss/beat at Q350 1.036e-04 J, escape-wheel torque needed at eta 0.35: 1.41e-03 N m (85x below 0.12)
+
+## D flexure frequency re-derivation
+[C] blade width implied by spec Kbase with N=4, t=0.25, K=N E b t^3/(12L) = 3.347 mm
+[C] shortest L at +/-18 deg, t 0.25, sigma<=510 MPa = 8.778 mm
+[C] sigma at +/-18 deg, L 18.00 mm, t 0.25: 249 MPa
+[C] sigma at +/-18 deg, L 8.78 mm, t 0.25: 510 MPa
+[C] sigma at +/-18 deg, L 8.50 mm, t 0.25: 527 MPa
+[C] D1 item-7 arch, balance ring only, spec law: I 4.368e-05; f(18) 8.00, f(L_stress 8.78) 11.46, f(8.5) 11.64 Hz
+[C] D2 item-7 arch, ring only, beam law b=4 mm t=0.25: I 4.368e-05; f(18) 8.75, f(L_stress 8.78) 12.53, f(8.5) 12.73 Hz
+[C] D3 Gemini arch, carrier+prism+ring oscillate, spec law: I 4.018e-04; f(18) 2.64, f(L_stress 8.78) 3.78, f(8.5) 3.84 Hz
+[C] D4 Gemini arch, beam law b=4 t=0.25: I 4.018e-04; f(18) 2.88, f(L_stress 8.78) 4.13, f(8.5) 4.20 Hz
+[C] D5 Gemini own blades 0.18x4x12 on new carrier (reference): I 4.018e-04; f(18) 2.16, f(L_stress 8.78) 2.16, f(8.5) 2.16 Hz
+[C] K needed for 4 / 20 Hz with I ring 4.368e-05: 0.0276 / 0.6898 N m/rad
+[C] K needed for 4 / 20 Hz with I ring+carrier 4.018e-04: 0.2538 / 6.3442 N m/rad
+[C] f ratio available from 1/L over 18->8.5 = 1.455
+[C] f ratio needed for 4-20 Hz = 5
+[C] length ratio needed with 1/L law alone = 25
+[C] L_min if 1/L alone did 4-20 from 18 mm = 0.72 mm
+[C] blade width for base K = K(4 Hz) at 18 mm, t 0.25 (ring) = 0.8364 mm
+
+## A6 lighter carrier variant (Kaydon KA025 thin section, 1.5 mm body wall)
+[C] light indexed set mass = 342.7 g
+[C] light indexed set I = 0.0002057 kg m2
+[C] light set reflected / ring = 13.84 x
+[C] light set time to step 12 deg at 0.12 N m = 26.8 ms
+[C] light set bang-bang torque for 12 deg in 4.65 ms = 7.971 N m
+[C] light set bang-bang torque for 12 deg in 15 ms = 0.766 N m
+
+## B3 stored energy and run-down
+[C] Option A stored energy at 45 deg = 0.04712 J
+[C] Option B energy in the 45 deg operating band = 0.09148 J
+[C] Option B total stored = 0.8011 J
+[C] drive power if 0.12 N m turns the indexed train at 8 Hz = 0.4022 W
+[C] drive power escapement-only (6.7e-4 N m) at 8 Hz = 0.002236 W
+[C] 15 s power-cut run-down energy, 0.12 N m train = 6.033 J
+[C] 15 s power-cut run-down energy, escapement-only = 0.03353 J
+[C] Q350 amplitude e-fold time at 8.00 Hz (Q/(pi f)) = 13.92 s
+[C] Q350 amplitude e-fold time at 11.46 Hz = 9.723 s
+
+## C DMX resolution
+[C] modeled frequency span (item-7 arch, spec law, stress-limited) = 3.456 Hz
+[C] 8-bit frequency step = 0.01355 Hz
+[C] 16-bit frequency step = 5.274e-05 Hz
+[C] worst phase drift/min from 8-bit half step = 0.4066 cycles/min
+[C] worst phase drift/min from 16-bit half step = 0.001582 cycles/min
+[C] amplitude 8-bit step 0.07059 deg mech -> radial step at 50 m 311.1 mm
+[C] amplitude 16-bit step 0.00027 deg mech -> radial step at 50 m 1.2 mm
+[C] phase offset 8-bit step 1.4062 deg -> arc step at rest radius 13.4 m: 329 mm
+[C] phase offset 16-bit step 0.0055 deg -> arc step at rest radius 13.4 m: 1 mm

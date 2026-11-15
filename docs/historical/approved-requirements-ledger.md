@@ -1,4 +1,4 @@
-# Approved requirement ledger — separate from original source
+# Approved requirement ledger: separate from original source
 
 Authority: Caleb's direct decisions relayed by parent in this engineering workstream. This ledger records changes/clarifications; it does NOT edit or replace full-user-specification.md. Numerical examples in proposal documents are not approvals.
 
