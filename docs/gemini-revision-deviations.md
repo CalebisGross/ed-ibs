@@ -85,7 +85,7 @@ Prism carrier: Light carrier
 15 s power-cut decay: Powered DMX decay effect
 Carousel park: Add a driven winding ring
 Visible flicker from stepping: Flicker is a flaw to reduce
-Status: item 7 = spring-swing indexer with cam-notch lock, stationary optical sensor plus voice-coil latch release (next coil size up), 15 ms step, light carrier; carousel optional with driven winding ring; 15 s decay is a powered DMX effect. Flicker reduction is an open design task. All values remain calculated predictions, not validated.
+Status: item 7 = spring-swing indexer with cam-notch lock, stationary optical sensor plus voice-coil latch release (next coil size up), 15 ms step, light carrier; carousel optional with driven winding ring; 15 s decay is a powered DMX effect. Flicker reduction is an open design task (superseded by the 12:03 and 12:10 CT sections below). All values remain calculated predictions, not validated.
 
 ## Nov 15 2026 12:03 CT flicker reduction study (flicker-study.md / .py / -results.txt)
 Trigger: Caleb's 11:44 CT answer "Flicker is a flaw to reduce". Analysis only, nothing validated. Tags as in the study.

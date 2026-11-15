@@ -119,7 +119,7 @@ Item 7 sizing predictions that go with the 11:44 CT choice, all from `item7-blen
 
 ### Left open on purpose
 
-- Flicker at the 15 ms step. Caleb called it a flaw to reduce. No quieter step, no higher rate, and no optical fix is sized.
+- Flicker at the 15 ms step. Caleb called it a flaw to reduce. Flicker reduction is sized in `docs/analysis/2026-11-15/flicker-study.md` (12:03 CT). Caleb's 12:10 CT working choices: step at pattern centre with zero-crossing fallback, beam divergence at least 2.4 deg, smear tolerance by look test, DMX blank-depth control, constant-current fast-PWM driver with lit-time boost, Raw Smear look dropped. The 15 ms step, dual path and strobe are still open ("Revisit"). Predictions, not validated, and not a photosensitivity safety finding.
 - Gearhead backlash. The cited GPX 22 HP average is 1.2 deg, against torque that reverses every beat, while the cock is supposed to hold near 0.1 deg. Named options are unsized.
 - The 0.25 mm all-orientation gravity shift of the balance suspension. Unpassed. The cage-bearing prediction does not close it. QEXT-200 remains a rejected specimen, at about 1.95 mm in the historical assessment.
 - Items 8, 9, and 15. Not addressed in step 1.
