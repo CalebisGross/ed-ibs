@@ -52,3 +52,37 @@ Numbering below follows the table rows above. Note: recommendation numbers 14-16
 15 Divergence: WORKING, not addressed in step 1.
 16 Certs: unchanged, not validated.
 Contact-seal (2RS) bearings excluded: estimated drag comparable to whole drive torque.
+
+## Nov 15 2026 11:01 CT item 7 update
+7 Prism motion: WORKING = spring-indexer blend (Caleb liked it in chat today). Balance + escapement are master clock and release each 12 deg step; spring cam/Geneva indexer powers the step; small motor rewinds the spring (remontoire); encoder supervises and can re-home. Not yet sized (next: release load on balance, indexer spring, rewind torque, blanking).
+Tourbillon (cage rotating about optical axis): UNDER EVALUATION, not adopted. See tourbillon-feasibility.md / .py / -results.txt. First pass [C]: feasible with conditions as a slow motor-driven carousel (balance + escapement on a 7075 cage on 2x 61813, ~342 g, I ~4.6e-4), indexer and prism stationary, mechanical-only (no slip ring fits: 60 mm bore rings are 135 mm OD). True escapement-driven tourbillon fails timing at 1 rev/min, marginal near 1 rev/5 min. Classic gravity-averaging benefit mostly does not apply to the flexure balance. Cage passes 0.25 mm on bearings (~15 um); balance suspension inside it still unresolved. Pattern precesses at -cage rate (6 deg/s at 1 rpm). Decisions pending Caleb: tourbillon vs carousel, precession feature or not, mechanical push-ring vs optical/electric release, option vs commit.
+
+## Nov 15 2026 11:42 CT item 7 blend sizing
+Caleb's widget answers (Nov 15 2026, 11:19 CT), verbatim:
+- Cage type: Carousel
+- Star pattern rotation: Rotation is a feature with DMX rate and park
+- Release across the rotating cage: Size both options first
+- Next step: Keep the cage optional and size the item 7 blend next
+
+Item 7 sizing done. See item7-blend-sizing.md / .py / -results.txt. Nothing is validated, and all numbers are [C] predictions on [T] assumptions and [S] catalog data.
+- Release budget, working target [T]: 10% of the balance's per-beat loss = 4.9e-6 J (8.00 Hz) to 1.0e-5 J (11.46 Hz). Take it centred on the zero crossing or from the escape wheel during impulse. A one-sided trip costs 19 s/day at 6 deg amplitude [C].
+- Mechanical, fixed balance: fits only through a 3-stage sear cascade [C]. Mechanical, carousel push ring: FAILS, 7.5-30x over budget [C].
+- Electric (optical sensor + voice-coil latch, predictive firing): fits both builds. RECOMMENDED as the baseline. Story becomes "the watch times it, a sensor releases it". Pending Caleb.
+- Indexer: no Geneva (jerk spike at pin entry, start/stop driver). The single-turn spring cam is rejected (0.31-0.54 J lost per step). WORKING proposal: a spring-swing indexer with a cam-notch lock and a continuous phase-locked motor arm. At 15 ms: k 21.7 / 12.5 N m/rad, cocked torque 1.78 / 1.03 N m, latch 45 / 26 N (baseline / light carrier) [C].
+- Rewind motor: DCX 22 S 24 V kept. Gearhead changes from 16:1 2-stage to GPX 22 HP 150-186:1 3-stage, at 4.8-6.8 W baseline or 2.6-3.7 W light [C, S]. Gearhead backlash 1.2 deg [S] against a torque that reverses every beat is OPEN.
+- Dark time at a 15 ms step: 26-41% across 8.00-11.46 Hz [C]. The 16-23 Hz chop is below flicker fusion, so it reads as flicker.
+- Power cut: the cocked spring holds 1 step. The spec's 15 s spiral-down becomes a powered DMX effect, because on a real mains loss the COB is dark too.
+- New risk: stationary-indexer reaction torque gives 0.18-0.20 ms beat error on a light rig (Gemini target 0.15 ms) [C, rough].
+- DMX: 15 channels proposed. Step-1 1-13 kept; ch 8-9 becomes pattern azimuth (parked cage angle); ch 13 adds cage re-home; new ch 14 carousel rate/park and ch 15 indexer mode. LOCK requires the cage parked at home and the indexer latched.
+
+12 Escapement remontoire torque: UPDATED. It now drives only the escapement plus the trip share. Need: 2.8e-3 N m nominal max (11.46 Hz, x2 headroom), clutch 4.2e-3 N m [C]. Gemini's 0.12 N m is 42x too high. Ribbon: Nivaflex 0.08 x 4.0 x about 177 mm, pre-wound 2 turns + 45 deg band [C]. This replaces step 1's sizing for the 0.12 N m Gemini number. Gemini's 0.08 x 1.2 section maxes at 1.28e-3 N m (30% of clutch).
+Carousel conflict: with the cage parked, the cage remontoire isn't wound. It runs about 0.3-0.9 s in band, 6-18 s total [C]. Park needs a driven winding ring or must stay short. Decision pending Caleb.
+
+## Nov 15 2026 11:44 CT Caleb item 7 decisions (his widget answers, verbatim)
+Release method: Electric release
+Step time: 15 ms step
+Prism carrier: Light carrier
+15 s power-cut decay: Powered DMX decay effect
+Carousel park: Add a driven winding ring
+Visible flicker from stepping: Flicker is a flaw to reduce
+Status: item 7 = spring-swing indexer with cam-notch lock, stationary optical sensor plus voice-coil latch release (next coil size up), 15 ms step, light carrier; carousel optional with driven winding ring; 15 s decay is a powered DMX effect. Flicker reduction is an open design task. All values remain calculated predictions, not validated.
