@@ -1,0 +1,114 @@
+---
+title: "Escapement cycle, as the solver steps it"
+---
+stateDiagram-v2
+  direction LR
+  state "Legend" as legend {
+    lg0: release
+    lg1: coast
+    lg2: lift
+    lg3: blank
+    lg4: decay
+    lg5: Breaks BlankDurationIsTwoPointTwoMs or CutWaitsOutTheUnwind or DeadCenterByUnwind or ImpulseOnlyAtZeroInsideLift
+    lg6: Breaks BlankDurationIsTwoPointTwoMs or CutWaitsOutTheUnwind or ImpulseOnlyAtZeroInsideLift in some cases
+    lg7: Path to the BlankDurationIsTwoPointTwoMs or CutWaitsOutTheUnwind or DeadCenterByUnwind or ImpulseOnlyAtZeroInsideLift bug
+  }
+  class lg0 tan
+  class lg1 teal
+  class lg2 orange
+  class lg3 yellow
+  class lg4 pink
+  class lg5 breaks
+  class lg6 mayBreak
+  class lg7 bugPath
+  state "At the same time" as all {
+    state "Swing" as r0 {
+      s0: Released outside the lift zone
+      s1: Free swing, toward the center
+      s2: Lift zone, toward the center
+      s3: Still swinging after fifteen seconds
+      s4: Blank window, toward the center
+      s5: Blank window, toward the end of the swing
+      s6: Lift zone, toward the end of the swing
+      s7: Free swing, toward the end of the swing
+      [*] --> s0
+      s0 --> s1: it leaves the release and swings toward the center
+      s0 --> s3: the unwind time passes [when Supply is not Drive commanded]
+      s1 --> s2: it enters the lift zone
+      s2 --> s4: it enters the blank window
+      s4 --> s5: it crosses the center and counts a beat
+      s5 --> s6: the blank window closes
+      s6 --> s7: it leaves the lift zone
+      s7 --> s1: it turns around outside the lift zone, and no impulse is added
+    }
+    --
+    state "Drive" as r1 {
+      s8: No drive torque
+      s9: Drive torque while moving
+      [*] --> s8
+      s8 --> s9: it enters the lift zone [when Swing is Free swing, toward the center and Supply is one of Drive commanded, Unwinding, source still lit]
+      s9 --> s8: you cut power and the source goes dark [when Supply is Drive commanded]
+      s8 --> s9: you restore power [when Swing is one of Blank window, toward the center, Blank window, toward the end of the swing, Lift zone, toward the center, Lift zone, toward the end of the swing and Supply is Source off, torque already gone]
+      s9 --> s8: it leaves the lift zone [when Swing is Lift zone, toward the end of the swing and Blank is Measured blank, not 2.2 ms]
+    }
+    --
+    state "Supply" as r2 {
+      s10: Drive commanded
+      s11: Source off, torque already gone
+      s12: Unwinding, source still lit
+      s13: Fifteen seconds with the source off
+      s14: Unwind finished, source still lit
+      [*] --> s10
+      s10 --> s11: you cut power and the source goes dark
+      s11 --> s10: you restore power
+      s11 --> s13: the unwind time passes [when Swing is Released outside the lift zone and Blank is No blank measured yet]
+      s10 --> s12: you cut power and the source stays lit
+      s12 --> s10: you restore power
+      s12 --> s14: the unwind time passes [when Swing is Released outside the lift zone and Drive is No drive torque and Blank is No blank measured yet]
+      s13 --> s10: you restore power
+      s14 --> s10: you restore power
+    }
+    --
+    state "Blank" as r3 {
+      s15: No blank measured yet
+      s16: Measured blank, not 2.2 ms
+      [*] --> s15
+      s15 --> s16: the blank window closes [when Swing is Blank window, toward the end of the swing and Supply is none of Fifteen seconds with the source off, Unwind finished, source still lit]
+    }
+  }
+  classDef breaks fill:#ffecee,stroke:#e72e3b,stroke-width:2.5px,color:#cd2834
+  classDef mayBreak fill:#fff3e6,stroke:#e8730c,stroke-width:2.5px,color:#b85a06
+  class s0 tan
+  class s0 bugPath
+  class s1 teal
+  class s1 bugPath
+  class s2 orange
+  class s2 mayBreak
+  class s2 bugPath
+  class s3 pink
+  class s3 bugPath
+  class s4 yellow
+  class s4 mayBreak
+  class s4 bugPath
+  class s5 yellow
+  class s5 mayBreak
+  class s5 bugPath
+  class s6 orange
+  class s6 breaks
+  class s6 bugPath
+  class s7 teal
+  class s7 breaks
+  class s8 bugPath
+  class s9 breaks
+  class s9 bugPath
+  class s10 bugPath
+  class s11 breaks
+  class s11 bugPath
+  class s13 pink
+  class s13 breaks
+  class s13 bugPath
+  class s14 pink
+  class s14 breaks
+  class s15 bugPath
+  class s16 breaks
+  class s16 bugPath

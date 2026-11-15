@@ -107,15 +107,15 @@ These twelve rules are what the simulator does. The Nov 15 hardware revision doe
 
 ## Visible source conflicts
 
-These simulator conflicts stay visible. Nov 15 did not close them.
+These simulator conflicts stay visible. Nov 15 did not close them. `docs/statecharts/escapement/report.md` records TLC at 74 states and 218 steps. `docs/statecharts/simrun/report.md` records TLC at 320 states and 2464 steps. Those runs locate the conflicts below. They do not close them. [C]
 
-- Zero-velocity impulse inside +/- 3.5 deg conflicts with a center crossing at peak velocity. The drive assumption above is the implemented choice. The analysis rule, centre the trip or take it from the escape wheel during impulse, is not implemented as a contact model. [T]
+- Zero-velocity impulse inside +/- 3.5 deg conflicts with a center crossing at peak velocity. The drive assumption above is the implemented choice. The analysis rule, centre the trip or take it from the escape wheel during impulse, is not implemented as a contact model. `docs/statecharts/escapement/report.md` names this `ImpulseOnlyAtZeroInsideLift`. The shortest path is two steps and ends on drive torque while the balance is still moving. [T]
 - Reference travel does not cover 4 to 20 Hz. [T]
-- Blank duration at 18 deg and about 8 Hz is about 4.652 ms in the solver test (expected 0.00465183 s), not 2.2 ms. The analysis cites the same window as about 4.65 ms. A 15 ms index step is a hardware working choice. It is not what the solver draws. [T, C]
+- Blank duration at 18 deg and about 8 Hz is about 4.652 ms in the solver test (expected 0.00465183 s), not 2.2 ms. The analysis cites the same window as about 4.65 ms. A 15 ms index step is a hardware working choice. It is not what the solver draws. `docs/statecharts/escapement/report.md` names this `BlankDurationIsTwoPointTwoMs`. The shortest path is five steps and ends on a measured blank that is not 2.2 ms. [T, C]
 - 44 deg is not treated as 7 deg. [T]
 - Three facets and three channels are 9 instantaneous rays. Accumulated spokes can overlap. The source's 45-beam wording is not drawn as 45 simultaneous beams. [C]
 - A 15 deg facet tilt does not put the rest spot at the wall center. [T]
-- Q near 350 does not extinguish the motion at 15 s. The decay test expects about 34 percent of a free linear amplitude to remain (0.340513857). Analysis e-fold times are 13.92 s at 8.00 Hz and 9.723 s at 11.46 Hz. Those are predictions. [C]
+- Q near 350 does not extinguish the motion at 15 s. The decay test expects about 34 percent of a free linear amplitude to remain (0.340513857). Analysis e-fold times are 13.92 s at 8.00 Hz and 9.723 s at 11.46 Hz. Those are predictions. Both TLC reports name the unwind `DeadCenterByUnwind`. The escapement chart ends on "Still swinging after fifteen seconds". The session chart ends with the angle away from the start. `CutWaitsOutTheUnwind` is one step to "Source off, torque already gone". [C]
 - K is prescribed. It is not derived from thickness, modulus, or leaf count.
 
 ## Nov 15 2026 working revision
@@ -168,7 +168,7 @@ Item 7 sizing predictions that go with the 11:44 CT choice, all from `item7-blen
 - Gearhead backlash. The cited GPX 22 HP average is 1.2 deg, against torque that reverses every beat, while the cock is supposed to hold near 0.1 deg. Named options are unsized. [S]
 - The 0.25 mm all-orientation gravity shift of the balance suspension. Unpassed. The cage-bearing prediction does not close it. QEXT-200 remains a rejected specimen, at about 1.95 mm in the historical assessment. [C, S]
 - Items 8, 9, and 15. Not addressed in step 1.
-- The four simulator conflicts named above: blanking duration, Q 350 decay at 15 s, the 15 deg bias against a dead-center pinspot, and impulse timing. [S]
+- The four simulator conflicts named above: blanking duration, Q 350 decay at 15 s, the 15 deg bias against a dead-center pinspot, and impulse timing. The TLC reports cited above locate blanking, the Q 350 unwind, and impulse timing. Those three stay open. The 15 deg bias is not a TLC state. [S]
 - Indexer-spring fatigue. The analysis counts about 1.7e8 to 2.5e8 fully reversed cycles per stated touring year at an assumed 500 MPa, with no supplier fatigue data. [C]
 - Reaction torque from a stationary indexer. Rough prediction: 0.18-0.20 ms of beat error on a 0.05 kg m^2 free body, against a Gemini 0.15 ms target. Yoke and truss stiffness are not in the model. [T, C, S]
 - The driven winding ring Caleb asked for. The analysis says park without it starves the escapement in about 0.3-0.9 s on the control band, or 6-18 s on the whole store. The ring itself is not drawn. The stationary band in the tourbillon pass was already at about 1 mm. [T]

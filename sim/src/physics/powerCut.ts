@@ -25,6 +25,26 @@ export function idlePower(mode: PowerCutMode = "total-source-off"): PowerLatch {
   return { active: false, mode, startTime: null, torqueAtCut: 0 };
 }
 
+/** The latch `cutPower` stores. Read-only; it does not integrate. */
+export function engagePowerCut(args: {
+  mode: PowerCutMode;
+  simTime: number;
+  torqueAtCut: number;
+}): PowerLatch {
+  return {
+    active: true,
+    mode: args.mode,
+    startTime: args.simTime,
+    torqueAtCut: args.torqueAtCut,
+  };
+}
+
+/** `setPowerMode` while a cut is latched. An idle latch is returned unchanged. */
+export function retargetPowerMode(power: PowerLatch, mode: PowerCutMode): PowerLatch {
+  if (!power.active) return power;
+  return { ...power, mode };
+}
+
 export function linearUnwindFraction(elapsedS: number, unwindSeconds: number): number {
   if (!(unwindSeconds > 0)) return 0;
   if (elapsedS <= 0) return 1;

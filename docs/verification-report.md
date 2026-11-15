@@ -72,3 +72,52 @@ The audience, side, and fixture views are the current model: the stage drawing a
 ## Solver checks still covered
 
 The passing tests include inertia `4.368e-5`, original-law endpoints `8.001351575 Hz` and `11.643676832 Hz`, lengths for 4 Hz and 20 Hz near 72.024 mm and 2.881 mm, blank duration `0.00465183 s` at 18 deg, Q=350 amplitude ratio `0.340513857` at 15 s, stress checks `248.709 MPa` and `3370.744 MPa`, tempo reachability, and illustrative CAD dimensions. Those figures are the test expectations that passed on this run. They are checks of the stated model. They are not hardware results.
+
+## Statechart check
+
+Date: 2026-11-15. Same machine. Node v22.23.4. Vite 6.4.5. Google Chrome 157.0.8103.50, user agent HeadlessChrome/157.0.0.0.
+
+Simulator tree for these commands: `68aefeb4a5c398f79924d321c9962e99543d4d70`. This section is a docs update on that commit. `sim/` was not modified again. `docs/user-specification.md` was not modified. Its SHA-256 is still `995efb5790190767d4a5bb53b461882b275b5e584cd09c55849d23b9ed453f4a`. `docs/spec-audit.md` is still `b8c6461663685241b43d66af4f76894340a80cc7b194643fe4c771cdbcabaa72`.
+
+The earlier session in this file stays the record of `06b1789110c5344bd720ac4c778eea5b5b0a2ef3`. This section is the later run. This run did not OCR the still headers, so the 55, 56, 55, 56, 54, and 51 FPS readings stay with that earlier session.
+
+From `sim/`, after the statechart commit and with the dev server already up:
+
+```bash
+npm run typecheck
+npm test
+npm run build
+node scripts/browser-verify.mjs
+```
+
+`npm ci` was not repeated. `npm run dev` was already serving `http://127.0.0.1:43117/`.
+
+Results:
+
+- `npm run typecheck` (`tsc --noEmit`) exited 0.
+- `npm test` (`vitest run`, Vitest v2.1.9) exited 0. 5 files, 45 tests, all passed: `tests/stage.test.ts` 6, `tests/model.test.ts` 10, `tests/solver.test.ts` 12, `tests/documents.test.ts` 2, `tests/statechart.test.ts` 15.
+- `npm run build` (`tsc --noEmit && vite build`) exited 0. Vite 6.4.5 wrote `dist/index.html` (0.67 kB), `dist/assets/index-CYcU2Sjx.css` (9.95 kB), and `dist/assets/index-8Dg7w6Vb.js` (830.64 kB). Vite warned that the JavaScript chunk is larger than 500 kB after minification. `dist/` is gitignored.
+- `node scripts/browser-verify.mjs` exited 0. Chrome binary: `/usr/bin/google-chrome`. `consoleErrors` was empty. `pageErrors` was empty.
+
+Script fields from this run:
+
+- Audience status: `9 live rays, source 85%, gate open, running, throw 12.0 m`. Canvas host 1098x655.
+- After the throw slider: `9 live rays, source 85%, gate open, running, throw 22.0 m`.
+- Pause held `step 19332`, then `step 19332` again after the script's 0.5 s wait.
+- Power cut status, read immediately before the source-off still: `0 live rays, source off, gate open, running, throw 22.0 m`.
+- Engineering pane titles: `Pane 1 · Mechanical`, `Pane 2 · Cyclorama`, `Pane 3 · Phase and timegrapher`, `Pane 4 · DMX, status, export`.
+- Before the curb move: frequency `derived 8.0014 Hz`, amplitude `13.72 deg`, `step 25398`, state `running`, WebGL `WebGL viewport ready`.
+- After curb: `derived 11.6437 Hz`. After thickness: `derived 11.6437 Hz`.
+- Brake: amplitude `10.33 deg`, then `1.43 deg` after the script's 1.2 s wait.
+- Engineering pause: `step 31331`. Reset: `step 0`. Chopper button text: `Chopper off`.
+- Mobile canvas host 388x574.
+- Final `readout-fps` text: `60 FPS this session`.
+
+Screenshots and `/opt/cursor/artifacts/browser-verify.json` are from this run. They are not committed.
+
+TLC, copied from the committed reports:
+
+- `docs/statecharts/escapement/report.md`: TLC reached 74 states and 218 steps. The chart draws 17 states and 21 arrows. The view hides 74 steps.
+- `docs/statecharts/simrun/report.md`: TLC reached 320 states and 2464 steps. The chart draws 17 states and 20 arrows. The view hides 320 steps.
+
+`statechart.test.ts` replays the broken rules in those reports. The rules stay open. Rows 2.9, 2.11, 2.15, 4.9, and A.5 cite the reports and stay open.
