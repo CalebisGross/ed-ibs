@@ -1,45 +1,61 @@
 # Verification report
 
-Date: 2026-11-08. Machine: this Linux VM. Node v22.23.4. Vite 6.4.5. Headless Chrome 156.0.0.0. No public deployment and no change to any other computer.
+Date: 2026-11-15. Machine: this Linux VM. Node v22.23.4. Vite 6.4.5. Google Chrome 157.0.8103.50, user agent HeadlessChrome/157.0.0.0. No public deployment and no change to any other computer.
+
+Verified tree: `06b1789110c5344bd720ac4c778eea5b5b0a2ef3` (`main` when these commands ran). `sim/` was not modified. This report is a docs change on top of that commit. The simulator results belong to that tree.
 
 ## Commands
 
+From `sim/`:
+
 ```bash
-npm install
-npx tsc --noEmit
-npx vitest run
+npm ci
+npm run typecheck
+npm test
 npm run build
 npm run dev
 node scripts/browser-verify.mjs
 ```
 
-`npx vitest run`: 4 files, 30 tests, all passed. That includes the original oscillator checks and `tests/stage.test.ts`.
+`npm run dev` was left running so `browser-verify.mjs` had a server. Vite reported ready at `http://localhost:43117/`. The script used `http://127.0.0.1:43117/`. That address is this VM, not another computer.
 
-`npm run build` runs `tsc --noEmit` and the Vite production build.
+Results:
 
-Preserved texts, unchanged:
+- `npm ci` exited 0. It added 204 packages and audited 205. The audit notice reported 6 vulnerabilities (3 moderate, 1 high, 2 critical). The lockfile was not changed, and `npm audit fix` was not run.
+- `npm run typecheck` (`tsc --noEmit`) exited 0.
+- `npm test` (`vitest run`, Vitest v2.1.9) exited 0. 4 files, 30 tests, all passed: `tests/stage.test.ts` 6, `tests/model.test.ts` 10, `tests/solver.test.ts` 12, `tests/documents.test.ts` 2.
+- `npm run build` (`tsc --noEmit && vite build`) exited 0. Vite 6.4.5 wrote `dist/index.html` (0.67 kB), `dist/assets/index-CYcU2Sjx.css` (9.95 kB), and `dist/assets/index-fmqJFiVG.js` (830.34 kB). Vite warned that the JavaScript chunk is larger than 500 kB after minification. `dist/` is gitignored.
+- `node scripts/browser-verify.mjs` exited 0. Chrome binary: `/usr/bin/google-chrome`.
+
+Preserved texts, unchanged. `sha256sum` on this date matched the recorded digests:
 
 - `docs/user-specification.md` SHA-256 `995efb5790190767d4a5bb53b461882b275b5e584cd09c55849d23b9ed453f4a`
 - `docs/spec-audit.md` SHA-256 `b8c6461663685241b43d66af4f76894340a80cc7b194643fe4c771cdbcabaa72`
 
 ## Stage session
 
-Browser: Headless Chrome 156, viewports 1440x900 and 390x844. The page was the Vite server on this machine only (`http://127.0.0.1:43117/`). That address is not the user's computer.
+Browser: Headless Chrome 157.0.0.0. The script set viewports 1440x900 and 390x844. The page was the Vite server on this machine only (`http://127.0.0.1:43117/`).
 
-Observed:
+The script's recorded fields:
 
-- Stage tab opened on the audience camera. Status: `9 live rays, source 85%, gate open, running, throw 12.0 m`. Canvas host 1098x655.
-- Persistence was set to 450 ms through the control so the still shows afterglow as well as the live shafts.
-- Side and fixture cameras rendered the same room.
-- Throw slider to 22 m changed the status to `throw 22.0 m` and kept 9 live rays.
-- Pause held step 18999, then 18999 again after 0.5 s.
-- Power cut reported `0 live rays, source off`. The dotted afterglow still on screen in that instant is the persistence window, not live shafts.
-- Engineering mode still mounts all four panes. Curb travel moved the derived frequency from 8.0014 Hz to 11.6437 Hz. Thickness left that frequency unchanged. Brake dropped amplitude from about 13 deg to about 1.6 deg. Reset returned to step 0. Chopper switched off.
-- Mobile stage canvas host 388x574. The viewport stacks above the controls.
-- Frame-rate readout in that session: 60 FPS, with nearby header frames at 59. This is Headless Chrome 156 on this VM, not a 60 to 120 FPS certificate.
-- Console: Vite connect lines and the React DevTools notice. No console errors. No page errors. No failed responses.
+- Audience status, before the throw change: `9 live rays, source 85%, gate open, running, throw 12.0 m`. Canvas host 1098x655.
+- After the throw slider: `9 live rays, source 85%, gate open, running, throw 22.0 m`.
+- Pause held `step 19932`, then `step 19932` again after the script's 0.5 s wait.
+- Power cut status, read immediately before the source-off still: `0 live rays, source off, gate open, running, throw 22.0 m`.
+- Engineering pane titles: `Pane 1 · Mechanical`, `Pane 2 · Cyclorama`, `Pane 3 · Phase and timegrapher`, `Pane 4 · DMX, status, export`.
+- Before the curb move: frequency `derived 8.0014 Hz`, amplitude `13.71 deg`, `step 24265`, state `running`, WebGL `WebGL viewport ready`. The workbench still was taken at this point, so its header is still the 8.0014 Hz readout.
+- After curb: `derived 11.6437 Hz`. After thickness: `derived 11.6437 Hz`.
+- Brake: amplitude `13.73 deg`, then `2.02 deg` after the script's 1.2 s wait.
+- Engineering pause: `step 30931`. Reset: `step 0`. Chopper button text: `Chopper off`.
+- Mobile canvas host 388x574.
+- Final `readout-fps` text, taken after the mobile still: `60 FPS this session`.
+- Console messages captured: Vite connecting, Vite connected, and the React DevTools notice. `consoleErrors` was empty. `pageErrors` was empty.
 
-Screenshots:
+The script set persistence to 450 ms before the audience still.
+
+Frame rate is a session readout, not a 60 to 120 FPS certificate. The script's one `fps` field is `60 FPS this session`. Tesseract, read against the six saved stills in capture order, shows the header at those earlier moments as 55, 56, 55, 56, 54, and 51 FPS (`stage-audience`, `stage-side`, `stage-fixture`, `stage-source-off`, `workbench-desktop`, `stage-mobile`). The mobile still's header also shows paused at step 0 with `derived 11.6437 Hz`.
+
+Screenshots and the script's JSON are session artifacts. They are not committed in this repository. The same paths were used by the 2026-11-08 report for an earlier session. The files at these paths now are from this run:
 
 - `/opt/cursor/artifacts/stage-audience.png`
 - `/opt/cursor/artifacts/stage-side.png`
@@ -51,8 +67,8 @@ Screenshots:
 
 ## What the pictures are
 
-The audience and side views are the current model: three facet directions, three colors on each path because the offsets are zero, endpoints at throw distance. The cloth, stand, haze, and 1.75 m figure are presentation. Shaft thickness is a display width.
+The audience, side, and fixture views are the current model: the stage drawing at throw distance, with the cloth, stand, haze, and 1.75 m figure as presentation. Shaft thickness is a display width. The workbench still is the four panes before the curb, brake, and reset steps. The mobile still is the stage layout at 390x844 after those steps, paused at step 0.
 
 ## Solver checks still covered
 
-Inertia `4.368e-5`, original-law endpoints near 8.001 Hz and 11.644 Hz, energy, RK4 order, partition invariance, one beat per valid crossing, amplitude-dependent blanking, Q=350 decay still moving at 15 s, tempo reachability, and illustrative CAD dimensions.
+The passing tests include inertia `4.368e-5`, original-law endpoints `8.001351575 Hz` and `11.643676832 Hz`, lengths for 4 Hz and 20 Hz near 72.024 mm and 2.881 mm, blank duration `0.00465183 s` at 18 deg, Q=350 amplitude ratio `0.340513857` at 15 s, stress checks `248.709 MPa` and `3370.744 MPa`, tempo reachability, and illustrative CAD dimensions. Those figures are the test expectations that passed on this run. They are checks of the stated model. They are not hardware results.
