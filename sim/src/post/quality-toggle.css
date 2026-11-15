@@ -1,0 +1,42 @@
+.ed-ibs-quality {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #c5ced8;
+  font: inherit;
+}
+
+.ed-ibs-quality-label {
+  color: #c5ced8;
+}
+
+.ed-ibs-quality-options {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.ed-ibs-quality button {
+  font: inherit;
+  line-height: 1.2;
+  color: #d5dbe3;
+  background: #1b222c;
+  border: 1px solid #3c4654;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.ed-ibs-quality button:hover {
+  border-color: #5c6b7c;
+}
+
+.ed-ibs-quality button[aria-pressed="true"] {
+  color: #e7eef4;
+  background: #24303c;
+  border-color: #9aafbf;
+}
+
+.ed-ibs-quality button:focus-visible {
+  outline: 2px solid #9aafbf;
+  outline-offset: 2px;
+}
