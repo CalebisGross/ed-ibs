@@ -6,10 +6,25 @@ import { CHANNELS } from "../physics/constants";
 import { degToRad } from "../physics/units";
 import type { Settings } from "../sim/settings";
 import type { FramePacket } from "../sim/useSimulator";
+import { ghostNotes, WHEEL_STATION_M } from "../stage/dimensions";
+import { disposeObject3D } from "../stage/dispose";
+import { buildLabBench } from "../stage/labBench";
+import { createLaserRig, updateLaser } from "../stage/laserRig";
+import { createMechanism } from "../stage/mechanism";
+import {
+  ORBIT_RAD_PER_S,
+  PUSH_IN_S,
+  advanceDisplayTime,
+  mixNumber,
+  poseAt,
+  pushMotion,
+  smoothstep,
+  type MotionSample,
+} from "../stage/motion";
+import { sceneryCloth } from "../stage/materials";
 import {
   STAGE,
   STAGE_COPY,
-  displayShaftOpacity,
   figureFeet,
   figureParts,
   liveBeams,
@@ -19,6 +34,10 @@ import {
   type StageCameraName,
   type TrailPoint,
 } from "../stage/stageGeometry";
+import { addStudioKeyFill, configureRenderer, mountStudio } from "../stage/studio";
+import { createLockTick } from "../stage/tick";
+
+type StageView = StageCameraName | "orbit" | "screen" | "wheel" | "impulse";
 
 const MAX_RAYS = 18;
 const MAX_TRAIL = 14000;
@@ -31,9 +50,11 @@ export function StagePreview({
   subscribe: (listener: (packet: FramePacket) => void) => () => void;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
-  const cameraRef = useRef<StageCameraName>("audience");
+  const cameraRef = useRef<StageView>("audience");
   const hazeRef = useRef(settings.hazeDisplay);
-  const [cameraName, setCameraName] = useState<StageCameraName>("audience");
+  const tickRef = useRef(createLockTick());
+  const [cameraName, setCameraName] = useState<StageView>("audience");
+  const [tick, setTick] = useState(false);
   const [webgl, setWebgl] = useState("starting");
   const [status, setStatus] = useState("Waiting for the solver.");
 
@@ -58,135 +79,38 @@ export function StagePreview({
       return;
     }
     setWebgl("ready");
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.setClearColor(0x07080c, 1);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    configureRenderer(renderer);
+    renderer.setClearColor(0x121416, 1);
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const fog = new THREE.FogExp2(0x090b10, 0.02);
+    const fog = new THREE.FogExp2(0x121416, 0.006);
     scene.fog = fog;
-    const camera = new THREE.PerspectiveCamera(46, 1, 0.05, 400);
+    const camera = new THREE.PerspectiveCamera(46, 1, 0.02, 400);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.maxDistance = 80;
     controls.target.set(0, 2.3, 6);
+    addStudioKeyFill(scene);
+    const releaseStudio = mountStudio(renderer, scene);
 
-    scene.add(new THREE.AmbientLight(0x9eb0c8, 0.35));
-    const fill = new THREE.DirectionalLight(0xfff1dc, 0.55);
-    fill.position.set(-4, 8, -6);
-    scene.add(fill);
-    const rim = new THREE.DirectionalLight(0x87a0c0, 0.25);
-    rim.position.set(6, 4, 10);
-    scene.add(rim);
-
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(36, 78),
-      new THREE.MeshStandardMaterial({ color: 0x2a241c, roughness: 0.9, metalness: 0.04 }),
-    );
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.set(0, 0, 24);
-    scene.add(floor);
-    const grid = new THREE.GridHelper(60, 60, 0x3a342c, 0x2a261f);
-    grid.position.set(0, 0.004, 18);
-    scene.add(grid);
-
-    const surroundMat = new THREE.MeshStandardMaterial({ color: 0x171d27, roughness: 1, side: THREE.DoubleSide });
-    const surround = new THREE.Mesh(new THREE.PlaneGeometry(STAGE.surroundWidthM, STAGE.surroundHeightM), surroundMat);
-    surround.position.set(0, STAGE.surroundHeightM / 2, 12);
-    scene.add(surround);
-    const clothMat = new THREE.MeshStandardMaterial({ color: 0x6d7d90, roughness: 0.82, metalness: 0, emissive: 0x1a2430 });
-    const cloth = new THREE.Mesh(new THREE.PlaneGeometry(STAGE.clothWidthM, STAGE.clothHeightM), clothMat);
-    cloth.position.set(0, STAGE.clothHeightM / 2, 12);
-    scene.add(cloth);
-    const cove = new THREE.Mesh(
-      new THREE.BoxGeometry(STAGE.clothWidthM, 0.18, 0.35),
-      new THREE.MeshStandardMaterial({ color: 0x8d97a3, roughness: 0.7 }),
-    );
-    cove.position.set(0, 0.09, 12);
-    scene.add(cove);
-    const wash = new THREE.SpotLight(0xe7eef8, 280, 40, 0.95, 0.35, 1);
-    wash.position.set(-1.2, 5.6, -5);
-    const washTarget = new THREE.Object3D();
-    washTarget.position.set(0, 3.6, 12);
-    scene.add(washTarget);
-    wash.target = washTarget;
-    scene.add(wash);
-
-    const trimMat = new THREE.MeshStandardMaterial({ color: 0x1a1c22, roughness: 0.8 });
-    const proscenium = new THREE.Group();
-    const legGeo = new THREE.BoxGeometry(0.55, 6.2, 0.45);
-    const leftLeg = new THREE.Mesh(legGeo, trimMat);
-    leftLeg.position.set(-4.3, 3.1, -2.4);
-    const rightLeg = new THREE.Mesh(legGeo, trimMat);
-    rightLeg.position.set(4.3, 3.1, -2.4);
-    const header = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.5, 0.45), trimMat);
-    header.position.set(0, 6.05, -2.4);
-    const pipe = new THREE.Mesh(new THREE.BoxGeometry(8.5, 0.1, 0.1), trimMat);
-    pipe.position.set(0, 5.15, 0);
-    proscenium.add(leftLeg, rightLeg, header, pipe);
-    scene.add(proscenium);
-
-    const stand = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.045, 0.055, STAGE.apertureHeightM, 12),
-      new THREE.MeshStandardMaterial({ color: 0x4a525c, metalness: 0.45, roughness: 0.4 }),
-    );
-    stand.position.set(0, STAGE.apertureHeightM / 2, -0.28);
-    scene.add(stand);
-    const housingMat = new THREE.MeshStandardMaterial({ color: 0x2c343d, metalness: 0.55, roughness: 0.38 });
-    const housing = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 0.62, 20), housingMat);
-    housing.rotation.x = Math.PI / 2;
-    housing.position.set(0, STAGE.apertureHeightM, -0.34);
-    scene.add(housing);
-    const yokeMat = new THREE.MeshStandardMaterial({ color: 0x5c6772, metalness: 0.5, roughness: 0.35 });
-    const yokeL = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.46, 0.08), yokeMat);
-    yokeL.position.set(-0.24, STAGE.apertureHeightM, -0.2);
-    const yokeR = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.46, 0.08), yokeMat);
-    yokeR.position.set(0.24, STAGE.apertureHeightM, -0.2);
-    scene.add(yokeL, yokeR);
-    const lens = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.07, 0.07, 0.03, 20),
-      new THREE.MeshStandardMaterial({ color: 0x9fd7e8, emissive: 0x12343c, roughness: 0.15, metalness: 0.1 }),
-    );
-    lens.rotation.x = Math.PI / 2;
-    lens.position.set(0, STAGE.apertureHeightM, -0.01);
-    scene.add(lens);
+    const lab = buildLabBench();
+    scene.add(lab.group);
+    const mechanism = createMechanism();
+    mechanism.group.position.set(0, STAGE.apertureHeightM, 0);
+    scene.add(mechanism.group);
+    const laser = createLaserRig(MAX_RAYS, CHANNELS.map((channel) => channel.css));
+    scene.add(laser.beams, laser.haze);
 
     const person = new THREE.Group();
-    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x4e5966, roughness: 0.62 });
-    const headMat = new THREE.MeshStandardMaterial({ color: 0xc8b4a2, roughness: 0.55 });
+    person.name = "scale-figure";
+    const bodyMat = sceneryCloth();
     for (const part of figureParts()) {
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(part.w, part.h, part.d), part.name === "head" ? headMat : bodyMat);
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(part.w, part.h, part.d), bodyMat);
       mesh.position.set(part.x, part.y, part.z);
       person.add(mesh);
     }
     scene.add(person);
-
-    const shaftGeo = new THREE.CylinderGeometry(STAGE.displayShaftRadiusM, STAGE.displayShaftRadiusM, 1, 8, 1, true);
-    const spotGeo = new THREE.SphereGeometry(STAGE.displaySpotRadiusM, 14, 10);
-    const shaftMats: THREE.MeshBasicMaterial[] = [];
-    const shafts: THREE.Mesh[] = [];
-    const spots: THREE.Mesh[] = [];
-    for (let index = 0; index < MAX_RAYS; index += 1) {
-      const material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.45,
-        depthWrite: false,
-        side: THREE.DoubleSide,
-      });
-      shaftMats.push(material);
-      const shaft = new THREE.Mesh(shaftGeo, material);
-      shaft.visible = false;
-      shaft.frustumCulled = false;
-      const spot = new THREE.Mesh(spotGeo, material);
-      spot.visible = false;
-      shafts.push(shaft);
-      spots.push(spot);
-      scene.add(shaft, spot);
-    }
 
     const trailPositions = new Float32Array(MAX_TRAIL * 3);
     const trailColors = new Float32Array(MAX_TRAIL * 3);
@@ -197,27 +121,52 @@ export function StagePreview({
     const trail = new THREE.Points(
       trailGeo,
       new THREE.PointsMaterial({
-        size: 0.22,
+        size: 0.09,
         vertexColors: true,
         transparent: true,
-        opacity: 0.7,
+        opacity: 0.55,
         depthWrite: false,
-        blending: THREE.AdditiveBlending,
         sizeAttenuation: true,
       }),
     );
     scene.add(trail);
     let trailPoints: TrailPoint[] = [];
     const channelRgb = CHANNELS.map((channel) => hexRgb(channel.css));
-    const yAxis = new THREE.Vector3(0, 1, 0);
 
     const latest = { packet: null as FramePacket | null };
+    let motion: MotionSample[] = [];
+    let displayT = 0;
+    let appliedKey = "";
+    let pushStart = 0;
+    let orbitAngle = 0.2;
+    let lastNow = performance.now();
+    let lastStatus = 0;
+    const tickPlayer = tickRef.current;
+    const wheelTarget = new THREE.Vector3(WHEEL_STATION_M.x, STAGE.apertureHeightM, WHEEL_STATION_M.z);
+    const wheelClose = new THREE.Vector3(wheelTarget.x - 0.02, wheelTarget.y + 0.015, wheelTarget.z - 0.055);
+
     const unsubscribe = subscribe((packet) => {
+      if (packet.reset) {
+        motion = [];
+        trailPoints = [];
+      }
+      motion = pushMotion(
+        motion,
+        packet.samples.map((sample) => ({
+          t: sample.t,
+          theta: sample.theta,
+          omega: sample.omega,
+          mechAngle: sample.mechAngle,
+          opticalAngle: sample.opticalAngle,
+          angularBlank: sample.angularBlank,
+          validBeats: sample.validBeats,
+        })),
+        2,
+      );
+      tickPlayer.hear(packet.state.validBeats);
       latest.packet = packet;
     });
 
-    let appliedKey = "";
-    let lastStatus = 0;
     const resize = () => {
       const width = Math.max(1, host.clientWidth);
       const height = Math.max(1, host.clientHeight);
@@ -231,102 +180,100 @@ export function StagePreview({
 
     let raf = 0;
     const draw = () => {
+      const now = performance.now();
+      const frameDt = Math.min(0.05, Math.max(0, (now - lastNow) / 1000));
+      lastNow = now;
+      const view = cameraRef.current;
       const packet = latest.packet;
       if (packet) {
-        const poseKey = `${cameraRef.current}:${packet.throwM.toFixed(2)}`;
-        if (poseKey !== appliedKey) {
-          const pose = stageCamera(cameraRef.current, packet.throwM);
+        const poseKey = `${view}:${packet.throwM.toFixed(2)}`;
+        const animated = view === "orbit" || view === "wheel" || view === "impulse";
+        controls.enabled = !animated;
+        if (view === "orbit") {
+          orbitAngle += frameDt * ORBIT_RAD_PER_S * 0.55;
+          camera.position.set(Math.sin(orbitAngle) * 3.8, 2.15, Math.cos(orbitAngle) * 3.8);
+          controls.target.set(0, STAGE.apertureHeightM, 1.2);
+          camera.lookAt(controls.target);
+          appliedKey = poseKey;
+        } else if (view === "wheel" || view === "impulse") {
+          if (poseKey !== appliedKey) pushStart = now;
+          const from = stageCamera("fixture", packet.throwM);
+          const u = view === "impulse" ? 1 : smoothstep((now - pushStart) / (PUSH_IN_S * 1000));
+          camera.position.set(
+            mixNumber(from.position.x, wheelClose.x, u),
+            mixNumber(from.position.y, wheelClose.y, u),
+            mixNumber(from.position.z, wheelClose.z, u),
+          );
+          camera.fov = mixNumber(from.fov, 28, u);
+          camera.updateProjectionMatrix();
+          controls.target.set(
+            mixNumber(from.target.x, wheelTarget.x, u),
+            mixNumber(from.target.y, wheelTarget.y, u),
+            mixNumber(from.target.z, wheelTarget.z, u),
+          );
+          camera.lookAt(controls.target);
+          appliedKey = poseKey;
+        } else if (poseKey !== appliedKey) {
+          const pose = framed(view, packet.throwM);
           camera.position.set(pose.position.x, pose.position.y, pose.position.z);
           camera.fov = pose.fov;
           camera.updateProjectionMatrix();
           controls.target.set(pose.target.x, pose.target.y, pose.target.z);
           appliedKey = poseKey;
         }
-        surround.position.z = packet.throwM + 0.35;
-        cloth.position.z = packet.throwM;
-        cove.position.z = packet.throwM - 0.16;
-        washTarget.position.z = packet.throwM;
+        lab.setThrow(packet.throwM);
         const feet = figureFeet(packet.throwM);
         person.position.set(feet.x, feet.y, feet.z);
         const haze = hazeRef.current;
-        fog.density = 0.008 + 0.028 * haze;
-        const opacity = displayShaftOpacity(packet.intensity, haze);
-
-        const visible = packet.intensity > 0 && !(packet.chopperEnabled && packet.state.angularBlank);
-        const beams = liveBeams({
-          theta: packet.state.theta,
-          opticalAngle: packet.state.opticalAngle,
+        fog.density = 0.003 + 0.01 * haze;
+        const fallback = poseFromPacket(packet);
+        const end = motion[motion.length - 1] ?? fallback;
+        displayT = advanceDisplayTime({
+          displayT,
+          latestT: end.t,
+          latestAbsTheta: Math.abs(end.theta),
+          liftRad: degToRad(packet.liftDeg),
+          frameDt,
+          slow: view === "impulse",
+        });
+        const pose = poseAt(motion, displayT) ?? fallback;
+        mechanism.update(packet, pose);
+        const liveOn = packet.intensity > 0 && !(packet.chopperEnabled && packet.state.angularBlank);
+        const drawnOn = packet.intensity > 0 && !(packet.chopperEnabled && pose.angularBlank);
+        const projection = {
           facetCount: packet.facetCount,
           throwM: packet.throwM,
           chromaticOffsetRad: packet.chromaticOffsetDeg.map((deg) => degToRad(deg)) as [number, number, number],
           facetTiltRad: DEFAULT_FACET_TILT_RAD,
-          beamVisible: visible,
+        };
+        const liveCount = liveBeams({
+          ...projection,
+          theta: packet.state.theta,
+          opticalAngle: packet.state.opticalAngle,
+          beamVisible: liveOn,
+        }).length;
+        const beams = liveBeams({
+          ...projection,
+          theta: pose.theta,
+          opticalAngle: pose.opticalAngle,
+          beamVisible: drawnOn,
         });
-        const drawn = visualShafts(beams);
-        for (let index = 0; index < MAX_RAYS; index += 1) {
-          const beam = drawn[index];
-          const shaft = shafts[index];
-          const spot = spots[index];
-          const material = shaftMats[index];
-          if (!beam) {
-            shaft.visible = false;
-            spot.visible = false;
-            continue;
-          }
-          material.color.set(beam.css);
-          material.opacity = opacity;
-          aimShaft(shaft, beam.from, beam.to, yAxis);
-          spot.visible = true;
-          spot.position.set(beam.to.x, beam.to.y, beam.to.z);
-        }
+        const drawn = visualShafts(beams).map((shaft) => ({
+          ...shaft,
+          to: { ...shaft.to, z: shaft.to.z - 0.03 },
+        }));
+        updateLaser(laser, drawn, packet.intensity, haze, packet.chopperEnabled, pose.angularBlank);
+        trailPoints = paintTrail(trail, trailGeo, trailPositions, trailColors, trailPoints, packet, channelRgb, haze);
 
-        const added: TrailPoint[] = [];
-        const stride = 4;
-        for (let index = 0; index < packet.samples.length; index += stride) {
-          const sample = packet.samples[index];
-          if (!sample.beamVisible) continue;
-          const samplesBeams = liveBeams({
-            theta: sample.theta,
-            opticalAngle: sample.opticalAngle,
-            facetCount: packet.facetCount,
-            throwM: packet.throwM,
-            chromaticOffsetRad: packet.chromaticOffsetDeg.map((deg) => degToRad(deg)) as [number, number, number],
-            facetTiltRad: DEFAULT_FACET_TILT_RAD,
-            beamVisible: true,
-          });
-          for (const beam of samplesBeams) {
-            added.push({ t: sample.t, x: beam.to.x, y: beam.to.y, z: beam.to.z, channel: beam.channel });
-          }
-        }
-        trailPoints = nextTrail(trailPoints, added, packet.state.t, packet.persistenceMs / 1000, packet.reset);
-        if (trailPoints.length > MAX_TRAIL) trailPoints = trailPoints.slice(trailPoints.length - MAX_TRAIL);
-        const positionAttr = trailGeo.getAttribute("position") as THREE.BufferAttribute;
-        const colorAttr = trailGeo.getAttribute("color") as THREE.BufferAttribute;
-        for (let index = 0; index < trailPoints.length; index += 1) {
-          const point = trailPoints[index];
-          trailPositions[index * 3] = point.x;
-          trailPositions[index * 3 + 1] = point.y;
-          trailPositions[index * 3 + 2] = point.z;
-          const rgb = channelRgb[point.channel] ?? channelRgb[0];
-          trailColors[index * 3] = rgb[0];
-          trailColors[index * 3 + 1] = rgb[1];
-          trailColors[index * 3 + 2] = rgb[2];
-        }
-        positionAttr.needsUpdate = true;
-        colorAttr.needsUpdate = true;
-        trailGeo.setDrawRange(0, trailPoints.length);
-        (trail.material as THREE.PointsMaterial).opacity = 0.35 + 0.55 * haze;
-
-        const nowMs = performance.now();
-        if (nowMs - lastStatus > 120) {
-          lastStatus = nowMs;
+        if (now - lastStatus > 120) {
+          lastStatus = now;
           const source = packet.intensity <= 0 ? "source off" : `source ${Math.round(packet.intensity * 100)}%`;
           const gate = packet.chopperEnabled && packet.state.angularBlank ? "chopper blanked" : "gate open";
           const hold = packet.paused ? "paused" : "running";
-          setStatus(`${beams.length} live rays, ${source}, ${gate}, ${hold}, throw ${packet.throwM.toFixed(1)} m`);
+          setStatus(`${liveCount} live rays, ${source}, ${gate}, ${hold}, throw ${packet.throwM.toFixed(1)} m`);
         }
       }
-      controls.update();
+      if (controls.enabled) controls.update();
       renderer.render(scene, camera);
       raf = requestAnimationFrame(draw);
     };
@@ -337,7 +284,8 @@ export function StagePreview({
       cancelAnimationFrame(raf);
       observer.disconnect();
       controls.dispose();
-      disposeScene(scene);
+      releaseStudio();
+      disposeObject3D(scene);
       renderer.dispose();
       renderer.domElement.remove();
     };
@@ -352,14 +300,24 @@ export function StagePreview({
       <header className="pane-head">
         <h2>Stage preview</h2>
         <div className="toolbar">
-          <button type="button" data-testid="cam-audience" className={cameraName === "audience" ? "active" : ""} onClick={() => setCameraName("audience")}>
-            Audience
-          </button>
-          <button type="button" data-testid="cam-side" className={cameraName === "side" ? "active" : ""} onClick={() => setCameraName("side")}>
-            Side
-          </button>
-          <button type="button" data-testid="cam-fixture" className={cameraName === "fixture" ? "active" : ""} onClick={() => setCameraName("fixture")}>
-            Fixture
+          <ViewButton name="audience" current={cameraName} setView={setCameraName} label="Audience" testId="cam-audience" />
+          <ViewButton name="side" current={cameraName} setView={setCameraName} label="Side" testId="cam-side" />
+          <ViewButton name="fixture" current={cameraName} setView={setCameraName} label="Fixture" testId="cam-fixture" />
+          <ViewButton name="orbit" current={cameraName} setView={setCameraName} label="Orbit" testId="stage-orbit" />
+          <ViewButton name="screen" current={cameraName} setView={setCameraName} label="Screen" testId="stage-screen" />
+          <ViewButton name="wheel" current={cameraName} setView={setCameraName} label="Push in" testId="stage-wheel" />
+          <ViewButton name="impulse" current={cameraName} setView={setCameraName} label="Impulse" testId="stage-impulse" />
+          <button
+            type="button"
+            data-testid="tick-toggle"
+            className={tick ? "active" : ""}
+            onClick={() => {
+              const next = !tick;
+              setTick(next);
+              tickRef.current.setEnabled(next);
+            }}
+          >
+            Tick {tick ? "on" : "off"}
           </button>
         </div>
       </header>
@@ -375,41 +333,114 @@ export function StagePreview({
             {STAGE_COPY.trail}
           </p>
           <p>{STAGE_COPY.disclosure} {STAGE_COPY.scenery} {STAGE_COPY.axis}</p>
+          <p>{ghostNotes().map((part) => part.label).join(" ")} Beam width and the spot are display sizes, not a measured diameter. A blank hides the beam and the spot on that step. Tick is off until enabled.</p>
         </div>
       </div>
     </section>
   );
 }
 
-function aimShaft(mesh: THREE.Mesh, from: { x: number; y: number; z: number }, to: { x: number; y: number; z: number }, yAxis: THREE.Vector3): void {
-  const direction = new THREE.Vector3(to.x - from.x, to.y - from.y, to.z - from.z);
-  const length = direction.length();
-  if (!(length > 1e-4)) {
-    mesh.visible = false;
-    return;
+function ViewButton({
+  name,
+  current,
+  setView,
+  label,
+  testId,
+}: {
+  name: StageView;
+  current: StageView;
+  setView: (name: StageView) => void;
+  label: string;
+  testId: string;
+}) {
+  return (
+    <button type="button" data-testid={testId} className={current === name ? "active" : ""} onClick={() => setView(name)}>
+      {label}
+    </button>
+  );
+}
+
+function framed(view: StageView, throwM: number): { position: { x: number; y: number; z: number }; target: { x: number; y: number; z: number }; fov: number } {
+  switch (view) {
+    case "audience":
+    case "side":
+    case "fixture":
+      return stageCamera(view, throwM);
+    case "screen":
+      return {
+        position: { x: 1.35, y: STAGE.apertureHeightM + 0.55, z: Math.max(0.4, throwM - 2.4) },
+        target: { x: 0, y: STAGE.apertureHeightM, z: throwM },
+        fov: 36,
+      };
+    case "orbit":
+    case "wheel":
+    case "impulse":
+      return stageCamera("fixture", throwM);
+    default: {
+      const forgotten: never = view;
+      return forgotten;
+    }
   }
-  direction.multiplyScalar(1 / length);
-  mesh.visible = true;
-  mesh.position.set(from.x + direction.x * length * 0.5, from.y + direction.y * length * 0.5, from.z + direction.z * length * 0.5);
-  mesh.quaternion.setFromUnitVectors(yAxis, direction);
-  mesh.scale.set(1, length, 1);
+}
+
+function poseFromPacket(packet: FramePacket): MotionSample {
+  return {
+    t: packet.state.t,
+    theta: packet.state.theta,
+    omega: packet.state.omega,
+    mechAngle: packet.state.mechAngle,
+    opticalAngle: packet.state.opticalAngle,
+    angularBlank: packet.state.angularBlank,
+    validBeats: packet.state.validBeats,
+  };
+}
+
+function paintTrail(
+  trail: THREE.Points,
+  trailGeo: THREE.BufferGeometry,
+  trailPositions: Float32Array,
+  trailColors: Float32Array,
+  previous: TrailPoint[],
+  packet: FramePacket,
+  channelRgb: [number, number, number][],
+  haze: number,
+): TrailPoint[] {
+  const added: TrailPoint[] = [];
+  const stride = 4;
+  for (let index = 0; index < packet.samples.length; index += stride) {
+    const sample = packet.samples[index];
+    if (!sample.beamVisible) continue;
+    const marks = liveBeams({
+      theta: sample.theta,
+      opticalAngle: sample.opticalAngle,
+      facetCount: packet.facetCount,
+      throwM: packet.throwM,
+      chromaticOffsetRad: packet.chromaticOffsetDeg.map((deg) => degToRad(deg)) as [number, number, number],
+      facetTiltRad: DEFAULT_FACET_TILT_RAD,
+      beamVisible: true,
+    });
+    for (const beam of marks) added.push({ t: sample.t, x: beam.to.x, y: beam.to.y, z: beam.to.z, channel: beam.channel });
+  }
+  let points = nextTrail(previous, added, packet.state.t, packet.persistenceMs / 1000, packet.reset);
+  if (points.length > MAX_TRAIL) points = points.slice(points.length - MAX_TRAIL);
+  for (let index = 0; index < points.length; index += 1) {
+    const point = points[index];
+    trailPositions[index * 3] = point.x;
+    trailPositions[index * 3 + 1] = point.y;
+    trailPositions[index * 3 + 2] = point.z;
+    const rgb = channelRgb[point.channel] ?? channelRgb[0];
+    trailColors[index * 3] = rgb[0];
+    trailColors[index * 3 + 1] = rgb[1];
+    trailColors[index * 3 + 2] = rgb[2];
+  }
+  (trailGeo.getAttribute("position") as THREE.BufferAttribute).needsUpdate = true;
+  (trailGeo.getAttribute("color") as THREE.BufferAttribute).needsUpdate = true;
+  trailGeo.setDrawRange(0, points.length);
+  (trail.material as THREE.PointsMaterial).opacity = 0.25 + 0.35 * haze;
+  return points;
 }
 
 function hexRgb(hex: string): [number, number, number] {
   const value = Number.parseInt(hex.slice(1), 16);
   return [(value >> 16) / 255, ((value >> 8) & 255) / 255, (value & 255) / 255];
-}
-
-function disposeScene(scene: THREE.Scene): void {
-  const materials = new Set<THREE.Material>();
-  const geometries = new Set<THREE.BufferGeometry>();
-  scene.traverse((object) => {
-    const mesh = object as THREE.Mesh;
-    if (mesh.geometry) geometries.add(mesh.geometry);
-    const material = mesh.material;
-    if (Array.isArray(material)) material.forEach((item) => materials.add(item));
-    else if (material) materials.add(material);
-  });
-  geometries.forEach((geometry) => geometry.dispose());
-  materials.forEach((material) => material.dispose());
 }

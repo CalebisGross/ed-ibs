@@ -62,7 +62,7 @@ export function Cyclorama({
       if (packet.reset || !bufferReady) {
         bctx.globalCompositeOperation = "source-over";
         bctx.globalAlpha = 1;
-        bctx.fillStyle = "#07090d";
+        bctx.fillStyle = "#141618";
         bctx.fillRect(0, 0, width, height);
         trail.length = 0;
       } else if (packet.simDt > 0) {
@@ -70,7 +70,7 @@ export function Cyclorama({
         const fade = 1 - Math.exp(-packet.simDt / tau);
         bctx.globalCompositeOperation = "source-over";
         bctx.globalAlpha = fade;
-        bctx.fillStyle = "#07090d";
+        bctx.fillStyle = "#141618";
         bctx.fillRect(0, 0, width, height);
         bctx.globalAlpha = 1;
       }
@@ -78,7 +78,7 @@ export function Cyclorama({
       const scale = (0.46 * Math.min(width, height)) / viewRadius;
       const mapX = (x: number) => width / 2 + x * scale;
       const mapY = (y: number) => height / 2 - y * scale;
-      bctx.globalCompositeOperation = "lighter";
+      bctx.globalCompositeOperation = "source-over";
       let lastRadial = packet.facetTiltDeg;
       for (const sample of packet.samples) {
         const rays = projectRays({
@@ -94,9 +94,9 @@ export function Cyclorama({
         if (trail.length > 240) trail.splice(0, trail.length - 240);
         if (!sample.beamVisible) continue;
         for (const ray of rays) {
-          bctx.globalAlpha = Math.max(0.15, sample.intensity);
+          bctx.globalAlpha = 0.35 * Math.max(0.2, sample.intensity);
           bctx.fillStyle = ray.css;
-          bctx.fillRect(mapX(ray.x) - 1.2, mapY(ray.y) - 1.2, 2.4, 2.4);
+          bctx.fillRect(mapX(ray.x) - 0.8, mapY(ray.y) - 0.8, 1.6, 1.6);
         }
       }
       bctx.globalCompositeOperation = "source-over";
@@ -107,8 +107,18 @@ export function Cyclorama({
 
       octx.setTransform(1, 0, 0, 1, 0, 0);
       octx.clearRect(0, 0, width, height);
-      octx.strokeStyle = "#314156";
+      octx.strokeStyle = "#3a3e42";
       octx.lineWidth = 1;
+      octx.beginPath();
+      const gridSteps = Math.min(80, Math.ceil(viewRadius));
+      for (let meter = -gridSteps; meter <= gridSteps; meter += 1) {
+        octx.moveTo(mapX(meter), mapY(-viewRadius));
+        octx.lineTo(mapX(meter), mapY(viewRadius));
+        octx.moveTo(mapX(-viewRadius), mapY(meter));
+        octx.lineTo(mapX(viewRadius), mapY(meter));
+      }
+      octx.stroke();
+      octx.strokeStyle = "#d5d8dc";
       octx.beginPath();
       octx.moveTo(width / 2, 0);
       octx.lineTo(width / 2, height);
@@ -131,7 +141,6 @@ export function Cyclorama({
       });
       octx.stroke();
       octx.setLineDash([]);
-      const latest = packet.samples[packet.samples.length - 1];
       const live = projectRays({
         theta: packet.state.theta,
         opticalAngle: packet.state.opticalAngle,
@@ -140,12 +149,15 @@ export function Cyclorama({
         chromaticOffsetRad: packet.chromaticOffsetDeg.map((deg) => degToRad(deg)) as [number, number, number],
         facetTiltRad: DEFAULT_FACET_TILT_RAD,
       });
-      for (const ray of live) {
-        octx.beginPath();
-        octx.strokeStyle = ray.css;
-        octx.globalAlpha = latest?.beamVisible ? 1 : 0.45;
-        octx.arc(mapX(ray.x), mapY(ray.y), latest?.beamVisible ? 4 : 6, 0, Math.PI * 2);
-        octx.stroke();
+      const liveOn = packet.intensity > 0 && !(packet.chopperEnabled && packet.state.angularBlank);
+      if (liveOn) {
+        for (const ray of live) {
+          octx.beginPath();
+          octx.fillStyle = ray.css;
+          octx.globalAlpha = 0.95;
+          octx.arc(mapX(ray.x), mapY(ray.y), 3.2, 0, Math.PI * 2);
+          octx.fill();
+        }
       }
       octx.globalAlpha = 1;
       octx.fillStyle = "#d7dee8";
@@ -217,7 +229,7 @@ export function Cyclorama({
             />
           </label>
           <p>
-            Source persistence range is 20 to 2000 ms. The 1 ms shutter is the separate high-speed preset. Decay follows simulated time, so pause holds the plate. Channels: {CHANNELS.map((channel) => `${channel.name} (${channel.wavelengths})`).join(", ")}. Offsets at 0 make the three colors coincident. This is the wall map D tan(phi), not a raytracer.
+            Source persistence range is 20 to 2000 ms. The 1 ms shutter is the separate high-speed preset. Decay follows simulated time, so pause holds the plate. Channels: {CHANNELS.map((channel) => `${channel.name} (${channel.wavelengths})`).join(", ")}. Offsets at 0 make the three colors coincident. This is the wall map D tan(phi), not a raytracer. The overlay grid is 1 m. A blanked step draws no live spot.
           </p>
         </div>
       </div>

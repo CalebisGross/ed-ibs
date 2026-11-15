@@ -23,7 +23,7 @@ export const STAGE_COPY = {
     "Brightness, haze, and shaft thickness are illustrative. They are not a photometric calibration and not a laser-safety result.",
   trail: "Afterglow is accumulated visible samples over the persistence time. It is not more rays.",
   scenery:
-    "Floor, cloth, stand, room, and the 1.75 m figure are presentation scale. They are not an approved enclosure or a measured room.",
+    "The optical table, posts, target card, and the 1.75 m figure are scenery at the 2.4 m axis. They are not an approved enclosure or a measured room. Chassis profiles are ghosted because the envelope is undecided.",
   axis:
     "The optical axis is drawn level at 2.4 m. Wall Y is added to that height. Large angles can leave the cloth or cross the floor.",
 } as const;
