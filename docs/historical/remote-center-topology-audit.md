@@ -1,4 +1,4 @@
-# QUADRIVOT full-source topology audit — current status
+# QUADRIVOT full-source topology audit: current status
 
 ## Result / approval state
 **Full accepted manuscript recovered from the official EPFL public download and inspected, including figures and appendix equations.** The previous missing-paper blocker is resolved. Caleb approved additional secondary and coupling flexures; that supersedes the earlier four-total-leaf authorization barrier. It does NOT establish a feasible ED-IBS suspension.
@@ -27,7 +27,7 @@ Rigid-body graph:
 - Fixed base G and moving platform PF.
 - Four main links ML_i and four secondary links SL_i, i=1..4.
 - Four coupling links CL_j, j=1..4.
-- Each chain: PF — R(A_i) — ML_i — R(B_i) — SL_i — R(C_i) — G.
+- Each chain: PF - R(A_i) - ML_i - R(B_i) - SL_i - R(C_i) - G.
 - CL1 couples SL1/SL2 through D11/D12.
 - CL2 couples SL2/SL3 through D21/D22.
 - CL3 couples SL3/SL4 through D31/D32.
@@ -114,7 +114,7 @@ Actual supported mass/inertia and gravity wrench remain parametric. At reference
 ## One next authorized engineering analysis
 Now that source and leaf authorization are resolved, perform a **single parametric QUADRIVOT reconstruction/closure and main/secondary-flexure sizing study** with the root datum at36 mm and explicit source-based D-point incidence. Sweep L and secondary geometry within an EXPLICIT proposed outer envelope; use Eq.(9)/(16) to reject excessive baseline, Eq.(7) to flag excessive secondary rotation, and exact rigid closure to detect incompatible couplers/singularities. Treat coupling/junction coordinates not numerically fixed by the paper as design parameters, never published measurements. Record every physical surface and blade group so r28 exclusion is checked before claiming feasibility.
 
-Do not yet implement the oscillator. A surviving geometry still requires3D nonlinear static gravity/compliance and finite-thickness clearance verification including axial/tilt behavior, plus mass integration and transmission/period recalculation. The existing planar scratch frame is not a validated3D model. This is a concrete next analysis now possible from the recovered mechanics—not another generic topology search or user-question ladder.
+Do not yet implement the oscillator. A surviving geometry still requires3D nonlinear static gravity/compliance and finite-thickness clearance verification including axial/tilt behavior, plus mass integration and transmission/period recalculation. The existing planar scratch frame is not a validated3D model. This is a concrete next analysis now possible from the recovered mechanics, not another generic topology search or user-question ladder.
 
 ## Saved files / provenance boundary
 Source PDF, extracted text, public landing HTML, thumbnail and page renders are listed above. Reproduce model checks with **/workspace/ed-ibs/quadrivot-source-calculations.py**. Original full-user-specification.md remains unchanged. No paid access, outside contacts, repo/cloud changes, hardware or user-computer actions occurred.

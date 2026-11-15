@@ -40,3 +40,7 @@ npm run dev
 ```
 
 `npm run dev` binds port 43117 (`vite --host 0.0.0.0 --port 43117 --strictPort`).
+
+## Docs sync
+
+One decision change is one pull request. Update the decision log `docs/gemini-revision-deviations.md`, `docs/requirements-matrix.md`, `docs/decisions-and-deviations.md`, and any affected file under `docs/analysis/`. The Decision index in those three docs must show the same ID and the same status. Run `node scripts/check-docs.mjs` before opening the pull request. Do not edit `docs/user-specification.md`. Caleb merges.
