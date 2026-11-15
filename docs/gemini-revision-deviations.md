@@ -22,7 +22,7 @@ States: OPEN = needs Caleb, INTERNAL = docs disagree with each other, PHYSICS = 
 | 16 | Hardware certs | sim only | proof load, IP54, Class 3R, rigging | OUT OF SCOPE | not validated by this project |
 
 ## Nov 15 2026 update
-Caleb (via Jeph): decide case by case and show him each conflict. DMX channel count is open, built to what the system needs. Repo: private CalebisGross/ed-ibs with docs/sim/hardware/firmware, move code once Jeph confirms it exists.
+Caleb (via Jeph): decide case by case and show him each conflict. DMX channel count is open, built to what the system needs. Repo: CalebisGross/ed-ibs exists and is public, with docs/, sim/, hardware/, and firmware/. The earlier note that the repository was private, and that the move waited until someone confirmed it existed, is stale.
 Recommendations sent to Caleb via Jeph (awaiting his picks):
 1 keep 4-20 Hz, DMX capped to modeled range | 2 keep 56 mm bore | 3 +/-18 deg, stops just beyond after stress check | 4 keep 0.25 mm min | 5 variable 18-8.5 mm driven by Gemini 10 mm stepper | 6 needs-based merged DMX map | 7 escape wheel steps prism on bearings, cage oscillates separately | 8 redesign cage around 56 mm bore | 9 0.08 mm stop gap | 10 regenerate ED-05 from m0.45 Z15 | 11 7 mm pockets, resize/relocate plate | 12 resize ribbon for 0.12 N m | 13 resolved by 56 mm bore | 14 drop <0.25 mrad, show calculated | 15 adopt touring hardware as modeled features | 16 certs documented, not validated.
 
@@ -31,7 +31,7 @@ Caleb (via Jeph, verbatim): "Whatever makes sense in the real world. Remember th
 Interpretation (Jeph's read, adopted): items 1-16 recommendations are WORKING DECISIONS, not final. Deciding test where unclear: real-world manufacturability and touring demands. Each is revisable when analysis shows otherwise.
 Status per item: 1-16 = WORKING (recommendation above). Assumptions to be stated per item as analysis lands.
 Still open, visible: blanking 4.65 vs 2.2 ms; Q350 decay; 15 deg bias vs dead-center pinspot; impulse timing (zero velocity vs center crossing); full suspension (0.25 mm gravity shift unpassed).
-Repo move: on hold until Jeph confirms CalebisGross/ed-ibs exists.
+Repo: CalebisGross/ed-ibs exists and is public. The hold until the repository was confirmed to exist is closed.
 
 ## Nov 15 2026 step 1 status (working-revision-step1.md, numbers in working-revision-step1.py)
 Numbering below follows the table rows above. Note: recommendation numbers 14-16 in the Nov 15 update do not match table rows 14-16.
