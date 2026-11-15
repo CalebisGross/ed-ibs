@@ -16,7 +16,7 @@ Evidence glanced at: `sim/src/sim/parameters.ts`, `sim/tests/solver.test.ts`, `s
 
 ### 1. severity: high (FIXED)
 
-**status:** Fixed in PR (see link after open). Issue #15.
+**status:** Fixed in https://github.com/CalebisGross/ed-ibs/pull/17. Issue #15.
 
 **title:** Angle-only blank enter/exit can miss a full blank transit inside allowed settings
 
