@@ -96,3 +96,15 @@ Trigger: Caleb's 11:44 CT answer "Flicker is a flaw to reduce". Analysis only, n
 - Flagged: item 7 spring table lists Nivaflex at t 1.5-2.0 mm, but strip is cited only up to 0.70 mm [S step 1]. Use the carbon-steel column.
 - Honest limit: beat-rate modulation is eliminated only with timing B, a wide beam and amplitude above about 9-10 deg. Otherwise it is reduced, not removed.
 - Decisions pending Caleb: timing B default; beam divergence target (item 15); smear tolerance; full blank vs dip (DMX blank depth); LED driver plus boost; keep 15 ms; drop dual path and strobe; keep Raw Smear mode.
+
+## 2026-11-15 12:10 CT: Caleb's flicker decisions (verbatim widget answers)
+
+- Step timing default: "Step at pattern centre, zero crossing as fallback"
+- Beam divergence target: "At least 2.4° (no flicker)"
+- Smear tolerance before blanking: "Decide with a look test" (quarter spot width stays a placeholder until then, not a decision)
+- Any blanking that remains: "DMX blank depth control"
+- LED driver: "Constant current, fast PWM, lit-time boost" (junction temperature effect still unchecked)
+- Step speed and dropped options: "Revisit" (scope being clarified with Caleb; 15 ms, dual path and strobe all stay open, none dropped yet)
+- Raw Smear DMX look: "No, drop it"
+
+Status: working decisions, design targets only. Nothing here is validated or a photosensitivity safety finding.
