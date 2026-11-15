@@ -1,0 +1,4 @@
+{
+  "name": "ED-IBS",
+  "install": "[ ! -d /agent/repos/ed-ibs ] || cd /agent/repos/ed-ibs || exit $?; bash scripts/cloud-install.sh"
+}
