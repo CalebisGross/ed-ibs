@@ -1,12 +1,14 @@
 # Number provenance (solver and UI defaults)
 
-Date: 2026-11-15. Check for issue #10 item 1. Findings only. No solver constants were changed here.
+Date: 2026-11-15. Check for the first item in issue ten (Refs #10). Findings only. No solver constants were changed here. [S]
 
-This table traces every figure in `sim/src/physics/` and the related UI defaults back to `docs/user-specification.md`, a PDF in `hardware/source-documents/`, a derivation in `docs/analysis/`, or none. Status is one of: sourced, derived, unsourced, conflicting. Conflicting means the number appears in more than one place with incompatible meaning, or the source claim disagrees with the measured or calculated result the code actually uses. Tags on each row: **[T]** target or chosen assumption, **[C]** calculated, **[S]** cited source. Nothing here is hardware-validated. Do not read this as a safety claim.
+This note traces every figure in `sim/src/physics/` and the related UI defaults back to `docs/user-specification.md`, a PDF in `hardware/source-documents/`, a derivation in `docs/analysis/`, or none. Status is one of: sourced, derived, unsourced, conflicting. Conflicting means the number appears in more than one place with incompatible meaning, or the source claim disagrees with the measured or calculated result the code actually uses. Tags: **[T]** target or chosen assumption, **[C]** calculated, **[S]** cited source. Nothing here is hardware-validated. Do not read this as a safety claim.
 
 Known OPEN decision IDs that already cover several conflicts: D-33 blanking duration, D-34 hold-Q decay, D-35 optical bias versus pinspot, D-36 impulse timing, D-37 gravity-shift target. Status tokens are not changed by this note.
 
 ## Key figures
+
+All quantities in this table [T, C, S] as listed in the Tag column.
 
 | Name | Value | Code | Source | Tag | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -48,6 +50,8 @@ Known OPEN decision IDs that already cover several conflicts: D-33 blanking dura
 
 ## Derived formulas (code)
 
+All quantities in this table [T, C, S] as listed in the Tag column.
+
 | Name | Value / form | Code | Source | Tag | Status |
 | --- | --- | --- | --- | --- | --- |
 | Reference stiffness | K = 0.1104 * (0.018 / L) | `referenceModel.ts:10-12` | user-specification §2.A.2 | [S] | sourced |
@@ -64,6 +68,8 @@ Known OPEN decision IDs that already cover several conflicts: D-33 blanking dura
 | Musical tempo map | f = (BPM * subdivision) / 120 | `tempo.ts:19-26` | decisions assumption #10 | [T] | derived |
 
 ## UI and runtime defaults without a physics source
+
+All quantities in this table [T, C, S] as listed in the Tag column.
 
 | Name | Value | Code | Source | Tag | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -88,16 +94,16 @@ Known OPEN decision IDs that already cover several conflicts: D-33 blanking dura
 
 ## Conflict notes (short)
 
-1. **D-33 blanking.** Angle window +/- 2.1 deg is sourced. Duration claim 2.2 ms is not what the harmonic window or the solver measures at +/- 18 deg and about 8 Hz (about 4.652 ms [C]). Unlock display 2.1 ms reuses the same digits as the blank angle.
-2. **D-34 Q and unwind.** Q about 350 and 15 s unwind are both sourced. Free linear decay leaves about 34 percent of amplitude at 15 s [C]. Motion does not stop.
-3. **D-35 facet tilt.** Phi0 = 15 deg is sourced. Dead-center pinspot is also sourced. Rest wall radius is D * tan(15 deg), not center.
-4. **D-36 impulse.** Spec wants a zero-velocity impulse inside +/- 3.5 deg. Code uses `directional-lift-zone-drive` while `|omega| > omegaEpsilon`. The epsilon itself is unsourced.
-5. **Frequency band.** Spec and UI claim 4 to 20 Hz. Original K law at reference inertia reaches about 8.001 to 11.644 Hz [C]. Blueprints PDF p1 claims 1.0 to 60.0 Hz.
-6. **45 beams versus 9 rays.** Spec wording versus facets * channels.
-7. **44 deg timegrapher lift** is not converted into the +/- 3.5 deg balance zone.
-8. **Blade 0.25 mm versus PDF 0.18 mm.** Covered by D-04 (working choice keeps 0.25 mm).
-9. **Bore 56 mm versus PDF carrier / 6807 geometry.** Covered by D-02 as a layout prediction; PDF pages disagree with the working target.
-10. **Gravity shift 0.25 mm.** Retained target, unpassed (D-37).
+1. **D-33 blanking.** Angle window +/- 2.1 deg is sourced [S]. Duration claim 2.2 ms is not what the harmonic window or the solver measures at +/- 18 deg and about 8 Hz (about 4.652 ms [C]). Unlock display 2.1 ms reuses the same digits as the blank angle.
+2. **D-34 Q and unwind.** Q about 350 and 15 s unwind are both sourced [S]. Free linear decay leaves about 34 percent of amplitude at 15 s [C]. Motion does not stop.
+3. **D-35 facet tilt.** Phi0 = 15 deg is sourced [S]. Dead-center pinspot is also sourced [S]. Rest wall radius is D * tan(15 deg), not center [C].
+4. **D-36 impulse.** Spec wants a zero-velocity impulse inside +/- 3.5 deg [S]. Code uses `directional-lift-zone-drive` while `|omega| > omegaEpsilon`. The epsilon itself is unsourced [T].
+5. **Frequency band.** Spec and UI claim 4 to 20 Hz [S]. Original K law at reference inertia reaches about 8.001 to 11.644 Hz [C]. Blueprints PDF p1 claims 1.0 to 60.0 Hz [S].
+6. **45 beams versus 9 rays.** Spec wording [S] versus facets * channels [C].
+7. **44 deg timegrapher lift** is not converted into the +/- 3.5 deg balance zone [S].
+8. **Blade 0.25 mm versus PDF 0.18 mm.** Covered by D-04 (working choice keeps 0.25 mm) [T, S].
+9. **Bore 56 mm versus PDF carrier / 6807 geometry.** Covered by D-02 as a layout prediction [T]; PDF pages disagree with the working target [S].
+10. **Gravity shift 0.25 mm.** Retained target, unpassed (D-37) [T].
 
 ## Cheap constant lock
 
