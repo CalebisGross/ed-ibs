@@ -48,3 +48,19 @@ jobs:
 
       - name: Check docs
         run: node scripts/check-docs.mjs
+
+  statecharts:
+    name: statecharts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Check statecharts (hold invariants)
+        run: bash scripts/check-statecharts.sh

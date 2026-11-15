@@ -2,6 +2,18 @@
 
 These charts are the escapement step and the simulator session, drawn from the code by the pstack `statechart` checker. They are not a stored state machine. `EscapementSolver.step` integrates a fixed-step RK4 oscillator and updates flags in the same step. The boxes are predicates over that sample.
 
+## Hold-only TLC (in-repo)
+
+For a fast regression check of the invariants the solver still keeps, from the repo root:
+
+```bash
+bash scripts/check-statecharts.sh
+```
+
+That uses `escapement.hold.cfg` and `simrun.hold.cfg`, a pinned tla2tools jar, and Java 11+. See `.cursor/skills/ed-ibs-statecharts/SKILL.md`. The full `*.cfg` files still list source-claim invariants that are expected to break (D-33, D-34, D-35, D-36 related). Do not weaken those claims to make TLC green.
+
+## Chart redraw (external checker)
+
 The checker is not in this repo. From a checkout of the skill:
 
 ```bash
