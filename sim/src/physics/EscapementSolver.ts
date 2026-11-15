@@ -14,7 +14,11 @@ import { mechanicalStepRad, opticalStepRad } from "./referenceModel";
  * asks for a zero-velocity impulse inside the lift zone is not implemented,
  * because that conjunction does not cross the center on a normal orbit.
  *
- * Event detection assumes at most one zero crossing per step.
+ * Event detection assumes at most one zero crossing per step. Blank enter
+ * and exit are localized by linear interpolation in theta. When both step
+ * endpoints lie outside the blank window but the path crosses it (a full
+ * transit inside one dt), enter and exit are both registered at their
+ * interpolated times so the blank is not missed at high frequency x amplitude.
  */
 
 export interface SolverParams {
@@ -161,6 +165,22 @@ export function step(state: SolverState, params: SolverParams, dt = DT_S): Solve
       lastBlankDuration = exitTime - blankEnterTime;
       blankEventCount += 1;
     }
+    blankEnterTime = null;
+    angularBlank = false;
+  } else if (
+    !state.angularBlank &&
+    abs0 > params.blankHalfAngle &&
+    abs1 > params.blankHalfAngle &&
+    theta0 * theta1 < 0
+  ) {
+    // Both endpoints outside, opposite signs: the linear path brackets the
+    // whole blank window. Register enter and exit at the interpolated times.
+    const enterLevel = theta0 > 0 ? params.blankHalfAngle : -params.blankHalfAngle;
+    const exitLevel = theta1 > 0 ? params.blankHalfAngle : -params.blankHalfAngle;
+    const enterTime = state.t + crossFraction(theta0, theta1, enterLevel) * dt;
+    const exitTime = state.t + crossFraction(theta0, theta1, exitLevel) * dt;
+    lastBlankDuration = exitTime - enterTime;
+    blankEventCount += 1;
     blankEnterTime = null;
     angularBlank = false;
   }
