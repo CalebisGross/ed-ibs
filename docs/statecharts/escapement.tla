@@ -22,6 +22,12 @@
 \* A fixed step often has no stored sample with omega exactly 0 at the
 \* far end. TurnOutside is that sign change while still outside the
 \* lift zone. The release itself is the one stored still point.
+\*
+\* When one RK4 step brackets the whole blank window (both endpoints
+\* outside, opposite signs), EscapementSolver registers enter and exit
+\* at interpolated times in that same step. This chart still sequences
+\* EnterBlank, CrossZero, and LeaveBlank as separate actions. The hold
+\* invariants stay the same.
 
 VARIABLES zone, heading, side, power, policy, torque, armed, clock, blankMs, beat, intensity
 

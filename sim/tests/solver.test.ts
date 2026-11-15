@@ -163,6 +163,45 @@ describe("events", () => {
     expect(state.mechAngle).toBeCloseTo(8 * Math.PI / 12, 12);
     expect(state.opticalAngle).toBeCloseTo(8 * (2 * Math.PI) / 12, 12);
   });
+
+  it("registers a blank when one fixed step jumps across the whole window at max editable f x A", () => {
+    // Sanitize caps allow 80 Hz prescribed and 40 deg amplitude. Peak |Delta theta|
+    // is about 5.03 deg per 0.25 ms step, wider than the 4.2 deg blank at +/- 2.1 deg.
+    const amplitudeDeg = 40;
+    const frequencyHz = 80;
+    const omega = 2 * Math.PI * frequencyHz;
+    const amp = degToRad(amplitudeDeg);
+    const params = freeParams({
+      stiffness: I_ANNULUS_KG_M2 * omega * omega,
+    });
+    const peakDeltaDeg = (amp * omega * 0.00025) * (180 / Math.PI);
+    expect(peakDeltaDeg).toBeGreaterThan(4.2);
+
+    const theta0 = degToRad(2.5);
+    const omega0 = -omega * Math.sqrt(Math.max(0, amp * amp - theta0 * theta0));
+    const before = createInitialState(theta0, omega0, blank);
+    expect(before.angularBlank).toBe(false);
+    const after = step(before, params);
+    expect(Math.abs(after.theta)).toBeGreaterThan(blank);
+    expect(after.theta * theta0).toBeLessThan(0);
+    expect(after.rawCrossings).toBe(1);
+    expect(after.blankEventCount).toBe(1);
+    expect(after.blankEnterTime).toBeNull();
+    expect(after.angularBlank).toBe(false);
+    expect(after.lastBlankDuration).not.toBeNull();
+    const expected = harmonicBlankDuration(amp, blank, frequencyHz);
+    expect(after.lastBlankDuration).toBeCloseTo(expected ?? 0, 4);
+
+    const run = advanceToTime(createInitialState(amp, 0, blank), params, 0.125);
+    expect(run.rawCrossings).toBe(20);
+    expect(run.blankEventCount).toBe(20);
+    expect(run.lastBlankDuration).toBeCloseTo(expected ?? 0, 4);
+
+    const single = advanceSteps(createInitialState(amp, 0, blank), params, 400);
+    let batched = createInitialState(amp, 0, blank);
+    for (let i = 0; i < 25; i += 1) batched = advanceSteps(batched, params, 16);
+    expect(signature(single)).toEqual(signature(batched));
+  });
 });
 
 describe("damping, drive, and torque gate", () => {

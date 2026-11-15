@@ -14,20 +14,23 @@ Evidence glanced at: `sim/src/sim/parameters.ts`, `sim/tests/solver.test.ts`, `s
 
 ## Findings
 
-### 1. severity: high
+### 1. severity: high (FIXED)
+
+**status:** Fixed in https://github.com/CalebisGross/ed-ibs/pull/17. Issue #15.
 
 **title:** Angle-only blank enter/exit can miss a full blank transit inside allowed settings
 
-**file:line:** `sim/src/physics/EscapementSolver.ts:146-166` (assumption stated at `:18`)
+**file:line:** `sim/src/physics/EscapementSolver.ts` blank update in `step` (was `:146-166`; assumption stated near the header)
 
-**evidence:** Blanking is updated only when the step starts outside and ends inside the +/- blank half-angle, or starts inside and ends outside (`:153-166`). If one fixed step goes from `|theta0| > blank` through center to `|theta1| > blank`, neither branch runs, `angularBlank` stays false (`:146`), and no blank duration is recorded. The header states event detection assumes at most one zero crossing per step (`:18`), but blank enter/exit is a second pair of level crossings with no sub-step localization.
+**evidence (pre-fix):** Blanking was updated only when the step starts outside and ends inside the +/- blank half-angle, or starts inside and ends outside. If one fixed step went from `|theta0| > blank` through center to `|theta1| > blank`, neither branch ran, `angularBlank` stayed false, and no blank duration was recorded. The header stated event detection assumes at most one zero crossing per step, but blank enter/exit is a second pair of level crossings with no sub-step localization for a full transit.
 
 At `DT_S = 0.00025` s [S], peak `|Delta theta| ≈ A * 2 * pi * f * dt`. With sanitize caps that allow prescribed frequency up to 80 Hz and amplitude target up to 40 deg (`settings.ts` clamps), peak step size is about 5.03 deg [C] while the full blank width is 4.2 deg at the default 2.1 deg half-angle [S]. That can skip the window entirely. The under-resolved UI warning fires only below 40 steps/cycle (`parameters.ts:328-335`); at 80 Hz there are still 50 steps/cycle [C], so the warning does not cover this miss.
 
-Spec §2.B.2 [S] requires `beamBlanked` whenever `|theta| <= 2.1 deg` during the zero-crossing. Chopper drawing then silently fails to blank those beats.
+Spec §2.B.2 [S] requires `beamBlanked` whenever `|theta| <= 2.1 deg` during the zero-crossing. Chopper drawing then silently fails to blank those beats when the event is missed.
 
-**proposed_fix:** Suggestion only: either (a) detect blank level crossings with the same interpolated enter/exit logic even when both endpoints are outside (enter and exit in one step), or (b) clamp editable frequency/amplitude so peak `|Delta theta|` stays below the blank full width with margin, and lower the steps/cycle warning threshold accordingly. Do not treat this as an applied patch from this review.
+**fix applied:** Keep `dt = 0.25 ms` [S] and the RK4 integrator unchanged. When both endpoints are outside the blank window and `theta0 * theta1 < 0`, register enter and exit at the interpolated blank half-angle crossings in the same step, set `lastBlankDuration`, and increment `blankEventCount`. Determinism (partition identity) is preserved. Regression: `sim/tests/solver.test.ts` "registers a blank when one fixed step jumps across the whole window at max editable f x A".
 
+**proposed_fix (historical):** Suggestion only from the review: either (a) detect blank level crossings with the same interpolated enter/exit logic even when both endpoints are outside (enter and exit in one step), or (b) clamp editable frequency/amplitude so peak `|Delta theta|` stays below the blank full width with margin, and lower the steps/cycle warning threshold accordingly. Option (a) was applied.
 ### 2. severity: medium
 
 **title:** Hitch catch-up permanently drops simulated time after long rAF gaps
@@ -187,4 +190,4 @@ These are conflicts with the byte-locked spec that the prototype already labels.
 
 ## Verdict
 
-The fixed-step RK4 core, render decoupling, SI units, unlock/beat indexing, and honest power-cut labeling match the prototype contract and are well tested. The highest-priority real gap in this slice is blank-window miss under editable high frequency × amplitude, where the "one event per step" assumption is weaker than the allowed settings. Remaining items are latch/init polish, param validation, and already-open D-33..D-36 spec conflicts.
+The fixed-step RK4 core, render decoupling, SI units, unlock/beat indexing, and honest power-cut labeling match the prototype contract and are well tested. Finding 1 (blank-window miss under editable high frequency x amplitude) is fixed by interpolated enter/exit when a step brackets the window; see issue #15. Remaining items are latch/init polish, param validation, and already-open D-33..D-36 spec conflicts.
