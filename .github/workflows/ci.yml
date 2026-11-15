@@ -33,3 +33,18 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  docs:
+    name: docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check docs
+        run: node scripts/check-docs.mjs

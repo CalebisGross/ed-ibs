@@ -19,7 +19,7 @@ Sources used here: step 1 files, `gemini-revision-deviations.md`, `approved-requ
 ## Terms used below
 - **True tourbillon (T1):** the escapement is on the cage, and the escape pinion rolls on a fixed ring (the "fourth wheel"). Each beat steps the cage a little, and drive torque goes into the cage. Cage rate is locked to beat rate.
 - **Carousel (T2):** a motor turns the cage at a set rate. The escapement on the cage only regulates the balance. It gets its own energy from a small cage remontoire that the cage rotation winds against a fixed ring. Horologically this is closer to a karussel than a tourbillon. I'm calling it what it is.
-- **Item 7 blend (working):** balance and escapement are the master clock and release each 12 deg prism step. A spring cam or Geneva indexer powers the step, a motor rewinds the spring, and an encoder supervises.
+- **Item 7 blend (working):** balance and escapement are the master clock and release each 12 deg prism step. A spring cam or Geneva indexer powers the step, a motor rewinds the spring, and an encoder supervises. [T]
 
 ## 1. Cage concept and fit
 Layout [T]: the cage is a separate Z station from the prism carrier. Two 61813-2RZ bearings sit on 65/56 x 10 journals, the same as step 1. Between them are two 90/56 x 3 mm flanges joined by three 5 x 5 x 40 mm pillars at r 42 mm. Inside are the spec reference balance ring (42 g, 56/72 mm), its flexure suspension, the escapement at r about 41 mm, and a counterweight opposite the off-axis parts. The bore stays a clear 56 mm through the journals and flanges.
@@ -36,7 +36,7 @@ Payload masses are assumptions [T]: suspension 15 g, escapement 12 g, release 3 
 
 Fit [C]:
 - Tube ID 102 mm [S MAN]. Cage OD 90 mm leaves 6 mm radial. A stationary band (fixed ring gear, encoder head, park lock) out to 100 mm leaves 1 mm. That is tight for a touring tube that may not be perfectly round, so a real layout would put the band at a bearing bulkhead instead.
-- Bearing housings are 93 mm OD (61813) or 84.2 mm (Kaydon), with 4.5 mm of radial room to the tube.
+- Bearing housings are 93 mm OD (61813) or 84.2 mm (Kaydon), with 4.5 mm of radial room to the tube. [S]
 - Between the ring OD (72) and the cage OD (90) there are 9 mm of radial room for the escapement and pillars. Gemini's escape wheel is listed at 14.8 mm OD [S BP] and fits only if it sits tangentially, not radially. ED-05 geometry is still conflicted (deviation item 10).
 - Axially the cage is about 74 mm. With the 120 mm carrier that is 194 mm of 280 mm [C].
 - **Packaging problem that carries over:** the balance suspension has to fit inside this cage. The only analyzed candidate (QEXT-200) used a 200 mm frame [S prior]. A rotating cage makes this harder, not easier.
@@ -45,7 +45,7 @@ Fit [C]:
 Carousel drive (V1, 3.35 N weight) [C]:
 - Bearing drag: 1.6e-4 N m from the load-dependent SKF estimate [C from S mu]. That is a lower bound because P is far below 0.1 C. The planning range for two non-contact-seal bearings is 0.002-0.02 N m (step 1, order of magnitude). Contact seals (2RS) stay excluded.
 - Unbalance gravity torque, cyclic once per rev: 6.7e-5 / 1.7e-4 / 3.4e-4 N m at a residual CoM offset of 0.02 / 0.05 / 0.10 mm [T].
-- Spin-up torque (1 s ramp): 5e-5 N m at 1 rpm, 3e-3 N m at 64 rpm.
+- Spin-up torque (1 s ramp): 5e-5 N m at 1 rpm, 3e-3 N m at 64 rpm. [C]
 - The cage self-winds its escapement remontoire. The escapement needs 2.2 mW at 8 Hz and 6.8 mW at 11.46 Hz [C]. Taken from cage rotation, that is 0.021-0.065 N m at 1 rpm, or 0.11-0.32 N m at 1 rev per 5 min [C]. Slower cages need more torque for the same power.
 
 | Rate | Omega | Worst steady torque (drag 0.02 + unbalance 0.1 mm) | Power |
@@ -67,14 +67,14 @@ These exclude the self-winding torque above. All [C].
 | 1 rev/2 min | 64 | 0.19 deg | 0.043-0.090 | 8.1 / 5.6 ms (marginal) | 22-47% |
 | 1 rev/5 min | 160 | 0.075 deg | 0.107-0.226 | 3.2 / 2.2 ms | 9-19% |
 | 1 rev/15 min | 480 | 0.025 deg | 0.32-0.68 | 1.1 / 0.7 ms | 3-6% |
-This is a crude screen, not an escapement simulation. Below about 1 rev per 5 min at 8 Hz, a watch-like tourbillon starves or loses impulse at this cage inertia. It gets worse at 11.46 Hz.
+This is a crude screen, not an escapement simulation. Below about 1 rev per 5 min at 8 Hz, a watch-like tourbillon starves or loses impulse at this cage inertia. It gets worse at 11.46 Hz. [C]
 
 ## 3. Does a tourbillon help this oscillator's rate? Mostly no.
 What a tourbillon fixes in a watch is position error in vertical positions, mainly poise error (balance CoM off the axis). It averages that over one cage turn. It does nothing for flat vs. vertical differences, temperature, or amplitude.
 
 For ED-IBS [C]:
 - **No pivot friction.** The flexure has no pivot, so the friction share of watch positional error doesn't exist here.
-- **Poise error does exist.** A ring CoM offset e adds m g e of stiffness when the axis is horizontal. df/f = 9.3e-6 / 3.7e-5 / 9.3e-5 for e = 5 / 20 / 50 µm at 18 mm. That is 7.5e-5 to 7.5e-4 Hz at 8 Hz (0.8 to 8 s/day). It's smaller at short L.
+- **Poise error does exist.** A ring CoM offset e adds m g e of stiffness when the axis is horizontal. df/f = 9.3e-6 / 3.7e-5 / 9.3e-5 for e = 5 / 20 / 50 µm at 18 mm. That is 7.5e-5 to 7.5e-4 Hz at 8 Hz (0.8 to 8 s/day). It's smaller at short L. [C]
 - **Leaf loading under gravity.** Gravity loads the leaves and changes their stiffness, which is a flexure-specific positional error. The order-of-magnitude result is dK/K = 0.16-0.63%, or **0.006-0.025 Hz at 8 Hz** [C, rough, c = 1/30 to 2/15 times P L]. That is 10-30x the poise error, and the real number depends on the unchosen suspension topology. A cage turning about a horizontal axis averages this too, but it converts a steady offset into a modulation once or twice per rev.
 - **Temperature dominates.** The Ti modulus drift gives about -1.7e-4 per K in rate, so -0.014 Hz for a 10 K stage swing [C from S approx]. That is about one 8-bit DMX frequency step (0.0136 Hz) [C step 1] and 20x the 50 µm poise error.
 - **Orientation.** The cage can only average the gravity component perpendicular to the optical axis. That's 100% when the axis is horizontal, 71% at 45 deg tilt, and **0% when the fixture points straight down or up** [C], which is common in touring rigs.
@@ -93,9 +93,9 @@ Bearing-located cage [C]:
 
 Balance ring inside the cage [C]:
 - The open problem is the same as before. The reference sag for 42 g at the 1647.52 N/m design-gate stiffness is exactly 0.25 mm [C prior]. No suspension has passed: QEXT-200 reached 1.95 mm [S prior]. Rotation doesn't change the magnitude of gravity, so it doesn't change the sag.
-- With an anisotropic suspension, the sag swings between W/k_max and W/k_min twice per rev. At 1.2:1 that is 0.21-0.25 mm, and at 2:1 it is 0.125-0.25 mm. In the world frame the ring center wobbles at twice the cage rate, which a static design would not do.
+- With an anisotropic suspension, the sag swings between W/k_max and W/k_min twice per rev. At 1.2:1 that is 0.21-0.25 mm, and at 2:1 it is 0.125-0.25 mm. In the world frame the ring center wobbles at twice the cage rate, which a static design would not do. [T]
 - The ring ID equals the 56 mm bore. Any sag intrudes on the bore unless the ring ID goes to about 56.5 mm [C]. That's an allowed ring-inertia change, and it should happen whether or not there's a cage.
-- **Bottom line:** the cage passes 0.25 mm, but the thing inside it, which is what matters, is still unresolved. The tourbillon adds the bearing contribution plus anisotropy wobble on top.
+- **Bottom line:** the cage passes 0.25 mm, but the thing inside it, which is what matters, is still unresolved. The tourbillon adds the bearing contribution plus anisotropy wobble on top. [T]
 
 ## 5. Dynamic effects
 - **Gyroscopic coupling:** the cage and balance are coaxial, so for perfect alignment the gyroscopic term is zero. With 0.1 deg misalignment [T] it is 1.3e-7 N m at 1 rpm [C]. The real gyroscopic load comes from moving the yoke: 1 rad/s [T] across the oscillating balance gives 6.9e-4 N m out of plane on the flexures. That exists with or without a cage. A V4 cage at 64 rpm adds 6.3e-3 N m on its bearings [C], which is fine.
@@ -107,7 +107,7 @@ Balance ring inside the cage [C]:
 ## 6. Power and signals across rotation
 - **Slip ring: no.** Through-bore rings with a 60 mm bore are 135 mm OD [S SVTS C 07, REC RH60], 33 mm bigger than the tube ID [C]. Ring drag of 0.1 N m [S RH60] is 5x the worst bearing drag [C]. Life isn't the issue: about 1.8e5 rev per touring year at 1 rpm [C, 10 h x 300 d T] against up to 1e8 [S]. Touring concerns are brush noise on encoder lines, debris near an open optical bore, and another IP-rated seal to maintain.
 - **Mechanical-only: yes.** Nothing powered rides the cage. The cage remontoire is wound by cage rotation against a fixed ring. The encoder is stationary and optical: a reflective sensor reads the balance rim or a code track through the open cage, with pillars hiding 5.7% of the rim [C]. A second stationary sensor reads a cage index mark. Firmware ignores the pillar blanking windows, since cage angle is known.
-- **The release is the hard part.** The item-7 blend has the escapement mechanically releasing a stationary indexer. Across a rotating interface there are two real options:
+- **The release is the hard part.** The item-7 blend has the escapement mechanically releasing a stationary indexer. Across a rotating interface there are two real options: [T]
   1. **Axial push ring:** the pallet fork lifts a coaxial ring a fraction of a mm each beat. Axial motion is rotation-invariant, so a stationary trip lever reads it through a thrust race. This keeps the "watch releases the light" story, but it adds mass and friction the balance must move each beat. It is not sized. Step 1 already said the release must be light, and this makes it heavier.
   2. **Optical read plus electric latch:** the stationary sensor sees the escape event and fires a latch on the spring indexer. It's simple and serviceable, but the honest description becomes "the watch times every step, a sensor releases it". That is a story change Caleb should make knowingly.
 
@@ -127,23 +127,23 @@ At 1 rev/15 min, 5 min and 1 min the pattern turns 0.4 / 1.2 / 6 deg/s, so one 2
 **Feature or fault?** As a feature it's elegant: a slow, tempo-tied rotation of the whole star that no stepper-mirror fixture has for free. As a fault, it means the facets' azimuth is no longer fixed, so programmers lose a static star look unless the cage stops. The spring cam indexer can't cancel it because it only makes discrete 12 deg steps. A carousel can stop and park on DMX. A true tourbillon cannot, unless the clock stops too. If precession is ever unwanted, I'd suggest a DMX "cage rate" channel with 0 = parked at home. That would be a 14th channel on the step-1 map [T].
 
 ## 8. Verdict, risks, cost, cheapest version
-**Verdict: feasible with conditions, as a slow motor-driven carousel. A true tourbillon is not worth it at watch speed and only marginal at about 1 rev/5 min.** The tourbillon idea does not solve any open engineering problem. It is a visual and story feature that costs packaging room and adds service steps.
+**Verdict: feasible with conditions, as a slow motor-driven carousel. A true tourbillon is not worth it at watch speed and only marginal at about 1 rev/5 min.** The tourbillon idea does not solve any open engineering problem. It is a visual and story feature that costs packaging room and adds service steps. [C]
 
 Conditions:
-1. Indexer and prism stay stationary. Riding the cage puts 7-36x the escape torque into the pallets (true tourbillon) or adds 0.55 kg to the cage (V4), so no.
+1. Indexer and prism stay stationary. Riding the cage puts 7-36x the escape torque into the pallets (true tourbillon) or adds 0.55 kg to the cage (V4), so no. [T]
 2. Use a carousel, not a true tourbillon, so it can park for transit lock and stop for a static look.
 3. Slow, 1 rev/min or slower. Fast rates bring Coriolis leaf loading up to 70% of g [C].
-4. The balance suspension still has to pass 0.25 mm and now also fit inside a 90 mm cage. This is the gating item, the same as without a cage.
+4. The balance suspension still has to pass 0.25 mm and now also fit inside a 90 mm cage. This is the gating item, the same as without a cage. [T]
 5. Static balance the cage to 0.05 mm or better and the ring to 20 µm or better [T], plus P6 bearings.
 
 **Top risks:**
-1. **Suspension inside the cage.** It's still unsolved for 0.25 mm in any orientation. It now has to fit a 9 mm radial band, and anisotropy turns into a twice-per-rev wobble. The cage can't help with this.
-2. **The release across rotation.** The mechanical push ring adds unsized load on the balance. The electric latch changes the story. If true tourbillon is chosen, there's also the train timing (16 ms against 7.7 ms at 1 rpm) and drag eating 44-94% of the drive.
-3. **Transit and shock on a rotating mechanism.** It needs home indexing, a park brake, a two-stage ring clamp, and a manual override. Angular shock on a cage held by the escapement is 20x the drive torque. Any failure strands the flexures unlocked, which the Gemini doc already says destroys them.
+1. **Suspension inside the cage.** It's still unsolved for 0.25 mm in any orientation. It now has to fit a 9 mm radial band, and anisotropy turns into a twice-per-rev wobble. The cage can't help with this. [C]
+2. **The release across rotation.** The mechanical push ring adds unsized load on the balance. The electric latch changes the story. If true tourbillon is chosen, there's also the train timing (16 ms against 7.7 ms at 1 rpm) and drag eating 44-94% of the drive. [T]
+3. **Transit and shock on a rotating mechanism.** It needs home indexing, a park brake, a two-stage ring clamp, and a manual override. Angular shock on a cage held by the escapement is 20x the drive torque. Any failure strands the flexures unlocked, which the Gemini doc already says destroys them. [S]
 
-**Cost and complexity, relative to the item-7 blend without a cage** (parts not priced except the motor):
+**Cost and complexity, relative to the item-7 blend without a cage** (parts not priced except the motor): [C]
 - Add: 2 bearings (61813-2RZ, P6), a 5-axis 7075 cage, a fixed ring gear and cage pinion, a cage remontoire (small spring, clutch, 2-3 wheels), counterweights, a cage drive (own gearmotor, about CHF 530 indicative [S], or a 32:1 branch), a cage index sensor, a park pin or brake, and a ring-clamp port. Plus either a push ring and trip lever or an optical sensor and latch.
-- That's roughly 20-30 more parts, a cage poising step and a ring poising step at build, one more DMX channel, and a park/lock service check. About 74 mm of chassis length goes to it.
+- That's roughly 20-30 more parts, a cage poising step and a ring poising step at build, one more DMX channel, and a park/lock service check. About 74 mm of chassis length goes to it. [T]
 
 **Cheapest version that keeps the visual and story value:**
 - A slow carousel (1 rev per 5-15 min [T]). It's V3 (Kaydon, 262 g) or V1, carrying the balance, flexures, escapement and the tiny cage remontoire.
@@ -154,17 +154,17 @@ Conditions:
 A note on the "decorative cage carrying only the escapement" idea: the escapement can't ride without the balance, because the pallet fork has to stay in mesh with the balance roller. So the minimum moving set is balance plus escapement. An even cheaper purely decorative cage around a stationary balance is possible, but calling it a tourbillon would be false, so I'd not do it.
 
 **Things that should go to Caleb as decisions:**
-1. True tourbillon (escapement drives the cage, rate locked to the beat, about 5 min/rev or slower, can't park) or motor-driven carousel (any rate, stops and parks, technically a carousel). My lean: carousel.
+1. True tourbillon (escapement drives the cage, rate locked to the beat, about 5 min/rev or slower, can't park) or motor-driven carousel (any rate, stops and parks, technically a carousel). My lean: carousel. [C]
 2. Precession: a feature (which sign and rate, DMX-controllable) or something to avoid (park the cage during static looks)?
 3. Release across rotation: mechanical axial push ring (keeps "the watch releases the light", adds unsized load on the balance) or optical read plus electric latch ("the watch times it, a sensor releases it")?
-4. Priority: keep the rotating cage as an option layered on item 7 without letting it gate the work, or commit now? My lean: keep it as an option. Size the item-7 blend next, starting with release load on the balance, since both paths need that number.
+4. Priority: keep the rotating cage as an option layered on item 7 without letting it gate the work, or commit now? My lean: keep it as an option. Size the item-7 blend next, starting with release load on the balance, since both paths need that number. [C]
 
 ## Assumptions and uncertainties
 - These are closed-form models only. There is no escapement dynamics simulation, no FEA, and no test. The true-tourbillon timing screen ignores escape-wheel inertia, mesh losses and pallet geometry.
 - Payload masses, inner race fraction (40%), counterweight radius, flange and pillar sizes, residual unbalance, and 61813 ball count and size are assumptions [T]. Ball internals are not catalog data.
-- Bearing drag 0.002-0.02 N m for a pair is an order-of-magnitude planning range (step 1), not datasheet data. The SKF mu formula is outside its stated load range here.
-- The leaf-loading stiffness coefficient (1/30 to 2/15 of P L) is generic beam-column order of magnitude. The real value depends on the unchosen suspension topology.
+- Bearing drag 0.002-0.02 N m for a pair is an order-of-magnitude planning range (step 1), not datasheet data. The SKF mu formula is outside its stated load range here. [S]
+- The leaf-loading stiffness coefficient (1/30 to 2/15 of P L) is generic beam-column order of magnitude. The real value depends on the unchosen suspension topology. [T]
 - The Ti modulus temperature slope comes from a weak secondary source.
-- Shock: 5 g is a Gemini design claim, not validated. 30 g drops and 1000 rad/s2 angular shock are uncited planning values.
-- Slip ring data are from two vendors' catalog pages. Smaller custom units may exist, but I found none with a 56 mm or larger bore that fits a 102 mm ID.
+- Shock: 5 g is a Gemini design claim, not validated. 30 g drops and 1000 rad/s2 angular shock are uncited planning values. [S]
+- Slip ring data are from two vendors' catalog pages. Smaller custom units may exist, but I found none with a 56 mm or larger bore that fits a 102 mm ID. [S]
 - Optical precession signs assume the spec's beam model with the facets upstream of the prism. The physical order of elements isn't defined in the docs yet.

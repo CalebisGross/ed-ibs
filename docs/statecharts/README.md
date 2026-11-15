@@ -35,14 +35,14 @@ The legend ORs every broken rule onto one swatch. Read the box, not the legend l
 
 Escapement (`docs/statecharts/escapement/chart.mmd`):
 
-- **ImpulseOnlyAtZeroInsideLift** — "Drive torque while moving". The solver applies torque throughout the lift zone whenever omega is outside the epsilon, not only at a zero-velocity sample inside that zone. "Lift zone, toward the center" and the blank boxes are only sometimes that failure, because the same words also cover a coast with the source off.
-- **BlankDurationIsTwoPointTwoMs** — "Measured blank, not 2.2 ms". The undriven harmonic blank at 18° and the reference frequency is about 4.652 ms. "Lift zone, toward the end of the swing" and "Free swing, toward the end of the swing" stay marked because the long measurement is kept after the window closes.
-- **CutWaitsOutTheUnwind** — "Source off, torque already gone". `total-source-off` zeroes torque and intensity at the cut. The 15 s unwind is not waited out.
-- **DeadCenterByUnwind** — "Fifteen seconds with the source off" and "Unwind finished, source still lit". After that interval the balance is "Still swinging after fifteen seconds". It is not parked at the center. Q near 350 leaves about 34% of the free linear amplitude.
+- **ImpulseOnlyAtZeroInsideLift**: "Drive torque while moving". The solver applies torque throughout the lift zone whenever omega is outside the epsilon, not only at a zero-velocity sample inside that zone. "Lift zone, toward the center" and the blank boxes are only sometimes that failure, because the same words also cover a coast with the source off.
+- **BlankDurationIsTwoPointTwoMs**: "Measured blank, not 2.2 ms". The undriven harmonic blank at 18° and the reference frequency is about 4.652 ms. "Lift zone, toward the end of the swing" and "Free swing, toward the end of the swing" stay marked because the long measurement is kept after the window closes.
+- **CutWaitsOutTheUnwind**: "Source off, torque already gone". `total-source-off` zeroes torque and intensity at the cut. The 15 s unwind is not waited out.
+- **DeadCenterByUnwind**: "Fifteen seconds with the source off" and "Unwind finished, source still lit". After that interval the balance is "Still swinging after fifteen seconds". It is not parked at the center. Q near 350 leaves about 34% of the free linear amplitude.
 
 Simulator (`docs/statecharts/simrun/chart.mmd`):
 
-- **CutWaitsOutTheUnwind** — "Source off, torque already gone", while the angle is still "At the start angle".
-- **DeadCenterByUnwind** — "Fifteen seconds with the source off" and "Unwind finished, source still lit". On that path the angle is "Away from the start angle".
+- **CutWaitsOutTheUnwind**: "Source off, torque already gone", while the angle is still "At the start angle".
+- **DeadCenterByUnwind**: "Fifteen seconds with the source off" and "Unwind finished, source still lit". On that path the angle is "Away from the start angle".
 
 `sim/tests/statechart.test.ts` replays each shortest path against `EscapementSolver` and the power latch, one segment per action.
