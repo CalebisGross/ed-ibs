@@ -6,7 +6,7 @@ import {
   GHOST_SLICE_M,
 } from "./dimensions";
 import { STAGE } from "./stageGeometry";
-import { anodized6061, asGhost, ghostEdgeMaterial, targetCard } from "./materials";
+import { anodized6061, asGhost, ghostLabel, targetCard } from "./materials";
 
 export interface LabBench {
   group: THREE.Group;
@@ -21,19 +21,28 @@ export function buildLabBench(): LabBench {
   const group = new THREE.Group();
   group.name = "lab-bench";
 
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(24, 70),
-    new THREE.MeshStandardMaterial({ color: 0x2a2c2e, metalness: 0, roughness: 0.92 }),
-  );
+  const floorMat = new THREE.MeshStandardMaterial({
+    color: 0x6a6f73,
+    metalness: 0,
+    roughness: 0.88,
+    roughnessMap: plaster(0.08),
+    map: plaster(0.04, 0x8d9398, 0x5e6468, true),
+    envMapIntensity: 0.25,
+  });
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 28), floorMat);
   floor.rotation.x = -Math.PI / 2;
-  floor.position.set(0, 0, 28);
+  floor.position.set(0, 0, 8);
   floor.name = "scenery-floor";
+  floor.receiveShadow = true;
   group.add(floor);
+  group.add(roomShell());
 
   const tableMat = anodized6061();
   const table = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.08, 1.05), tableMat);
   table.position.set(0, TABLE_TOP_Y - 0.04, 0.15);
   table.name = "scenery-table";
+  table.castShadow = true;
+  table.receiveShadow = true;
   group.add(table);
   group.add(holePlate(1.5, 1.05));
 
@@ -45,6 +54,8 @@ export function buildLabBench(): LabBench {
       const post = new THREE.Mesh(postGeo, postMat);
       post.position.set(x, postY, z);
       post.name = "scenery-post";
+      post.castShadow = true;
+      post.receiveShadow = true;
       group.add(post);
     }
   }
@@ -60,10 +71,17 @@ export function buildLabBench(): LabBench {
 
   const wall = new THREE.Mesh(
     new THREE.PlaneGeometry(STAGE.surroundWidthM, STAGE.surroundHeightM),
-    new THREE.MeshStandardMaterial({ color: 0x1c1e21, roughness: 1, metalness: 0, side: THREE.DoubleSide }),
+    new THREE.MeshStandardMaterial({
+      color: 0x8a9094,
+      roughness: 0.92,
+      metalness: 0,
+      roughnessMap: plaster(0.06),
+      side: THREE.DoubleSide,
+    }),
   );
   wall.position.set(0, STAGE.surroundHeightM / 2, 12.4);
   wall.name = "scenery-wall";
+  wall.receiveShadow = true;
   group.add(wall);
 
   group.add(chassisGhosts());
@@ -133,24 +151,80 @@ function targetGrid(screen: THREE.Mesh): THREE.LineSegments {
   return lines;
 }
 
+function roomShell(): THREE.Group {
+  const shell = new THREE.Group();
+  shell.name = "scenery-shell";
+  const wallMat = new THREE.MeshStandardMaterial({
+    color: 0x7e8589,
+    roughness: 0.9,
+    metalness: 0,
+    roughnessMap: plaster(0.05),
+    side: THREE.DoubleSide,
+  });
+  const side = new THREE.PlaneGeometry(28, 8);
+  const left = new THREE.Mesh(side, wallMat);
+  left.position.set(-8, 4, 8);
+  left.rotation.y = Math.PI / 2;
+  left.receiveShadow = true;
+  const right = new THREE.Mesh(side, wallMat);
+  right.position.set(8, 4, 8);
+  right.rotation.y = -Math.PI / 2;
+  right.receiveShadow = true;
+  const ceiling = new THREE.Mesh(
+    new THREE.PlaneGeometry(18, 28),
+    new THREE.MeshStandardMaterial({ color: 0x9aa0a4, roughness: 0.94, metalness: 0 }),
+  );
+  ceiling.rotation.x = Math.PI / 2;
+  ceiling.position.set(0, 7.2, 8);
+  shell.add(left, right, ceiling);
+  return shell;
+}
+
+function plaster(amount: number, light = 0xffffff, dark = 0x000000, srgb = false): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 128;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Surface texture needs a canvas.");
+  ctx.fillStyle = "#808080";
+  ctx.fillRect(0, 0, 128, 128);
+  const lightHex = light.toString(16).padStart(6, "0");
+  const darkHex = dark.toString(16).padStart(6, "0");
+  for (let i = 0; i < 700; i += 1) {
+    const x = (i * 47) % 128;
+    const y = (i * 19) % 128;
+    ctx.fillStyle = i % 2 === 0 ? `#${lightHex}` : `#${darkHex}`;
+    ctx.globalAlpha = amount;
+    ctx.fillRect(x, y, 2, 2);
+  }
+  ctx.globalAlpha = 1;
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(6, 6);
+  texture.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+  return texture;
+}
+
 function chassisGhosts(): THREE.Group {
   const group = new THREE.Group();
   group.name = "ghost-chassis";
   group.position.set(0, STAGE.apertureHeightM, 0);
-  const edge = ghostEdgeMaterial();
   const squareMat = asGhost(anodized6061());
   const square = new THREE.Mesh(new THREE.BoxGeometry(CHASSIS_SQUARE_M, CHASSIS_SQUARE_M, GHOST_SLICE_M), squareMat);
   square.name = "ghost-chassis-square";
   square.position.z = -0.03;
-  square.add(new THREE.LineSegments(new THREE.EdgesGeometry(square.geometry), edge));
+  square.castShadow = false;
   const outer = CHASSIS_ROUND_OD_M / 2;
   const inner = outer - CHASSIS_ROUND_WALL_M;
   const roundMat = asGhost(anodized6061());
   const round = new THREE.Mesh(annulus(outer, inner, GHOST_SLICE_M), roundMat);
   round.name = "ghost-chassis-round";
   round.position.z = 0.03;
-  round.add(new THREE.LineSegments(new THREE.EdgesGeometry(round.geometry), edge));
-  group.add(square, round);
+  round.castShadow = false;
+  const tag = ghostLabel(0.018);
+  tag.position.set(0, CHASSIS_SQUARE_M / 2 + 0.02, 0);
+  group.add(square, round, tag);
   return group;
 }
 

@@ -81,12 +81,12 @@ export function BlankWindowTimeline(props: {
           </dd>
         </div>
       </dl>
-      <p className="see-why-note">
-        A square mark is a step whose endpoints are both outside the blank half-angle and on opposite sides of zero.
-        The solver registers that transit in the same step. The harmonic blank uses 2 asin(blank/A) / omega at the
-        displayed amplitude and the analytic frequency. It is undefined while the amplitude is inside the blank
-        half-angle.
-      </p>
+      <details className="see-why-more">
+        <summary>Mark notes</summary>
+        <p>
+          A square mark brackets the blank half-angle. The harmonic blank uses 2 asin(blank/A) / omega and is undefined inside that half-angle.
+        </p>
+      </details>
     </section>
   );
 }

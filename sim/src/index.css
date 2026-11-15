@@ -66,13 +66,18 @@ select {
 
 .workbench {
   height: 100%;
+  min-height: 0;
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) 168px;
+  grid-template-rows: auto auto minmax(0, 1fr) minmax(200px, 28vh);
+  overflow: hidden;
 }
 
 .viewer-tools {
   min-height: 0;
-  overflow: auto;
+  min-width: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   border-top: 1px solid #2a3444;
   background: #10151c;
 }
@@ -173,9 +178,11 @@ details p {
 
 .toolbar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
   align-items: center;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .viewport-host,
@@ -183,7 +190,7 @@ details p {
 .wall-host {
   position: relative;
   flex: 1;
-  min-height: 160px;
+  min-height: 0;
 }
 
 .viewport-host canvas,
@@ -291,7 +298,9 @@ details p {
 
 .stage-layout {
   min-height: 0;
+  min-width: 0;
   height: 100%;
+  overflow: hidden;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
 }
@@ -303,7 +312,7 @@ details p {
 .stage-host {
   position: relative;
   flex: 1;
-  min-height: 280px;
+  min-height: 0;
   background: #07080c;
 }
 
@@ -315,9 +324,18 @@ details p {
 
 .stage-rail {
   min-height: 0;
-  overflow: auto;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: #10151c;
   border-left: 1px solid #243044;
+}
+
+.stage-rail .pane {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
 }
 
 .stage-controls {
@@ -357,11 +375,13 @@ details p {
   .workbench {
     height: auto;
     min-height: 100%;
+    overflow: visible;
     grid-template-rows: auto auto auto auto;
   }
 
   .viewer-tools {
     overflow: visible;
+    display: block;
   }
 
   .bench.narrow {

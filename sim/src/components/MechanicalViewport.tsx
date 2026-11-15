@@ -20,24 +20,30 @@ import {
   type MotionSample,
 } from "../stage/motion";
 import { createQualityPipeline, markLaserBloom, type QualityTier } from "../post/createQualityPipeline";
-import { addStudioKeyFill, configureRenderer, mountStudio } from "../stage/studio";
+import { addMacroBackdrop, addStudioKeyFill, configureRenderer, mountStudio } from "../stage/studio";
 import { createLockTick } from "../stage/tick";
 import type { FramePacket } from "../sim/useSimulator";
-import type { VisualShaft } from "../stage/stageGeometry";
+import { visualShafts, type LiveBeam, type VisualShaft } from "../stage/stageGeometry";
 
 type PresetName = "coaxial" | "isometric" | "macro" | "stage" | "orbit" | "push" | "impulse";
 
-const STILL: Record<Exclude<PresetName, "orbit" | "push" | "impulse">, { position: [number, number, number]; target: [number, number, number] }> = {
-  coaxial: { position: [0, 0, 0.24], target: [0, 0, 0] },
-  isometric: { position: [0.18, 0.15, 0.16], target: [0, 0, 0] },
-  macro: { position: [-0.09, 0.03, 0.055], target: [-0.05, 0.008, 0.014] },
-  stage: { position: [0.24, 0.16, 0.18], target: [0, 0, 0.02] },
+const CONTACT = { x: WHEEL_STATION_M.x - 0.002, y: 0.0024, z: WHEEL_STATION_M.z };
+
+const STILL: Record<Exclude<PresetName, "orbit" | "push" | "impulse">, { position: [number, number, number]; target: [number, number, number]; fov: number }> = {
+  coaxial: { position: [0, 0.002, 0.09], target: [0, 0, 0], fov: 26 },
+  isometric: { position: [0.055, 0.048, 0.055], target: [0, 0, 0], fov: 24 },
+  macro: {
+    position: [CONTACT.x + 0.01, CONTACT.y + 0.012, CONTACT.z + 0.034],
+    target: [CONTACT.x, CONTACT.y, CONTACT.z],
+    fov: 24,
+  },
+  stage: { position: [0.07, 0.055, 0.07], target: [0, 0, 0], fov: 26 },
 };
 
-const PUSH_FROM = { position: [0.09, 0.06, 0.12] as [number, number, number], target: [0, 0, 0] as [number, number, number] };
+const PUSH_FROM = { position: [0.1, 0.07, 0.14] as [number, number, number], target: [0, 0, 0] as [number, number, number] };
 const PUSH_TO = {
-  position: [WHEEL_STATION_M.x - 0.006, WHEEL_STATION_M.y + 0.006, WHEEL_STATION_M.z + 0.032] as [number, number, number],
-  target: [WHEEL_STATION_M.x, WHEEL_STATION_M.y, WHEEL_STATION_M.z] as [number, number, number],
+  position: [CONTACT.x + 0.012, CONTACT.y + 0.014, CONTACT.z + 0.048] as [number, number, number],
+  target: [CONTACT.x, CONTACT.y, CONTACT.z] as [number, number, number],
 };
 
 export function MechanicalViewport({
@@ -82,25 +88,33 @@ export function MechanicalViewport({
     }
     setWebgl("ready");
     configureRenderer(renderer);
-    renderer.setClearColor(0x2c2f33, 1);
+    renderer.setClearColor(0x4a5156, 1);
     renderer.localClippingEnabled = true;
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x2c2f33, 0.85);
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.002, 20);
+    scene.fog = new THREE.FogExp2(0x4a5156, 0.55);
+    const camera = new THREE.PerspectiveCamera(26, 1, 0.001, 4);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.target.set(0, 0, 0);
-    addStudioKeyFill(scene);
+    addStudioKeyFill(scene, 0.32);
+    addMacroBackdrop(scene);
     const releaseStudio = mountStudio(renderer, scene);
     const pipeline = createQualityPipeline({ renderer, scene, camera, tier: tierRef.current });
     const mechanism = createMechanism();
+    mechanism.group.traverse((obj) => {
+      const mesh = obj as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const ghost = mesh.name.startsWith("ghost") || Boolean((mesh.material as THREE.Material).transparent);
+      mesh.castShadow = !ghost;
+      mesh.receiveShadow = !ghost;
+    });
     scene.add(mechanism.group);
     const laser = createLaserRig(18, CHANNELS.map((channel) => channel.css), {
-      core: 0.0007,
-      sheath: 0.0018,
-      spot: 0.0014,
+      core: 0.0001,
+      sheath: 0.00036,
+      spot: 0,
     });
     scene.add(laser.beams, laser.haze);
     markLaserBloom(laser.beams);
@@ -154,17 +168,24 @@ export function MechanicalViewport({
         pushStart = now;
         if (wanted !== "orbit" && wanted !== "push" && wanted !== "impulse") {
           const pose = STILL[wanted];
+          camera.fov = pose.fov;
           camera.position.set(pose.position[0], pose.position[1], pose.position[2]);
           controls.target.set(pose.target[0], pose.target[1], pose.target[2]);
+          camera.lookAt(controls.target);
+          camera.updateProjectionMatrix();
         }
       }
       controls.enabled = wanted !== "orbit" && wanted !== "push";
       if (wanted === "orbit") {
         orbitAngle += frameDt * ORBIT_RAD_PER_S;
-        camera.position.set(Math.cos(orbitAngle) * 0.12, 0.028, Math.sin(orbitAngle) * 0.12);
-        controls.target.set(WHEEL_STATION_M.x * 0.35, 0, 0);
+        camera.fov = 26;
+        camera.position.set(Math.cos(orbitAngle) * 0.1, 0.028, Math.sin(orbitAngle) * 0.1);
+        controls.target.set(0, 0, 0);
         camera.lookAt(controls.target);
+        camera.updateProjectionMatrix();
       } else if (wanted === "push" || wanted === "impulse") {
+        camera.fov = wanted === "impulse" ? 22 : 26;
+        camera.updateProjectionMatrix();
         const u = wanted === "impulse" ? 1 : smoothstep((now - pushStart) / (PUSH_IN_S * 1000));
         camera.position.set(
           mixNumber(PUSH_FROM.position[0], PUSH_TO.position[0], u),
@@ -208,8 +229,10 @@ export function MechanicalViewport({
         );
       }
       pipeline.setTier(tierRef.current);
-      pipeline.setMacroDof(wanted === "macro" || wanted === "orbit" || wanted === "push" || wanted === "impulse");
-      const focus = camera.position.distanceTo(controls.target);
+      const macro = wanted === "macro";
+      pipeline.setMacroDof(macro);
+      const focusPoint = macro ? CONTACT : controls.target;
+      const focus = camera.position.distanceTo(focusPoint);
       pipeline.setFocusDistance(focus > 0 ? focus : null);
       pipeline.render(frameDt);
       raf = requestAnimationFrame(draw);
@@ -280,9 +303,15 @@ export function MechanicalViewport({
         <p className={webgl === "ready" ? "sr" : "legend"} data-testid="webgl-status">
           {webgl === "ready" ? "WebGL viewport ready" : webgl}
         </p>
-        <p className="legend mech-notes">
-          Solid: balance ring inner 28 mm, outer 36 mm, Ti-6Al-4V. Axial thickness is the illustrative CAD value. Leaf length follows the curb. Width and bow are illustrative. {ghosts.join(" ")} No drawn part is specified as brass. Short beams are direction markers, not the throw. Haze here is a fixed display value. Impulse slows the picture only. Tick stays off until enabled and marks a valid beat, not a contact microphone.
+        <p className="legend mech-notes" title={ghosts.join(" ")}>
+          Solid Ti-6Al-4V ring, 28 to 36 mm. Ghost tags mark illustrative parts.
         </p>
+        <details className="legend mech-notes">
+          <summary>Part notes</summary>
+          <p>
+            Axial thickness and leaf width are illustrative. {ghosts.join(" ")} No drawn part is brass. Beams are direction markers. Tick marks a valid beat, not a contact.
+          </p>
+        </details>
       </div>
     </section>
   );
@@ -329,14 +358,17 @@ function shortShafts(packet: FramePacket, pose: MotionSample): VisualShaft[] {
     chromaticOffsetRad: packet.chromaticOffsetDeg.map((deg) => degToRad(deg)) as [number, number, number],
     facetTiltRad: DEFAULT_FACET_TILT_RAD,
   });
-  return rays.map((ray) => {
+  const beams: LiveBeam[] = rays.map((ray) => {
     const length = Math.hypot(ray.x, ray.y, packet.throwM);
-    const scale = length > 1e-6 ? 0.05 / length : 0;
+    const scale = length > 1e-6 ? 0.045 / length : 0;
     return {
+      facet: ray.facet,
+      channel: ray.channel,
+      css: ray.css,
       from: { x: 0, y: 0, z: 0 },
       to: { x: ray.x * scale, y: ray.y * scale, z: packet.throwM * scale },
-      css: ray.css,
-      channels: 1,
+      onCloth: true,
     };
   });
+  return visualShafts(beams);
 }

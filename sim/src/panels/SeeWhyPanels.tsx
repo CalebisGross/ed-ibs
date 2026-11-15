@@ -86,9 +86,8 @@ export function SeeWhyPanels(props: SeeWhyPanelsProps) {
       data-paused={props.paused ? "true" : "false"}
       data-scrub-seconds={props.scrubTimeSeconds ?? ""}
     >
-      <p className="see-why-banner">
-        {props.paused ? "Paused." : "Running."} Panels read solver output. Headless runs call step on separate states.
-        Sample window {((SAMPLE_CAP * DT_S).toFixed(2))} s.{scrubLabel}
+      <p className="see-why-banner" title={`Headless runs call step on separate states. Sample window ${(SAMPLE_CAP * DT_S).toFixed(2)} s.${scrubLabel}`}>
+        {props.paused ? "Paused." : "Running."} Panels read solver output.
       </p>
       <StateChartOverlay state={state} settings={props.settings} power={props.power} recent={recent} />
       <BlankWindowTimeline

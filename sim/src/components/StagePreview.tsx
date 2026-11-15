@@ -85,18 +85,18 @@ export function StagePreview({
     }
     setWebgl("ready");
     configureRenderer(renderer);
-    renderer.setClearColor(0x121416, 1);
+    renderer.setClearColor(0x8a9094, 1);
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const fog = new THREE.FogExp2(0x121416, 0.006);
+    const fog = new THREE.FogExp2(0x8a9094, 0.012);
     scene.fog = fog;
-    const camera = new THREE.PerspectiveCamera(46, 1, 0.02, 400);
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.02, 80);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.maxDistance = 80;
-    controls.target.set(0, 2.3, 6);
-    addStudioKeyFill(scene);
+    controls.maxDistance = 40;
+    controls.target.set(0, 1.8, 4);
+    addStudioKeyFill(scene, 2.6, new THREE.Vector3(0, 1.4, 2));
     const releaseStudio = mountStudio(renderer, scene);
     const pipeline = createQualityPipeline({ renderer, scene, camera, tier: tierRef.current });
 
@@ -104,6 +104,13 @@ export function StagePreview({
     scene.add(lab.group);
     const mechanism = createMechanism();
     mechanism.group.position.set(0, STAGE.apertureHeightM, 0);
+    mechanism.group.traverse((obj) => {
+      const mesh = obj as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const ghost = mesh.name.startsWith("ghost") || Boolean((mesh.material as THREE.Material).transparent);
+      mesh.castShadow = !ghost;
+      mesh.receiveShadow = !ghost;
+    });
     scene.add(mechanism.group);
     const laser = createLaserRig(MAX_RAYS, CHANNELS.map((channel) => channel.css));
     scene.add(laser.beams, laser.haze);
@@ -115,6 +122,8 @@ export function StagePreview({
     for (const part of figureParts()) {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(part.w, part.h, part.d), bodyMat);
       mesh.position.set(part.x, part.y, part.z);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
       person.add(mesh);
     }
     scene.add(person);
@@ -128,7 +137,7 @@ export function StagePreview({
     const trail = new THREE.Points(
       trailGeo,
       new THREE.PointsMaterial({
-        size: 0.09,
+        size: 0.035,
         vertexColors: true,
         transparent: true,
         opacity: 0.55,
@@ -149,8 +158,8 @@ export function StagePreview({
     let lastNow = performance.now();
     let lastStatus = 0;
     const tickPlayer = tickRef.current;
-    const wheelTarget = new THREE.Vector3(WHEEL_STATION_M.x, STAGE.apertureHeightM, WHEEL_STATION_M.z);
-    const wheelClose = new THREE.Vector3(wheelTarget.x - 0.02, wheelTarget.y + 0.015, wheelTarget.z - 0.055);
+    const wheelTarget = new THREE.Vector3(WHEEL_STATION_M.x - 0.002, STAGE.apertureHeightM + 0.0024, WHEEL_STATION_M.z);
+    const wheelClose = new THREE.Vector3(wheelTarget.x + 0.018, wheelTarget.y + 0.016, wheelTarget.z - 0.05);
 
     const unsubscribe = subscribe((packet) => {
       if (packet.reset) {
@@ -199,9 +208,11 @@ export function StagePreview({
         controls.enabled = !animated;
         if (view === "orbit") {
           orbitAngle += frameDt * ORBIT_RAD_PER_S * 0.55;
-          camera.position.set(Math.sin(orbitAngle) * 3.8, 2.15, Math.cos(orbitAngle) * 3.8);
-          controls.target.set(0, STAGE.apertureHeightM, 1.2);
+          camera.fov = 38;
+          camera.position.set(Math.sin(orbitAngle) * 2.15, 1.85, Math.cos(orbitAngle) * 2.15);
+          controls.target.set(0, 1.7, 0.6);
           camera.lookAt(controls.target);
+          camera.updateProjectionMatrix();
           appliedKey = poseKey;
         } else if (view === "wheel" || view === "impulse") {
           if (poseKey !== appliedKey) pushStart = now;
@@ -212,7 +223,7 @@ export function StagePreview({
             mixNumber(from.position.y, wheelClose.y, u),
             mixNumber(from.position.z, wheelClose.z, u),
           );
-          camera.fov = mixNumber(from.fov, 28, u);
+          camera.fov = mixNumber(from.fov, 24, u);
           camera.updateProjectionMatrix();
           controls.target.set(
             mixNumber(from.target.x, wheelTarget.x, u),
@@ -270,7 +281,8 @@ export function StagePreview({
           ...shaft,
           to: { ...shaft.to, z: shaft.to.z - 0.03 },
         }));
-        updateLaser(laser, drawn, packet.intensity, haze, packet.chopperEnabled, pose.angularBlank);
+        const close = view === "wheel" || view === "impulse";
+        updateLaser(laser, drawn, packet.intensity, haze, packet.chopperEnabled, pose.angularBlank, close ? 0.02 : 1);
         trailPoints = paintTrail(trail, trailGeo, trailPositions, trailColors, trailPoints, packet, channelRgb, haze);
 
         if (now - lastStatus > 120) {
@@ -283,8 +295,9 @@ export function StagePreview({
       }
       if (controls.enabled) controls.update();
       pipeline.setTier(tierRef.current);
-      pipeline.setMacroDof(view === "wheel" || view === "impulse");
-      const focus = camera.position.distanceTo(controls.target);
+      const macro = view === "wheel" || view === "impulse";
+      pipeline.setMacroDof(macro);
+      const focus = macro ? camera.position.distanceTo(wheelTarget) : camera.position.distanceTo(controls.target);
       pipeline.setFocusDistance(focus > 0 ? focus : null);
       pipeline.render(frameDt);
       raf = requestAnimationFrame(draw);
@@ -342,11 +355,14 @@ export function StagePreview({
         <div className="stage-readout">
           <p data-testid="stage-status">{status}</p>
           <p>
-            {coincident ? "Equal color offsets share one path. " : "Color offsets are illustrative, not dispersion. "}
-            {STAGE_COPY.trail}
+            {coincident ? "Equal color offsets share one path. " : "Color offsets are illustrative. "}
+            Afterglow is not more rays.
           </p>
-          <p>{STAGE_COPY.disclosure} {STAGE_COPY.scenery} {STAGE_COPY.axis}</p>
-          <p>{ghostNotes().map((part) => part.label).join(" ")} Beam width and the spot are display sizes, not a measured diameter. A blank hides the beam and the spot on that step. Tick is off until enabled.</p>
+          <details>
+            <summary>Scene notes</summary>
+            <p>{STAGE_COPY.disclosure} {STAGE_COPY.scenery}</p>
+            <p>{ghostNotes().map((part) => part.label).join(" ")}</p>
+          </details>
         </div>
       </div>
     </section>
@@ -381,9 +397,9 @@ function framed(view: StageView, throwM: number): { position: { x: number; y: nu
       return stageCamera(view, throwM);
     case "screen":
       return {
-        position: { x: 1.35, y: STAGE.apertureHeightM + 0.55, z: Math.max(0.4, throwM - 2.4) },
+        position: { x: 0, y: STAGE.apertureHeightM, z: throwM - 20 },
         target: { x: 0, y: STAGE.apertureHeightM, z: throwM },
-        fov: 36,
+        fov: 38,
       };
     case "orbit":
     case "wheel":

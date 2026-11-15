@@ -1,18 +1,24 @@
 .see-why {
   --see-space: 4px;
-  --see-font: 13px;
+  --see-font: 12px;
   --see-font-sm: 11px;
-  --see-font-lg: 15px;
+  --see-font-lg: 12px;
   --see-bg: #12161c;
   --see-surface: #1b212b;
   --see-line: #313844;
   --see-text: #d7dee6;
   --see-muted: #8d97a3;
-  --see-accent: #d1a15c;
+  --see-accent: #79d0cb;
   background: var(--see-bg);
   color: var(--see-text);
   display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: auto minmax(0, 1fr);
   gap: calc(var(--see-space) * 2);
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace;
   font-size: var(--see-font);
   line-height: 1.45;
@@ -44,19 +50,33 @@
   font-weight: 600;
 }
 
+.see-why-banner {
+  grid-column: 1 / -1;
+}
+
 .see-why-banner,
 .see-why-note,
 .see-why-source,
-.see-why-panel-head p {
+.see-why-panel-head p,
+.see-why-more {
   color: var(--see-muted);
   font-size: var(--see-font-sm);
+}
+
+.see-why-more summary {
+  cursor: pointer;
+  color: var(--see-text);
 }
 
 .see-why-panel {
   background: var(--see-surface);
   border: 1px solid var(--see-line);
   display: grid;
+  align-content: start;
   gap: calc(var(--see-space) * 2);
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
   padding: calc(var(--see-space) * 3);
 }
 
@@ -90,7 +110,7 @@
 }
 
 .see-why-box[data-lit="current"] {
-  background: #2c261c;
+  background: #1d3a38;
   border-color: var(--see-accent);
 }
 
@@ -140,7 +160,11 @@
   align-items: baseline;
   display: grid;
   gap: calc(var(--see-space) * 2);
-  grid-template-columns: 12rem 11rem auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+}
+
+.see-why-source {
+  grid-column: 1 / -1;
 }
 
 .see-why-legend li {
@@ -201,7 +225,7 @@
 
 .see-why-axis,
 .see-why-scrub {
-  stroke: #d1a15c;
+  stroke: #79d0cb;
   stroke-width: 1;
 }
 
@@ -282,7 +306,7 @@
 }
 
 .see-why-cell[data-outcome="holds"] {
-  background: #2c261c;
+  background: #1d3a38;
   border-color: var(--see-accent);
 }
 
@@ -305,7 +329,19 @@
   font-size: var(--see-font-sm);
 }
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
+  .see-why {
+    height: auto;
+    overflow: visible;
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+
+  .see-why-panel {
+    max-height: none;
+    overflow: visible;
+  }
+
   .see-why-regions,
   .see-why-provenance-list li {
     grid-template-columns: 1fr;

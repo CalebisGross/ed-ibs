@@ -42,17 +42,13 @@ export function PhasePortrait(props: {
       <ul className="see-why-legend">
         <li>
           <span className="see-why-swatch see-why-swatch-session" />
-          Session samples. {sessionTrailLabel(props.power, props.simTime, props.unwindSeconds)} <SolverSampleTag />
+          Session samples. <SolverSampleTag />
         </li>
         <li>
           <span className="see-why-swatch see-why-swatch-decay" />
           {props.decay ? (
             <>
-              Headless solver, Q {props.decay.q} <ProvenanceBadge id="q-factor" />, amplitude {props.decay.amplitudeDeg} deg{" "}
-              <ProvenanceBadge id="amplitude-target" />, {props.decay.durationS} s <ProvenanceBadge id="unwind-time" />
-              , torque {props.decay.torqueAtStart} N m, stride {props.decay.stride} steps. Final displayed amplitude{" "}
-              {props.decay.finalAmplitudeDeg.toFixed(2)} deg <SolverSampleTag />. Reference frequency{" "}
-              {props.decay.frequencyHz.toFixed(4)} Hz <ProvenanceBadge id="natural-frequency" />.
+              Headless decay, Q {props.decay.q}. <ProvenanceBadge id="q-factor" />
             </>
           ) : (
             <span data-testid="see-why-phase-tail-empty">Q 350 tail is not in solver output yet.</span>
@@ -60,36 +56,20 @@ export function PhasePortrait(props: {
         </li>
         <li>
           <span className="see-why-swatch see-why-swatch-unwind" />
-          {props.unwind ? (
-            <>
-              Headless solver, retained-source unwind, torque at cut {props.unwind.torqueAtStart.toExponential(3)} N m{" "}
-              <ProvenanceBadge id="energy-balance-torque" />, linear ramp <ProvenanceBadge id="linear-unwind-fraction" />
-              , {props.unwind.durationS} s. Final displayed amplitude {props.unwind.finalAmplitudeDeg.toFixed(2)} deg{" "}
-              <SolverSampleTag />.
-            </>
-          ) : (
-            <span>Power-cut unwind is not in solver output yet.</span>
-          )}
+          {props.unwind ? "Retained-source unwind." : "Power-cut unwind is not in solver output yet."}
         </li>
         <li>
           <span className="see-why-swatch see-why-swatch-illustrative" />
-          {props.illustrative ? (
-            <>
-              Illustrative linear envelope. Closed form from rest, envelope factor{" "}
-              <ProvenanceBadge id="linear-decay-ratio" />. Ratio at {props.illustrative.durationS} s is{" "}
-              {props.illustrative.envelopeRatio.toFixed(4)}. Illustrative closed form, drawn beside the solver tail.
-            </>
-          ) : (
-            <span>Illustrative envelope is hidden until the solver tail exists.</span>
-          )}
+          {props.illustrative ? "Illustrative envelope." : "Illustrative envelope is hidden until the solver tail exists."}
         </li>
       </ul>
-      <p className="see-why-note">
-        Damping for the headless runs is c = sqrt(K I) / Q <ProvenanceBadge id="viscous-c" /> at reference stiffness{" "}
-        {`0.1104 N m/rad`} <ProvenanceBadge id="k-base" /> and the annulus inertia <ProvenanceBadge id="annulus-inertia" />
-        . Drawn tail samples are every {props.decay?.stride ?? 40} integrated steps. The session trail is separate.
-        Dead-center pinspot claim <ProvenanceBadge id="dead-center-pinspot" />.
-      </p>
+      <details className="see-why-more">
+        <summary>Tail notes</summary>
+        <p>
+          {sessionTrailLabel(props.power, props.simTime, props.unwindSeconds)} Damping is c = sqrt(K I) / Q{" "}
+          <ProvenanceBadge id="viscous-c" />. Stride {props.decay?.stride ?? 40} steps.
+        </p>
+      </details>
     </section>
   );
 }

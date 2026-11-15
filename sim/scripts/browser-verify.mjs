@@ -54,6 +54,42 @@ async function setRange(testId, value) {
   );
 }
 
+async function assertPanelsDisjoint(page, label) {
+  const hits = await page.evaluate(() => {
+    const nodes = [...document.querySelectorAll("section.pane, .see-why-panel, .replay-scrubber, .stage-rail")];
+    const boxes = nodes
+      .map((node) => {
+        const rect = node.getBoundingClientRect();
+        return {
+          node,
+          id: node.getAttribute("data-testid") || String(node.className),
+          top: rect.top,
+          left: rect.left,
+          right: rect.right,
+          bottom: rect.bottom,
+          width: rect.width,
+          height: rect.height,
+        };
+      })
+      .filter((box) => box.width > 2 && box.height > 2);
+    const found = [];
+    for (let i = 0; i < boxes.length; i += 1) {
+      for (let j = i + 1; j < boxes.length; j += 1) {
+        const a = boxes[i];
+        const b = boxes[j];
+        if (a.node.contains(b.node) || b.node.contains(a.node)) continue;
+        const overlapW = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+        const overlapH = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+        if (overlapW > 1 && overlapH > 1) {
+          found.push(`${a.id} overlaps ${b.id} by ${Math.round(overlapW)}x${Math.round(overlapH)}`);
+        }
+      }
+    }
+    return found;
+  });
+  if (hits.length > 0) throw new Error(`Overlapping panels at ${label}: ${hits.join("; ")}`);
+}
+
 async function clickButton(label) {
   await page.evaluate((name) => {
     const button = [...document.querySelectorAll("button")].find((item) => item.textContent?.trim() === name);
@@ -77,6 +113,12 @@ await page.waitForFunction(() => {
 await page.waitForFunction(() => (document.querySelector('[data-testid="stage-status"]')?.textContent ?? "").includes("live rays"), {
   timeout: 8000,
 });
+await assertPanelsDisjoint(page, "stage 1440x900");
+await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
+await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+await assertPanelsDisjoint(page, "stage 1280x800");
+await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
+await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 
 await setRange("persistence", 450);
 await new Promise((resolve) => setTimeout(resolve, 1200));
@@ -124,6 +166,12 @@ await page.click('[data-testid="mode-engineering"]');
 await page.waitForSelector('[data-testid="pane-mechanical"]');
 await page.waitForFunction(() => document.querySelectorAll("section.pane h2").length >= 4);
 const engineeringPanes = await page.$$eval("section.pane h2", (nodes) => nodes.map((node) => node.textContent));
+await assertPanelsDisjoint(page, "engineering 1440x900");
+await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
+await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+await assertPanelsDisjoint(page, "engineering 1280x800");
+await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
+await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 await page.screenshot({ path: `${outDir}/workbench-desktop.png`, fullPage: false });
 
 const before = {

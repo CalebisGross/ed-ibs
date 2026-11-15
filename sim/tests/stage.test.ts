@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_FACET_TILT_RAD } from "../src/optics/projection";
 import {
+  COINCIDENT_SHAFT_CSS,
   STAGE,
   STAGE_COPY,
   audienceCamera,
@@ -45,6 +46,7 @@ describe("stage beam mapping", () => {
     const drawn = visualShafts(beams);
     expect(drawn).toHaveLength(3);
     expect(drawn.every((shaft) => shaft.channels === 3)).toBe(true);
+    expect(drawn[0].css).toBe(COINCIDENT_SHAFT_CSS);
     expect(drawn[0].to).toEqual(first.to);
   });
 

@@ -37,9 +37,8 @@ export function ProvenanceList(props: { ids: readonly string[] }) {
     <section className="see-why-panel" data-testid="see-why-provenance">
       <header className="see-why-panel-head">
         <h2>Provenance</h2>
-        <p>
-          Status words are the provenance table: sourced, derived, unsourced, conflicting. Hover a badge for the PDF
-          page or decision ID when that table names one. A solver sample has no row in the table.
+        <p title="Status words: sourced, derived, unsourced, conflicting. A solver sample has no table row.">
+          Hover a badge for the source.
         </p>
       </header>
       <ul className="see-why-provenance-list">

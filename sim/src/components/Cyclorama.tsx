@@ -228,9 +228,13 @@ export function Cyclorama({
               onChange={(event) => setSettings({ persistenceMs: Number(event.target.value) })}
             />
           </label>
-          <p>
-            Source persistence range is 20 to 2000 ms. The 1 ms shutter is the separate high-speed preset. Decay follows simulated time, so pause holds the plate. Channels: {CHANNELS.map((channel) => `${channel.name} (${channel.wavelengths})`).join(", ")}. Offsets at 0 make the three colors coincident. This is the wall map D tan(phi), not a raytracer. The overlay grid is 1 m. A blanked step draws no live spot.
-          </p>
+          <p>Wall map D tan(phi). The overlay grid is 1 m. A blanked step draws no live spot.</p>
+          <details>
+            <summary>Channel notes</summary>
+            <p>
+              Persistence is 20 to 2000 ms. Pause holds the plate. Channels: {CHANNELS.map((channel) => `${channel.name} (${channel.wavelengths})`).join(", ")}. Offsets at 0 share one path.
+            </p>
+          </details>
         </div>
       </div>
     </section>

@@ -20,7 +20,7 @@ import {
   anodized7075,
   asGhost,
   brushedTitanium,
-  ghostEdgeMaterial,
+  ghostLabel,
   hardenedSteel,
   rubyJewel,
   siliconNitride,
@@ -45,8 +45,6 @@ export function createMechanism(): Mechanism {
     clipped.push(material);
     return material;
   };
-  const edge = track(ghostEdgeMaterial());
-
   const ringMat = track(brushedTitanium());
   const ring = new THREE.Mesh(annulus(RING_OUTER_M, RING_INNER_M, RING_AXIAL_M), ringMat);
   ring.name = "balance-ring";
@@ -60,7 +58,7 @@ export function createMechanism(): Mechanism {
   }
   const bore = new THREE.Line(
     new THREE.BufferGeometry().setFromPoints(borePts),
-    track(new THREE.LineBasicMaterial({ color: 0x9aa3ab })),
+    track(new THREE.LineBasicMaterial({ color: 0x9aa3ab, transparent: true, opacity: 0.35 })),
   );
   bore.name = "bore-line";
   group.add(bore);
@@ -71,7 +69,10 @@ export function createMechanism(): Mechanism {
   );
   steel.name = "ghost-steel-ring";
   steel.position.z = -0.008;
-  steel.add(new THREE.LineSegments(new THREE.EdgesGeometry(steel.geometry), edge));
+  steel.castShadow = false;
+  const steelTag = ghostLabel(0.004);
+  steelTag.position.set(0, STEEL_RING_OD_M / 2 + 0.008, 0);
+  steel.add(steelTag);
   group.add(steel);
 
   const carrier = new THREE.Mesh(
@@ -80,7 +81,7 @@ export function createMechanism(): Mechanism {
   );
   carrier.name = "ghost-carrier";
   carrier.position.z = 0.01;
-  carrier.add(new THREE.LineSegments(new THREE.EdgesGeometry(carrier.geometry), edge));
+  carrier.castShadow = false;
   group.add(carrier);
 
   const prismShape = new THREE.Shape();
@@ -100,6 +101,9 @@ export function createMechanism(): Mechanism {
   const wheel = new THREE.Group();
   wheel.name = "ghost-wheel";
   wheel.position.set(WHEEL_STATION_M.x, WHEEL_STATION_M.y, WHEEL_STATION_M.z);
+  const wheelTag = ghostLabel(0.0032);
+  wheelTag.position.set(0, WHEEL_OD_M / 2 + 0.004, 0.002);
+  wheel.add(wheelTag);
   group.add(wheel);
   let wheelCount = -1;
 
@@ -147,7 +151,7 @@ export function createMechanism(): Mechanism {
     ring.rotation.z = pose.theta;
     prism.rotation.z = pose.mechAngle;
     if (packet.toothCount !== wheelCount) {
-      rebuildWheel(wheel, packet.toothCount, wheelMat, edge);
+      rebuildWheel(wheel, packet.toothCount, wheelMat);
       wheelCount = packet.toothCount;
     }
     wheel.rotation.z = pose.mechAngle;
@@ -161,8 +165,9 @@ export function createMechanism(): Mechanism {
   return { group, update, setSection };
 }
 
-function rebuildWheel(group: THREE.Group, toothCount: number, material: THREE.Material, edge: THREE.Material): void {
+function rebuildWheel(group: THREE.Group, toothCount: number, material: THREE.Material): void {
   for (const child of [...group.children]) {
+    if (child.name === "ghost-label") continue;
     group.remove(child);
     disposeMesh(child);
   }
@@ -170,7 +175,7 @@ function rebuildWheel(group: THREE.Group, toothCount: number, material: THREE.Ma
   const disk = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.62, radius * 0.62, 0.0012, 24), material);
   disk.rotation.x = Math.PI / 2;
   disk.name = "ghost-wheel-disk";
-  disk.add(new THREE.LineSegments(new THREE.EdgesGeometry(disk.geometry), edge));
+  disk.castShadow = false;
   group.add(disk);
   for (let i = 0; i < toothCount; i += 1) {
     const tooth = new THREE.Mesh(new THREE.BoxGeometry(0.0014, 0.0007, 0.001), material);

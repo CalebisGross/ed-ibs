@@ -172,3 +172,50 @@ Frame times, measured after that browser run, on the same dev server. Method: 35
 - High, escapement macro: median 99.9 ms, mean 94.76 ms, min 66.6 ms, max 149.9 ms.
 
 Stills from the same session are under `/opt/cursor/artifacts/`. They are not committed. The room uses one synthesized neutral studio HDRI (`sim/src/stage/assets/studio-neutral.hdr`), not a photograph. Ghosted envelopes stay semi-transparent and the legend says they are illustrative. Depth of field is on only for the close cameras, and only in the high tier.
+
+## Look pass, 2026-11-15
+
+Same branch, after the review of the first stills. The solver was not edited. Decision index IDs and statuses were not moved. This is still a simulator presentation, not a hardware measurement.
+
+What changed in the picture: see-why panels sit in their own grid row and scroll inside that row. The browser check fails if those panels intersect the engineering panes, the stage rail, or each other, at 1440x900 and at 1280x800. Beams are thin and near-white, with a faint sheath, and no end spheres. Close mechanism views scale that beam down. The mechanical cameras frame the ring and the escapement contact. Ghost meshes stay faint, without edge wires, and carry a Ghost label. Depth of field is only the escapement macro in the mechanical view, and only the push-in and impulse views on the stage. Panel captions are one or two lines, with the rest behind a disclosure.
+
+Commands, run on this tree:
+
+```bash
+cd sim && npm run typecheck
+cd sim && npm test
+node scripts/check-docs.mjs
+bash scripts/check-statecharts.sh
+cd sim && node scripts/browser-verify.mjs
+```
+
+Results:
+
+- `npm run typecheck` (`tsc --noEmit`) exited 0.
+- `npm test` (`vitest run`, Vitest v2.1.9) exited 0. Start 22:40:53, duration 1.88 s. 10 files, 90 tests, all passed.
+- `node scripts/check-docs.mjs` printed `ok` and exited 0.
+- `bash scripts/check-statecharts.sh` printed `escapement ok (74 distinct states)`, `simrun ok (320 distinct states)`, and `check-statecharts: ok`.
+- `node scripts/browser-verify.mjs` exited 0. Headless Chrome 157.0.8103.50. `consoleErrors` was empty. `pageErrors` was empty.
+
+Script fields from this run:
+
+- Audience status: `0 live rays, source 85%, chopper blanked, running, throw 12.0 m`. Canvas host 1098x410. The chopper was on and the sample was inside the blank.
+- After the throw slider: `9 live rays, source 85%, gate open, running, throw 22.0 m`.
+- Pause held `step 16733`, then `step 16733` again.
+- Power cut status: `0 live rays, source off, chopper blanked, running, throw 22.0 m`.
+- Engineering pane titles matched the four pane headings. The new overlap check passed at 1440x900 and at 1280x800.
+- Before the curb move: frequency `derived 8.0014 Hz`, amplitude `13.55 deg`, `step 26400`, state `running`, WebGL `WebGL viewport ready`.
+- After curb: `derived 11.6437 Hz`. After thickness: `derived 11.6437 Hz`.
+- Brake: amplitude `10.24 deg`, then `3.99 deg`.
+- Engineering pause: `step 30067`. Reset: `step 0`. Chopper button text: `Chopper off`.
+- Mobile canvas host 388x574.
+- Final `readout-fps` text: `35 FPS this session`. That string is the in-app session counter on this software GPU. It is not the frame-time sample below.
+
+Frame times, measured on the same dev server after the look pass. Method: 35 `requestAnimationFrame` gaps after a 400 ms settle. Viewport 1440x900. Stage samples use the audience camera. The macro sample uses Engineering, Escapement macro, high tier. GPU string: `ANGLE (Mesa, llvmpipe (LLVM 20.1.2 256 bits), OpenGL 4.5)`. CPU from `/proc/cpuinfo`: `Intel(R) Xeon(R) Processor`, 4 processors. These gaps include the solver and the render call. They are not a GPU fence, and they are not `lastFrameMs`.
+
+- Low, audience: median 116.7 ms, mean 112.38 ms, min 16.6 ms, max 183.3 ms.
+- Medium, audience: median 116.7 ms, mean 118.57 ms, min 83.4 ms, max 150 ms.
+- High, audience: median 133.4 ms, mean 136.18 ms, min 100 ms, max 183.3 ms.
+- High, escapement macro: median 149.9 ms, mean 140.47 ms, min 16.7 ms, max 183.2 ms.
+
+Replacement stills, not the rejected set, are the `review-*.png` files under `/opt/cursor/artifacts/`. They are not committed.

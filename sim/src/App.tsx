@@ -118,11 +118,13 @@ export function App() {
             <QualityToggle tier={tier} onChange={setTier} />
           </div>
         </header>
-        <p className="banner">
+        <p
+          className="banner"
+          title={`Directional lift-zone drive. Measured blanking is amplitude dependent. Spec SHA-256 ${PROVENANCE.userSpecificationSha256.slice(0, 12)}.`}
+        >
           {sim.settings.stiffnessMode === "reference-law"
-            ? `Reference stiffness law is active. At the reference inertia the curb endpoints derive ${ends.lowHz.toFixed(3)} Hz and ${ends.highHz.toFixed(3)} Hz, not 4 to 20 Hz.`
-            : "Prescribed-frequency assumption is active. K = I (2 pi f)^2 across the editable band. This is not the original curb law and not a validated actuator map."}{" "}
-          Directional lift-zone drive replaces the conflicting zero-velocity impulse. Measured blanking is amplitude dependent. Spec SHA-256 {PROVENANCE.userSpecificationSha256.slice(0, 12)}.
+            ? `Reference stiffness law. Curb endpoints derive ${ends.lowHz.toFixed(3)} Hz and ${ends.highHz.toFixed(3)} Hz.`
+            : "Prescribed frequency. K = I (2 pi f)^2. Not the curb law."}
         </p>
         {sim.settings.viewMode === "stage" ? (
           <div className="stage-layout">

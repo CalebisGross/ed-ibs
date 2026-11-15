@@ -24,10 +24,7 @@ export function StateChartOverlay(props: {
     <section className="see-why-panel" data-testid="see-why-statechart">
       <header className="see-why-panel-head">
         <h2>Escapement chart</h2>
-        <p>
-          Escapement cycle, as the solver steps it. The lit box is the current sample. Boxes crossed in the sample
-          window keep a dim border.
-        </p>
+        <p title="Boxes crossed in the sample window keep a dim border.">The lit box is the current sample.</p>
       </header>
       {reading.unmappedReason ? <p className="see-why-empty" data-testid="see-why-state-empty">{reading.unmappedReason}</p> : null}
       <div className="see-why-regions">

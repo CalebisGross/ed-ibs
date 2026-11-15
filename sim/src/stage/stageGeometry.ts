@@ -75,27 +75,15 @@ export function visualShafts(beams: readonly LiveBeam[]): VisualShaft[] {
     shafts.push({
       from: group[0].from,
       to: group[0].to,
-      css: group.length === 1 ? group[0].css : mixCss(group.map((beam) => beam.css)),
+      css: group.length === 1 ? group[0].css : COINCIDENT_SHAFT_CSS,
       channels: group.length,
     });
   }
   return shafts;
 }
 
-function mixCss(colors: readonly string[]): string {
-  let red = 0;
-  let green = 0;
-  let blue = 0;
-  for (const color of colors) {
-    const value = Number.parseInt(color.slice(1), 16);
-    red += (value >> 16) & 255;
-    green += (value >> 8) & 255;
-    blue += value & 255;
-  }
-  const count = Math.max(1, colors.length);
-  const channel = (value: number) => Math.round(value / count).toString(16).padStart(2, "0");
-  return `#${channel(red)}${channel(green)}${channel(blue)}`;
-}
+/** Coincident channels share one path. Averaging the swatches made a tan rod, so the drawn shaft stays near-white. */
+export const COINCIDENT_SHAFT_CSS = "#f4f7f8";
 
 export type StageCameraName = "audience" | "side" | "fixture";
 
@@ -195,25 +183,26 @@ export function figureTopM(): number {
 
 export function audienceCamera(throwM: number): CameraPose {
   return {
-    position: { x: -1.5, y: 1.7, z: -8.2 },
-    target: { x: 0.3, y: 2.7, z: Math.min(throwM * 0.8, throwM) },
-    fov: 50,
+    position: { x: -0.55, y: 1.45, z: -2.4 },
+    target: { x: 0, y: 1.85, z: Math.min(Math.max(throwM * 0.35, 1.5), 6) },
+    fov: 42,
   };
 }
 
 export function sideCamera(throwM: number): CameraPose {
   return {
-    position: { x: -12, y: 5.1, z: -1.2 },
-    target: { x: 0.8, y: 1.8, z: Math.min(Math.max(throwM * 0.42, 3), 10) },
-    fov: 42,
+    position: { x: -3.6, y: 2.15, z: 2.4 },
+    target: { x: 0, y: 2.05, z: Math.min(Math.max(throwM * 0.4, 2), 7) },
+    fov: 38,
   };
 }
 
 export function fixtureCamera(throwM: number): CameraPose {
+  const lookZ = Math.min(Math.max(throwM * 0.08, 0.4), 1.6);
   return {
-    position: { x: 2.2, y: 3.35, z: -2.1 },
-    target: { x: 0, y: STAGE.apertureHeightM, z: Math.min(throwM, 8) },
-    fov: 40,
+    position: { x: 0.72, y: 1.72, z: -1.15 },
+    target: { x: 0, y: 1.55, z: lookZ },
+    fov: 36,
   };
 }
 

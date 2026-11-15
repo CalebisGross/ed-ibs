@@ -171,4 +171,4 @@ Caleb on Nov 15 2026 (issue #16): square versus round chassis stays OPEN; the ot
 
 ## 2026-11-15 viewer
 
-The cinematic stage, quality tiers, see-why panels, and replay scrubber are a simulator presentation. The Decision index above is unchanged: no ID was added and no status moved. Scene dimensions come from the existing solver constants and the open envelopes already recorded here. They are not hardware measurements. Exploded view stays D-39 OPEN. Ray-trace stays D-35 OPEN. A decision-ID map is not part of this view.
+The cinematic stage, quality tiers, see-why panels, and replay scrubber are a simulator presentation. The Decision index above is unchanged: no ID was added and no status moved. Scene dimensions come from the existing solver constants and the open envelopes already recorded here. They are not hardware measurements. Exploded view stays D-39 OPEN. Ray-trace stays D-35 OPEN. A decision-ID map is not part of this view. A later look pass changed beam display, camera framing, and the see-why grid. It did not add an ID and it did not move a status.

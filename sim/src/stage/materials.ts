@@ -6,7 +6,7 @@ export function anodized6061(): THREE.MeshStandardMaterial {
     color: 0x2c3136,
     metalness: 0.02,
     roughness: 0.48,
-    envMapIntensity: 1,
+    envMapIntensity: 0.55,
   });
 }
 
@@ -16,7 +16,7 @@ export function anodized7075(): THREE.MeshStandardMaterial {
     color: 0xb7bcc2,
     metalness: 0.04,
     roughness: 0.4,
-    envMapIntensity: 1,
+    envMapIntensity: 0.55,
   });
 }
 
@@ -25,9 +25,9 @@ export function brushedTitanium(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
     color: 0x8e939a,
     metalness: 1,
-    roughness: 0.42,
+    roughness: 0.32,
     roughnessMap: brushMap(6, 1),
-    envMapIntensity: 1,
+    envMapIntensity: 1.8,
   });
 }
 
@@ -36,9 +36,9 @@ export function hardenedSteel(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
     color: 0xa7adb4,
     metalness: 1,
-    roughness: 0.22,
+    roughness: 0.18,
     roughnessMap: brushMap(10, 1),
-    envMapIntensity: 1,
+    envMapIntensity: 1.7,
   });
 }
 
@@ -78,7 +78,7 @@ export function rubyJewel(): THREE.MeshStandardMaterial {
   });
 }
 
-export const GHOST_OPACITY = 0.32;
+export const GHOST_OPACITY = 0.2;
 
 export function asGhost(material: THREE.MeshStandardMaterial): THREE.MeshStandardMaterial {
   material.transparent = true;
@@ -102,7 +102,7 @@ export function laserCoreMaterial(css: string): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
     color: 0x000000,
     emissive: color,
-    emissiveIntensity: 1,
+    emissiveIntensity: 0.85,
     metalness: 0,
     roughness: 1,
     transparent: true,
@@ -118,7 +118,7 @@ export function laserSpotMaterial(css: string): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
     color: 0x000000,
     emissive: color,
-    emissiveIntensity: 2,
+    emissiveIntensity: 0.7,
     metalness: 0,
     roughness: 1,
     transparent: true,
@@ -158,6 +158,33 @@ export function targetCard(): THREE.MeshStandardMaterial {
     roughness: 0.94,
     side: THREE.DoubleSide,
   });
+}
+
+/** Small "Ghost" tag. The mesh stays faint. The word says the shape is illustrative. */
+export function ghostLabel(heightM: number): THREE.Sprite {
+  const canvas = document.createElement("canvas");
+  canvas.width = 160;
+  canvas.height = 48;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Ghost label needs a canvas.");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "rgba(16, 18, 20, 0.78)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "rgba(196, 204, 212, 0.85)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
+  ctx.fillStyle = "#e6edf4";
+  ctx.font = "28px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Ghost", canvas.width / 2, canvas.height / 2);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
+  const sprite = new THREE.Sprite(material);
+  sprite.scale.set(heightM * (160 / 48), heightM, 1);
+  sprite.name = "ghost-label";
+  return sprite;
 }
 
 function brushMap(repeatU: number, repeatV: number): THREE.DataTexture {

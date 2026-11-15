@@ -17,6 +17,7 @@ export interface LaserRig {
   cores: THREE.Mesh[];
   sheaths: THREE.Mesh[];
   spots: THREE.Mesh[];
+  showSpots: boolean;
 }
 
 export function createLaserRig(
@@ -36,9 +37,9 @@ export function createLaserRig(
   const cores: THREE.Mesh[] = [];
   const sheaths: THREE.Mesh[] = [];
   const spots: THREE.Mesh[] = [];
-  const coreGeo = new THREE.CylinderGeometry(radii.core, radii.core, 1, 8, 1, true);
-  const sheathGeo = new THREE.CylinderGeometry(radii.sheath, radii.sheath, 1, 8, 1, true);
-  const spotGeo = new THREE.SphereGeometry(radii.spot, 14, 10);
+  const coreGeo = new THREE.CylinderGeometry(radii.core, radii.core, 1, 10, 1, true);
+  const sheathGeo = new THREE.CylinderGeometry(radii.sheath, radii.sheath, 1, 10, 1, true);
+  const spotGeo = new THREE.CircleGeometry(Math.max(radii.spot, 1e-5), 20);
   for (let index = 0; index < count; index += 1) {
     const css = swatch[index % swatch.length] ?? "#d7d7d7";
     const coreMat = laserCoreMaterial(css);
@@ -62,10 +63,11 @@ export function createLaserRig(
     cores.push(core);
     sheaths.push(sheath);
     spots.push(spot);
-    beams.add(core, spot);
+    beams.add(core);
+    if (radii.spot > 0) beams.add(spot);
     haze.add(sheath);
   }
-  return { beams, haze, cores, sheaths, spots };
+  return { beams, haze, cores, sheaths, spots, showSpots: radii.spot > 0 };
 }
 
 export function updateLaser(
@@ -75,6 +77,7 @@ export function updateLaser(
   hazeAmount: number,
   chopperEnabled: boolean,
   angularBlank: boolean,
+  radiusScale = 1,
 ): void {
   const visible = laserVisible(intensity, chopperEnabled, angularBlank, hazeAmount);
   const coreOp = coreOpacity(intensity, hazeAmount);
@@ -90,16 +93,22 @@ export function updateLaser(
       spot.visible = false;
       continue;
     }
-    paint(core, shaft.css, coreOp);
+    paint(core, nearWhite(shaft.css), coreOp);
     paint(sheath, shaft.css, sheathOp);
-    paint(spot, shaft.css, 0.92);
-    const aimed = aimUnitCylinder(core, shaft.from, shaft.to);
-    aimUnitCylinder(sheath, shaft.from, shaft.to);
+    paint(spot, nearWhite(shaft.css), 0.55);
+    const aimed = aimUnitCylinder(core, shaft.from, shaft.to, radiusScale);
+    aimUnitCylinder(sheath, shaft.from, shaft.to, radiusScale * 1);
     core.visible = visible.beam && aimed;
     sheath.visible = visible.beam && aimed;
-    spot.visible = true;
+    spot.visible = rig.showSpots && visible.spot;
     spot.position.set(shaft.to.x, shaft.to.y, shaft.to.z);
   }
+}
+
+function nearWhite(css: string): string {
+  const color = new THREE.Color(css);
+  color.lerp(new THREE.Color(0xf4f7f8), 0.84);
+  return `#${color.getHexString()}`;
 }
 
 function paint(mesh: THREE.Mesh, css: string, opacity: number): void {
@@ -109,13 +118,18 @@ function paint(mesh: THREE.Mesh, css: string, opacity: number): void {
   material.opacity = opacity;
 }
 
-function aimUnitCylinder(mesh: THREE.Mesh, from: { x: number; y: number; z: number }, to: { x: number; y: number; z: number }): boolean {
+function aimUnitCylinder(
+  mesh: THREE.Mesh,
+  from: { x: number; y: number; z: number },
+  to: { x: number; y: number; z: number },
+  radiusScale = 1,
+): boolean {
   direction.set(to.x - from.x, to.y - from.y, to.z - from.z);
   const length = direction.length();
   if (!(length > 1e-4)) return false;
   direction.multiplyScalar(1 / length);
   mesh.position.set(from.x + direction.x * length * 0.5, from.y + direction.y * length * 0.5, from.z + direction.z * length * 0.5);
   mesh.quaternion.setFromUnitVectors(Y_AXIS, direction);
-  mesh.scale.set(1, length, 1);
+  mesh.scale.set(radiusScale, length, radiusScale);
   return true;
 }
