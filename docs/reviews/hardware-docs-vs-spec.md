@@ -10,9 +10,9 @@ Sources:
 Cross-reference first (do not duplicate the full earlier pass):
 
 - `docs/hardware-docs-review.md` (internal PDF conflicts and rough physics)
-- `docs/decisions-and-deviations.md` Decision index D-01..D-38
+- `docs/decisions-and-deviations.md` Decision index D-01..D-43
 - `docs/analysis/2026-11-15/working-revision-step1.md`
-- `docs/analysis/number-provenance.md` (when that check is merged)
+- `docs/analysis/number-provenance.md`
 
 Tags on quantities: **[T]** target, **[C]** calculated, **[S]** sourced claim from a PDF or the locked spec.
 
@@ -64,6 +64,22 @@ Conflicts that the existing Decision index does not cleanly own, or that need a 
 | Ti-6Al-4V balance cage | BP p2 ED-04 | Spec §2.A.2 material name |
 | Dove prism as image rotator | BP / MAN OPT-03 path | Spec §2.B.1 / §3 |
 | Remontoire + winding motor present | BP HR-03 / HR-05; MAN | Spec §4 remontoire concept (not the same map) |
+
+## Additional conflicts from #16
+
+Issue #16 (Jason / @jkbennitt manufacturability pass). Items already owned by #14 are left out. Each row was re-checked with `pdftotext` against the cited pages on 2026-11-15. Verification is confirmed, partly confirmed, or not found. Decision IDs D-39..D-43 are owner picks by Caleb on Nov 15 2026 (issue #16 comment). Nothing here edits the source PDFs. Nothing is hardware-validated.
+
+Cross-reference: `docs/hardware-docs-review.md` already notes the chassis square-vs-round clash and the ED-03 7.00 H7 vs 10.00 mm pocket clash (including 7 pockets vs 10 bearings). It does not note the ED-10 20.00 mm top block, the OpenSCAD crest-outside-OD detail, or the missing hatch BOM line.
+
+| # | Conflict | PDF (file + page) | Verification | Covered elsewhere? | Decision |
+| --- | --- | --- | --- | --- | --- |
+| 16.1 | Chassis envelope: square 150.00 x 150.00 mm profile [S BP] vs round extruded tube OD 120.00 mm, wall 10.00 mm [S MAN] | BP p1 Chassis Profile Footprint; MAN p1 Part ED-01 | Confirmed | `docs/hardware-docs-review.md` internal inconsistencies ("Chassis 150 sq vs round 120 OD tube"). Not in #14. D-02 uses a 102 mm tube ID as an analysis assumption and does not pick square vs round. | D-39 OPEN |
+| 16.2 | ED-03 arbor bearing pockets: Dia 7.00 mm H7, 3.00 mm deep [S BP] vs pockets sized for 10.00 mm OD bearings [S MAN]; also 7 pockets / press 7 bearings [S MAN] vs 4 arbor rows at 7.00 mm [S BP] vs BOM HR-02 qty 10 of 3 mm ID x 7 mm OD x 3 mm W [S BP] | BP p3 ED-03 arbor bores; BP p2 HR-02; BP p4 G-code arbor pockets 1-4; MAN p3 Op 20; MAN assembly press-fit of 7x bearings into ED-03 | Confirmed (diameter clash and count mismatch). Pocket count vs the 10 BOM bearings cannot be reconciled from the PDFs alone. | #14 row 9 / D-11 covers arbor radii vs a larger bearing housing, not pocket diameter or 7-vs-10 count. `docs/hardware-docs-review.md` already records 7.00 H7 vs 10.00 mm and 7 vs 10. | D-40 WORKING |
+| 16.3 | ED-10 plate: BOM lists 6 mm plate only [S BP] vs traveler 6.00 mm sides plus 20.00 mm top mounting block [S MAN] | BP p2 ED-10; MAN p7 Part ED-10; MAN p8 Op 10 / Op 20 | Confirmed | Not in #14 or `docs/hardware-docs-review.md`. The review's yoke M8 vs M12 note is a different conflict. | D-41 WORKING |
+| 16.4 | ED-05 OpenSCAD impulse crest vertex at `outer_r + 0.15` sits outside the table OD Dia 14.80 mm [S BP] | BP p3 Outside Tip Diameter Dia 14.80 mm; BP p4 `outer_r = 7.40`, crest `[outer_r + 0.15, 1.35]` | Confirmed. Radial distance of that vertex is about 7.67 mm [C], outside the 7.40 mm OD radius [S]. | #14 row 8 / D-10 covers broader ED-05 OD / root / spoke conflicts. `docs/hardware-docs-review.md` already records root dia 5.40 vs OpenSCAD `root_r = 5.40` as a radius. The crest-outside-OD detail is new. | D-42 WORKING |
+| 16.5 | Side access hatches called out as removable [S MAN] with no BOM line, part ID, material, thickness, or quantity [S BP] | MAN p1 ED-01 Op 30 ("2x side access hatches"); MAN p16 "internal service hatches"; MAN p19 "Remove side access hatches on main chassis (ED-01)"; BP p2 master parts list has no hatch or cover line | Confirmed | Not in #14, `docs/hardware-docs-review.md`, or the prior Decision index. | D-43 WORKING |
+
+Manufacturability note from the same #16 pass (not a decision): of the custom parts, only ED-10 matches a sheet-cut shop path as written. Nearest stock to the documented 6.00 mm and 20.00 mm thicknesses is inch plate. Recorded as a manufacturing note under D-41. Not a structural or proof-load check.
 
 ## Method note
 

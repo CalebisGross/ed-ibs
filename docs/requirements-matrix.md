@@ -62,6 +62,11 @@ Current status of each decision. Dated sections keep their own wording. Status t
 | D-36 | OPEN | Impulse timing. Zero-velocity conjunction versus a center crossing. |
 | D-37 | OPEN | Full suspension. The all-orientation gravity-shift target is unpassed. |
 | D-38 | WORKING | Bearing seals. Contact seals stay excluded. |
+| D-39 | OPEN | Chassis envelope. Square profile versus round extruded tube. No choice made. |
+| D-40 | WORKING | ED-03 arbor bearing pockets. Adopt H7 pockets matching the BOM miniature bearings. Pocket count versus BOM quantity stays unresolved from the PDFs. |
+| D-41 | WORKING | ED-10 yoke. Add a BOM line for the thicker top mounting block alongside the side plates. Inch-plate stock is a manufacturing note only. |
+| D-42 | WORKING | ED-05 escape wheel crest. Clip the OpenSCAD crest vertex to the table OD in derived CAD or notes. Do not edit the PDF. |
+| D-43 | WORKING | Side access hatches. Add a BOM placeholder part ID. Material, thickness, and quantity stay OPEN sub-items. |
 
 
 ## 1. Role and overview
@@ -181,6 +186,11 @@ Caleb's 10:33 CT note makes items 1-16 working decisions, revisable. Later widge
 | N.15 | D-15 Divergence | working decision | WORKING. The 12:10 CT target is a beam divergence of at least 2.4 deg [T]. Step 1 did not size the optics. The "<0.25 mrad from a 150 W COB" claim [S] is not that target. The 75 mm beam [S] versus the 25 mm prism aperture [S] is still unchecked | `hardware-docs-review.md`; `working-revision-step1.md` item 15 |
 | N.16 | D-16 Hardware certificates | out of scope | OUT_OF_SCOPE. Proof load, IP54, Class 3R, and rigging are not validated by this project. The hardware PDFs are not machine-ready or certified | `hardware-docs-review.md` "Out of scope" |
 | N.17 | D-18 Carousel versus tourbillon | working decision | Carousel is the working option and stays optional. Caleb chose carousel, pattern rotation as a DMX-rated feature with park, and a driven winding ring. A true tourbillon is not adopted. The crude timing screen fails at 1 rev/min and is marginal near 1 rev/5 min. Cage mass and inertia predictions (342 g and 4.55e-4 kg m^2 for the 7075 / 61813 carousel row; the summary rounds inertia to 4.6e-4) are not a build approval. The balance suspension still has to pass 0.25 mm inside the cage [T, C] | `tourbillon-feasibility.md`; `gemini-revision-deviations.md` 11:19 CT and 11:44 CT |
+| N.18 | D-39 Chassis envelope | open | OPEN. Square 150.00 x 150.00 mm profile [S BP p1] versus round OD 120.00 mm wall 10.00 mm tube [S MAN p1]. Affects housing and packaging of the nominal 56 mm clear through-bore [T]. No choice made. | `docs/reviews/hardware-docs-vs-spec.md` Additional conflicts; GitHub issue sixteen [S] |
+| N.19 | D-40 ED-03 arbor pockets | working decision | WORKING. Adopt Dia 7.00 mm H7 pockets matching BOM HR-02 3 mm ID x 7 mm OD x 3 mm W [S]. Reject manual 10.00 mm pocket sizing for those arbors. Pocket count unresolved from PDFs: 4 arbor rows [S BP] vs 7 pockets / 7 bearings [S MAN] vs BOM qty 10 [S]. | `docs/reviews/hardware-docs-vs-spec.md` Additional conflicts; `hardware-docs-review.md` [S] |
+| N.20 | D-41 ED-10 yoke BOM | working decision | WORKING. Add a BOM line for the 20.00 mm top mounting block alongside 6.00 mm side plates [S MAN p7-p8]. Inch-plate nearest stock is a manufacturing note only; no size change [T, S]. | `docs/reviews/hardware-docs-vs-spec.md` Additional conflicts [S] |
+| N.21 | D-42 ED-05 crest clip | working decision | WORKING. Clip OpenSCAD crest `outer_r + 0.15` to Dia 14.80 mm OD in derived CAD or notes. Vertex radial distance about 7.67 mm [C] vs 7.40 mm OD radius [S]. Do not edit the PDF. [T, C, S] | `docs/reviews/hardware-docs-vs-spec.md` Additional conflicts [S] |
+| N.22 | D-43 Side access hatches | working decision | WORKING. BOM placeholder part ID ED-11. Material, thickness, and quantity stay OPEN sub-items (unspecified in the PDFs). [T, S] | `docs/reviews/hardware-docs-vs-spec.md` Additional conflicts [S] |
 
 ### Open inside item 7 (intentionally unresolved)
 
