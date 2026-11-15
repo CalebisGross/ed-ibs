@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DT_S } from "../physics/constants";
 import { createInitialState, step, type SolverState } from "../physics/EscapementSolver";
-import { idlePower, type PowerCutMode, type PowerLatch } from "../physics/powerCut";
+import {
+  engagePowerCut,
+  idlePower,
+  retargetPowerMode,
+  type PowerCutMode,
+  type PowerLatch,
+} from "../physics/powerCut";
 import { degToRad } from "../physics/units";
 import { solveCommand } from "./parameters";
 import {
@@ -85,17 +91,50 @@ function makePacket(
   };
 }
 
+/** True when this frame should integrate. The first frame has no previous wall time. */
+export function simulationShouldStep(paused: boolean, hasPreviousFrame: boolean): boolean {
+  return !paused && hasPreviousFrame;
+}
+
+/** Wall dt the loop will accept, in seconds. */
+export function clampWallDt(rawDt: number): number {
+  return Math.min(0.05, Math.max(0, rawDt));
+}
+
+/** Whole solver steps covered by the accumulator. Above the cap, leftover time is dropped. */
+export function consumeFixedSteps(
+  accum: number,
+  wallDt: number,
+  dt = DT_S,
+  maxSteps = 8000,
+): { steps: number; accum: number } {
+  const next = accum + wallDt;
+  const steps = Math.floor(next / dt);
+  if (steps > maxSteps) return { steps: maxSteps, accum: 0 };
+  return { steps, accum: next - steps * dt };
+}
+
+/** Drawing gate. The chopper does not change the solver. */
+export function beamSampleVisible(intensity: number, chopperEnabled: boolean, angularBlank: boolean): boolean {
+  return intensity > 0 && !(chopperEnabled && angularBlank);
+}
+
+/** Angle and latch a reset builds. The paused flag is left alone. */
+export function freshRun(settings: Settings): { state: SolverState; power: PowerLatch } {
+  return {
+    state: createInitialState(degToRad(settings.theta0Deg), settings.omega0, degToRad(settings.blankDeg)),
+    power: idlePower(settings.powerCutMode),
+  };
+}
+
 export function useSimulator() {
   const [settings, setSettingsState] = useState<Settings>(() => loadSettings());
   const [paused, setPausedState] = useState(false);
   const [power, setPower] = useState<PowerLatch>(() => idlePower());
-  const [readout, setReadout] = useState<Readout>(() => {
-    const initial = loadSettings();
-    return {
-      state: createInitialState(degToRad(initial.theta0Deg), initial.omega0, degToRad(initial.blankDeg)),
-      fps: null,
-    };
-  });
+  const [readout, setReadout] = useState<Readout>(() => ({
+    state: freshRun(loadSettings()).state,
+    fps: null,
+  }));
 
   const settingsRef = useRef(settings);
   const pausedRef = useRef(false);
@@ -137,13 +176,8 @@ export function useSimulator() {
   const resetTo = useCallback(
     (nextSettings: Settings) => {
       epoch.current += 1;
-      const state = createInitialState(
-        degToRad(nextSettings.theta0Deg),
-        nextSettings.omega0,
-        degToRad(nextSettings.blankDeg),
-      );
+      const { state, power: nextPower } = freshRun(nextSettings);
       stateRef.current = state;
-      const nextPower = idlePower(nextSettings.powerCutMode);
       powerRef.current = nextPower;
       setPower(nextPower);
       accum.current = 0;
@@ -168,12 +202,11 @@ export function useSimulator() {
   const cutPower = useCallback(() => {
     const current = settingsRef.current;
     const command = solveCommand(current, idlePower(current.powerCutMode), stateRef.current.t);
-    const next: PowerLatch = {
-      active: true,
+    const next = engagePowerCut({
       mode: current.powerCutMode,
-      startTime: stateRef.current.t,
+      simTime: stateRef.current.t,
       torqueAtCut: command.torqueMagnitude,
-    };
+    });
     powerRef.current = next;
     setPower(next);
   }, []);
@@ -187,8 +220,8 @@ export function useSimulator() {
   const setPowerMode = useCallback(
     (mode: PowerCutMode) => {
       setSettings({ powerCutMode: mode });
-      if (powerRef.current.active) {
-        const next = { ...powerRef.current, mode };
+      const next = retargetPowerMode(powerRef.current, mode);
+      if (next !== powerRef.current) {
         powerRef.current = next;
         setPower(next);
       }
@@ -209,26 +242,25 @@ export function useSimulator() {
         fpsWindow.push(1 / rawDt);
         if (fpsWindow.length > 40) fpsWindow.shift();
       }
-      const wallDt = Math.min(0.05, Math.max(0, rawDt));
+      const wallDt = clampWallDt(rawDt);
       const epochAtStart = epoch.current;
       const currentSettings = settingsRef.current;
       const samples: Sample[] = [];
       let simDt = 0;
-      if (!pausedRef.current && previous !== null) {
-        accum.current += wallDt;
-        let steps = Math.floor(accum.current / DT_S);
-        if (steps > 8000) {
-          steps = 8000;
-          accum.current = 0;
-        } else {
-          accum.current -= steps * DT_S;
-        }
+      if (simulationShouldStep(pausedRef.current, previous !== null)) {
+        const budget = consumeFixedSteps(accum.current, wallDt);
+        accum.current = budget.accum;
+        const steps = budget.steps;
         for (let i = 0; i < steps; i += 1) {
           if (epoch.current !== epochAtStart) break;
           const command = solveCommand(currentSettings, powerRef.current, stateRef.current.t);
           const next = step(stateRef.current, command.params);
           stateRef.current = next;
-          const beamVisible = command.intensity > 0 && !(currentSettings.chopperEnabled && next.angularBlank);
+          const beamVisible = beamSampleVisible(
+            command.intensity,
+            currentSettings.chopperEnabled,
+            next.angularBlank,
+          );
           samples.push({
             t: next.t,
             theta: next.theta,

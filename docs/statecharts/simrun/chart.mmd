@@ -1,0 +1,104 @@
+---
+title: "Simulator run, as the workbench controls it"
+---
+stateDiagram-v2
+  direction LR
+  state "Legend" as legend {
+    lg0: live
+    lg1: unwind
+    lg2: cut
+    lg3: decay
+    lg4: Breaks CutWaitsOutTheUnwind or DeadCenterByUnwind
+    lg5: Path to the CutWaitsOutTheUnwind or DeadCenterByUnwind bug
+  }
+  class lg0 teal
+  class lg1 yellow
+  class lg2 pink
+  class lg3 orange
+  class lg4 breaks
+  class lg5 bugPath
+  state "At the same time" as all {
+    state "Session" as r0 {
+      s0: Running
+      s1: Paused
+      [*] --> s0
+      s0 --> s1: you pause
+      s1 --> s0: you run
+    }
+    --
+    state "Supply" as r1 {
+      s2: Drive commanded
+      s3: Source off, torque already gone
+      s4: Fifteen seconds with the source off
+      s5: Unwinding, source still lit
+      s6: Unwind finished, source still lit
+      [*] --> s2
+      s2 --> s3: you cut power and the source goes dark
+      s2 --> s5: you cut power and the source stays lit
+      s3 --> s2: you reset or you restore power
+      s3 --> s4: the unwind time passes [when Session is Running]
+      s4 --> s2: you reset or you restore power
+      s5 --> s2: you reset or you restore power
+      s5 --> s6: the unwind time passes [when Session is Running]
+      s6 --> s2: you reset or you restore power
+    }
+    --
+    state "Angle" as r2 {
+      s7: At the start angle
+      s8: Away from the start angle
+      [*] --> s7
+      s7 --> s8: the clock advances [when Session is Running]
+      s8 --> s7: you reset
+      s7 --> s8: the unwind time passes [when Session is Running and Supply is not Drive commanded]
+    }
+    --
+    state "Curb" as r3 {
+      s9: Long leaf
+      s10: Shorter leaf
+      [*] --> s9
+      s9 --> s10: you shorten the curb
+      s10 --> s9: you lengthen the curb
+    }
+    --
+    state "Brake" as r4 {
+      s11: Brake off
+      s12: Brake on
+      [*] --> s11
+      s11 --> s12: you apply the eddy brake
+      s12 --> s11: you release the eddy brake
+    }
+    --
+    state "Chopper" as r5 {
+      s13: Chopper on
+      s14: Chopper off
+      [*] --> s13
+      s13 --> s14: you turn the chopper off
+      s14 --> s13: you turn the chopper on
+    }
+    --
+    state "Thickness" as r6 {
+      s15: Nominal thickness
+      s16: Thicker leaf
+      [*] --> s15
+      s15 --> s16: you thicken the leaf
+    }
+  }
+  classDef breaks fill:#ffecee,stroke:#e72e3b,stroke-width:2.5px,color:#cd2834
+  class s0 bugPath
+  class s2 teal
+  class s2 bugPath
+  class s3 pink
+  class s3 breaks
+  class s3 bugPath
+  class s4 orange
+  class s4 breaks
+  class s4 bugPath
+  class s5 yellow
+  class s6 orange
+  class s6 breaks
+  class s7 bugPath
+  class s8 bugPath
+  class s9 bugPath
+  class s11 bugPath
+  class s13 bugPath
+  class s15 bugPath
