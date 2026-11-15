@@ -116,8 +116,8 @@ Current status of each decision. Dated sections keep their own wording. Status t
 | ID | Source | Requirement | Class | State | Evidence |
 | --- | --- | --- | --- | --- | --- |
 | 4.1 | §4 | Dark four-pane workbench | target | code-built | `sim/src/App.tsx` |
-| 4.2 | §4.1 | Escape wheel, dove prism, pallet, flexure ring, beam cones | target | code-built as simplified geometry. Not contact-solved and not a cathedral of 45 cones [S] | `sim/src/components/MechanicalViewport.tsx` |
-| 4.3 | §4.1 | Camera presets: coaxial bore, isometric cutaway, escapement macro, stage rig | target | code-built | preset buttons |
+| 4.2 | §4.1 | Escape wheel, dove prism, pallet, flexure ring, beam cones | target | code-built as simplified geometry. Shapes the documents leave open stay semi-transparent and labeled illustrative. Not contact-solved and not a cathedral of 45 cones [S] | `sim/src/components/MechanicalViewport.tsx` |
+| 4.3 | §4.1 | Camera presets: coaxial bore, isometric cutaway, escapement macro, stage rig, orbit, push-in, and impulse | target | code-built. Depth of field runs only on the close presets, and only in the high tier | preset buttons |
 | 4.4 | §4.2 | Throw 5 m to 50 m, persistence presets, chopper comparison of smear vs blanking [T] | target | code-built. Transition is the continuous angle plus the azimuth step at the beat | `sim/src/components/Cyclorama.tsx` |
 | 4.5 | §4.3 | Phase portrait with +/- 3.5 deg kick at peak velocity, and spiral on brake or power cut [T] | target | code-built from samples. The kick is at center because that is where speed peaks. Decay appears when damping exceeds drive | `sim/src/components/Timegrapher.tsx` |
 | 4.6 | §4.3 | Timegrapher strip with 44 deg lift and 2.1 ms unlock [T] | target | conflict-visible. Strip shows theta, blank band, and beat ticks. 44 deg and 2.1 ms are labeled source claims [S] | pane 3 legend |
@@ -154,12 +154,13 @@ Added after Caleb asked for a live-environment view. The source specification di
 
 | ID | Source | Requirement | Class | State | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| S.1 | 2026-11-08 approval | Audience view with floor, backdrop, fixture, and a person for scale | presentation | code-built, tested for scale and cameras. Re-exercised 2026-11-15 | `sim/tests/stage.test.ts`, stage screenshots in `verification-report.md` |
+| S.1 | 2026-11-08 approval | Audience view with floor, backdrop, fixture, and a person for scale | presentation | code-built, tested for scale and cameras. The room is an optical table, posts, and a target card. Re-exercised 2026-11-15 | `sim/tests/stage.test.ts`, stage screenshots in `verification-report.md` |
 | S.2 | Same | Side and fixture cameras | presentation | code-built | camera buttons |
 | S.3 | Same | Beams follow current throw, angle, blanking, and intensity | target | code-built, tested. No extra rays | `liveBeams` |
 | S.4 | Same | Afterglow is time accumulation | assumption | code-built, tested | `nextTrail` |
 | S.5 | Same | Haze and brightness are not photometry or a safety rating | constraint | disclosed on the stage view | `STAGE_COPY` |
 | S.6 | Same | Engineering panes and controls remain | target | code-built. Stage and Engineering are modes of one simulator | header tabs |
+| S.7 | Same | Quality tiers, read-only see-why panels, and a replay scrubber | presentation | code-built. The scrubber reads recorded samples and does not step the solver. The default tier is medium. This does not add a decision ID and does not move a Decision index status | `sim/src/post/`, `sim/src/panels/`, `sim/src/replay/` |
 
 ## Nov 15 2026 working revision
 

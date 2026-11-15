@@ -4,6 +4,10 @@ import { Cyclorama } from "./components/Cyclorama";
 import { MechanicalViewport } from "./components/MechanicalViewport";
 import { StagePreview } from "./components/StagePreview";
 import { Timegrapher } from "./components/Timegrapher";
+import { SeeWhyPanels } from "./panels/SeeWhyPanels";
+import { QualityToggle } from "./post/QualityToggle";
+import type { QualityTier } from "./post/limits";
+import { ReplayProvider, ReplayScrubber, useReplayScrub } from "./replay";
 import { displayedAmplitudeRad, measuredOscillationHz } from "./physics/EscapementSolver";
 import { PROVENANCE } from "./physics/constants";
 import { radToDeg } from "./physics/units";
@@ -13,6 +17,7 @@ import { useSimulator } from "./sim/useSimulator";
 
 export function App() {
   const sim = useSimulator();
+  const [tier, setTier] = useState<QualityTier>("medium");
   const benchRef = useRef<HTMLDivElement>(null);
   const [split, setSplit] = useState({ x: 0.5, y: 0.56 });
   const [narrow, setNarrow] = useState(false);
@@ -68,6 +73,12 @@ export function App() {
 
   return (
     <ErrorBoundary>
+      <ReplayProvider
+        subscribe={sim.subscribe}
+        settings={sim.settings}
+        readout={sim.readout}
+        onRestoreShareLink={(state) => sim.setSettings(state.settings)}
+      >
       <div className="workbench">
         <header className="topbar">
           <div className="brand">
@@ -104,6 +115,7 @@ export function App() {
             </span>
             <span data-testid="readout-amplitude">{amplitude.toFixed(2)} deg</span>
             <span data-testid="readout-fps">{sim.readout.fps === null ? "FPS unmeasured" : `${sim.readout.fps.toFixed(0)} FPS this session`}</span>
+            <QualityToggle tier={tier} onChange={setTier} />
           </div>
         </header>
         <p className="banner">
@@ -114,7 +126,7 @@ export function App() {
         </p>
         {sim.settings.viewMode === "stage" ? (
           <div className="stage-layout">
-            <StagePreview settings={sim.settings} subscribe={sim.subscribe} />
+            <StagePreview settings={sim.settings} subscribe={sim.subscribe} tier={tier} />
             <aside className="stage-rail">
               <div className="stage-controls">
                 <label>
@@ -188,7 +200,7 @@ export function App() {
                   }
             }
           >
-            <MechanicalViewport subscribe={sim.subscribe} />
+            <MechanicalViewport subscribe={sim.subscribe} tier={tier} />
             {narrow ? null : <div className="gutter" onPointerDown={drag("x")} />}
             <Cyclorama settings={sim.settings} setSettings={sim.setSettings} subscribe={sim.subscribe} />
             {narrow ? null : <div className="gutter horizontal" style={{ gridColumn: "1 / -1" }} onPointerDown={drag("y")} />}
@@ -215,8 +227,27 @@ export function App() {
             />
           </div>
         )}
+        <ViewerTools sim={sim} />
       </div>
+      </ReplayProvider>
     </ErrorBoundary>
+  );
+}
+
+function ViewerTools({ sim }: { sim: ReturnType<typeof useSimulator> }) {
+  const replay = useReplayScrub();
+  return (
+    <section className="viewer-tools" aria-label="Replay and see-why">
+      <ReplayScrubber />
+      <SeeWhyPanels
+        readout={sim.readout}
+        subscribe={sim.subscribe}
+        settings={sim.settings}
+        power={sim.power}
+        paused={sim.paused}
+        scrubTimeSeconds={replay.followingLive ? undefined : replay.scrubTimeSeconds}
+      />
+    </section>
   );
 }
 

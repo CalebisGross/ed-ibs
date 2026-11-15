@@ -168,3 +168,7 @@ Caleb on Nov 15 2026 (issue #16): square versus round chassis stays OPEN; the ot
 - D-41. ED-10 yoke: WORKING. Add a BOM line for the 20.00 mm top mounting block alongside the 6.00 mm side plates [S MAN p7-p8]. BP p2 currently lists only 6 mm plate. Manufacturing note from Jason (@jkbennitt): nearest stock is inch plate (about 0.25 in / 0.75 in). No size change decided.
 - D-42. ED-05 crest vertex: WORKING. BP p4 OpenSCAD uses `outer_r = 7.40` and crest `[outer_r + 0.15, 1.35]`, which sits outside Dia 14.80 mm on BP p3 (radial distance about 7.67 mm [C]). Clip the crest to the OD in derived CAD or notes. Do not edit the PDF.
 - D-43. Side access hatches: WORKING. Add BOM placeholder part ID ED-11 for the removable side access hatches called out on MAN p1 Op 30, MAN p16, and MAN p19, missing from BP p2. Material, thickness, and quantity are OPEN sub-items (unspecified in the PDFs; do not invent values).
+
+## 2026-11-15 viewer
+
+The cinematic stage, quality tiers, see-why panels, and replay scrubber are a simulator presentation. The Decision index above is unchanged: no ID was added and no status moved. Scene dimensions come from the existing solver constants and the open envelopes already recorded here. They are not hardware measurements. Exploded view stays D-39 OPEN. Ray-trace stays D-35 OPEN. A decision-ID map is not part of this view.

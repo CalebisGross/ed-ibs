@@ -34,6 +34,7 @@ import {
   type StageCameraName,
   type TrailPoint,
 } from "../stage/stageGeometry";
+import { createQualityPipeline, markLaserBloom, type QualityTier } from "../post/createQualityPipeline";
 import { addStudioKeyFill, configureRenderer, mountStudio } from "../stage/studio";
 import { createLockTick } from "../stage/tick";
 
@@ -45,14 +46,18 @@ const MAX_TRAIL = 14000;
 export function StagePreview({
   settings,
   subscribe,
+  tier,
 }: {
   settings: Settings;
   subscribe: (listener: (packet: FramePacket) => void) => () => void;
+  tier: QualityTier;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<StageView>("audience");
   const hazeRef = useRef(settings.hazeDisplay);
   const tickRef = useRef(createLockTick());
+  const tierRef = useRef(tier);
+  tierRef.current = tier;
   const [cameraName, setCameraName] = useState<StageView>("audience");
   const [tick, setTick] = useState(false);
   const [webgl, setWebgl] = useState("starting");
@@ -93,6 +98,7 @@ export function StagePreview({
     controls.target.set(0, 2.3, 6);
     addStudioKeyFill(scene);
     const releaseStudio = mountStudio(renderer, scene);
+    const pipeline = createQualityPipeline({ renderer, scene, camera, tier: tierRef.current });
 
     const lab = buildLabBench();
     scene.add(lab.group);
@@ -101,6 +107,7 @@ export function StagePreview({
     scene.add(mechanism.group);
     const laser = createLaserRig(MAX_RAYS, CHANNELS.map((channel) => channel.css));
     scene.add(laser.beams, laser.haze);
+    markLaserBloom(laser.beams);
 
     const person = new THREE.Group();
     person.name = "scale-figure";
@@ -173,6 +180,7 @@ export function StagePreview({
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
+      pipeline.setSize(width, height);
     };
     const observer = new ResizeObserver(resize);
     observer.observe(host);
@@ -274,7 +282,11 @@ export function StagePreview({
         }
       }
       if (controls.enabled) controls.update();
-      renderer.render(scene, camera);
+      pipeline.setTier(tierRef.current);
+      pipeline.setMacroDof(view === "wheel" || view === "impulse");
+      const focus = camera.position.distanceTo(controls.target);
+      pipeline.setFocusDistance(focus > 0 ? focus : null);
+      pipeline.render(frameDt);
       raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
@@ -284,6 +296,7 @@ export function StagePreview({
       cancelAnimationFrame(raf);
       observer.disconnect();
       controls.dispose();
+      pipeline.dispose();
       releaseStudio();
       disposeObject3D(scene);
       renderer.dispose();

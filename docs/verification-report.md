@@ -121,3 +121,54 @@ TLC, copied from the committed reports:
 - `docs/statecharts/simrun/report.md`: TLC reached 320 states and 2464 steps. The chart draws 17 states and 20 arrows. The view hides 320 steps.
 
 `statechart.test.ts` replays the broken rules in those reports. The rules stay open. Rows 2.9, 2.11, 2.15, 4.9, and A.5 cite the reports and stay open.
+
+## Viewer integration, 2026-11-15
+
+This section is a later session on branch `viewer/cinematic-stage`. It does not replace the numbers above. The stage look, the post-quality pass, the see-why panels, and the replay scrubber were merged here and wired into the existing workbench. The solver, `settings.ts`, and the byte-locked specification files were not edited. Decision index IDs and statuses were not moved. Nothing in this section is a hardware measurement.
+
+Inputs that were already on the remote: post `e41f4ef`, panels `5e90410`, replay `e742c99`, stage look `10f27cd`, main `641913b`.
+
+Commands, run on the working tree this section describes:
+
+```bash
+cd sim && npm run typecheck
+cd sim && npm test
+node scripts/check-docs.mjs
+bash scripts/check-statecharts.sh
+cd sim && node scripts/browser-verify.mjs
+```
+
+`npm run dev` was already serving `http://127.0.0.1:43117/`.
+
+Results:
+
+- `npm run typecheck` (`tsc --noEmit`) exited 0.
+- `npm test` (`vitest run`, Vitest v2.1.9) exited 0. Start 22:15:10, duration 1.97 s. 10 files, 90 tests, all passed: `post.test.ts` 11, `statechart.test.ts` 15, `replay.test.ts` 9, `model.test.ts` 10, `solver.test.ts` 13, `panels.test.ts` 14, `stage.test.ts` 6, `stage-look.test.ts` 7, `provenance.test.ts` 3, `documents.test.ts` 2.
+- `node scripts/check-docs.mjs` printed `ok` and exited 0.
+- `bash scripts/check-statecharts.sh` printed `escapement ok (74 distinct states)`, `simrun ok (320 distinct states)`, and `check-statecharts: ok`.
+- `node scripts/browser-verify.mjs` exited 0. Headless Chrome 157.0.8103.50. `consoleErrors` was empty. `pageErrors` was empty. Console lines were the Vite connect notices and the React DevTools notice.
+
+Script fields from this run:
+
+- Audience status: `9 live rays, source 85%, gate open, running, throw 12.0 m`. Canvas host 1098x346.
+- After the throw slider: `9 live rays, source 85%, gate open, running, throw 22.0 m`.
+- Pause held `step 31397`, then `step 31397` again after the script's 0.5 s wait.
+- Power cut status: `0 live rays, source off, gate open, running, throw 22.0 m`.
+- Engineering pane titles matched the four pane headings.
+- Before the curb move: frequency `derived 8.0014 Hz`, amplitude `14.18 deg`, `step 46395`, state `running`, WebGL `WebGL viewport ready`.
+- After curb: `derived 11.6437 Hz`. After thickness: `derived 11.6437 Hz`.
+- Brake: amplitude `10.00 deg`, then `2.25 deg` after the script's 1.2 s wait.
+- Engineering pause: `step 59593`. Reset: `step 0`. Chopper button text: `Chopper off`.
+- Mobile canvas host 403x597.
+- Final `readout-fps` text: `27 FPS this session`. That string is the in-app session counter, not the frame-time sample below.
+
+The browser script waits for `load`, then for Puppeteer's in-flight request count to stay at zero for 500 ms. Chrome 157 does not emit the networkIdle lifecycle event for this document. The later solver checks are unchanged.
+
+Frame times, measured after that browser run, on the same dev server. Method: 35 `requestAnimationFrame` gaps after a 400 ms settle. Viewport 1440x900. Stage samples use the audience camera. The macro sample uses Engineering, Escapement macro, high tier. GPU string: `ANGLE (Mesa, llvmpipe (LLVM 20.1.2 256 bits), OpenGL 4.5)`. CPU from `/proc/cpuinfo`: `Intel(R) Xeon(R) Processor`, 4 processors. These gaps include the solver and the render call. They are not a GPU fence, and they are not `lastFrameMs` from the post pipeline.
+
+- Low, audience: median 33.3 ms, mean 40.48 ms, min 16.5 ms, max 116.7 ms.
+- Medium, audience: median 49.9 ms, mean 43.81 ms, min 16.6 ms, max 133.4 ms.
+- High, audience: median 49.9 ms, mean 51.90 ms, min 16.6 ms, max 116.7 ms.
+- High, escapement macro: median 99.9 ms, mean 94.76 ms, min 66.6 ms, max 149.9 ms.
+
+Stills from the same session are under `/opt/cursor/artifacts/`. They are not committed. The room uses one synthesized neutral studio HDRI (`sim/src/stage/assets/studio-neutral.hdr`), not a photograph. Ghosted envelopes stay semi-transparent and the legend says they are illustrative. Depth of field is on only for the close cameras, and only in the high tier.

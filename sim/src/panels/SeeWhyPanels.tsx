@@ -28,6 +28,8 @@ export interface SeeWhyPanelsProps {
   settings: Settings;
   power: PowerLatch;
   paused: boolean;
+  /** Recorded sample time, seconds. Omit it while replay is following the live head. */
+  scrubTimeSeconds?: number;
 }
 
 interface LiveView {
@@ -68,20 +70,40 @@ export function SeeWhyPanels(props: SeeWhyPanelsProps) {
     ],
   );
   const tails = useHeadlessTails();
+  const scrubbed = sampleAtOrBefore(live.samples, props.scrubTimeSeconds);
+  const phaseCurrent = scrubbed
+    ? { thetaDeg: radToDeg(scrubbed.theta), omegaRadPerS: scrubbed.omega }
+    : { thetaDeg: radToDeg(state.theta), omegaRadPerS: state.omega };
+  const phaseTime = scrubbed ? scrubbed.t : state.t;
+  const scrubLabel =
+    props.scrubTimeSeconds !== undefined && Number.isFinite(props.scrubTimeSeconds)
+      ? ` Scrub ${props.scrubTimeSeconds.toFixed(3)} s uses the recorded sample at or before that time.`
+      : "";
   return (
-    <div className="see-why" data-testid="see-why-panels" data-paused={props.paused ? "true" : "false"}>
+    <div
+      className="see-why"
+      data-testid="see-why-panels"
+      data-paused={props.paused ? "true" : "false"}
+      data-scrub-seconds={props.scrubTimeSeconds ?? ""}
+    >
       <p className="see-why-banner">
         {props.paused ? "Paused." : "Running."} Panels read solver output. Headless runs call step on separate states.
-        Sample window {((SAMPLE_CAP * DT_S).toFixed(2))} s.
+        Sample window {((SAMPLE_CAP * DT_S).toFixed(2))} s.{scrubLabel}
       </p>
       <StateChartOverlay state={state} settings={props.settings} power={props.power} recent={recent} />
-      <BlankWindowTimeline marks={live.marks} blankDeg={blankDeg} state={state} settings={props.settings} />
+      <BlankWindowTimeline
+        marks={live.marks}
+        blankDeg={blankDeg}
+        state={state}
+        settings={props.settings}
+        cursorSeconds={props.scrubTimeSeconds}
+      />
       <ProvenanceList ids={DISPLAYED_PROVENANCE_IDS} />
       <PhasePortrait
         samples={live.samples}
-        current={{ thetaDeg: radToDeg(state.theta), omegaRadPerS: state.omega }}
+        current={phaseCurrent}
         power={props.power}
-        simTime={state.t}
+        simTime={phaseTime}
         unwindSeconds={props.settings.unwindSeconds}
         decay={tails.decay}
         unwind={tails.unwind}
@@ -96,6 +118,16 @@ export function SeeWhyPanels(props: SeeWhyPanelsProps) {
       />
     </div>
   );
+}
+
+function sampleAtOrBefore(samples: FramePacket["samples"], t: number | undefined): FramePacket["samples"][number] | null {
+  if (t === undefined || !Number.isFinite(t)) return null;
+  let found: FramePacket["samples"][number] | null = null;
+  for (const sample of samples) {
+    if (sample.t <= t) found = sample;
+    else break;
+  }
+  return found;
 }
 
 function useLiveView(subscribe: SeeWhyPanelsProps["subscribe"]): LiveView {

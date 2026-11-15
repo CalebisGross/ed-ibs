@@ -200,6 +200,11 @@
 }
 
 .see-why-axis,
+.see-why-scrub {
+  stroke: #d1a15c;
+  stroke-width: 1;
+}
+
 .see-why-window-edge {
   stroke: var(--see-accent);
 }

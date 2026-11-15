@@ -63,7 +63,11 @@ async function clickButton(label) {
 }
 
 await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
-await page.goto(url, { waitUntil: "networkidle0", timeout: 30000 });
+// Chrome 157 does not emit the networkIdle lifecycle event for this document
+// even after every resource has finished. Wait for load, then for Puppeteer's
+// in-flight request count to stay at zero. The later solver checks still gate readiness.
+await page.goto(url, { waitUntil: "load", timeout: 30000 });
+await page.waitForNetworkIdle({ idleTime: 500, timeout: 30000 });
 await page.waitForSelector('[data-testid="pane-stage"]');
 await page.waitForFunction(() => {
   const step = document.querySelector('[data-testid="sim-step"]')?.textContent ?? "";

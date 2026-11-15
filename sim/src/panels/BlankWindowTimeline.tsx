@@ -13,6 +13,7 @@ export function BlankWindowTimeline(props: {
   blankDeg: number;
   state: SolverState;
   settings: Settings;
+  cursorSeconds?: number;
 }) {
   const harmonic = harmonicBlankMs(props.state, props.settings);
   return (
@@ -26,7 +27,7 @@ export function BlankWindowTimeline(props: {
           No RK4 steps yet. The timeline fills from solver samples.
         </p>
       ) : (
-        <TimelinePlot marks={props.marks} blankDeg={props.blankDeg} />
+        <TimelinePlot marks={props.marks} blankDeg={props.blankDeg} cursorSeconds={props.cursorSeconds} />
       )}
       <dl className="see-why-readouts">
         <div>
@@ -99,7 +100,7 @@ function harmonicBlankMs(state: SolverState, settings: Settings): number | null 
   return seconds === null ? null : seconds * 1000;
 }
 
-function TimelinePlot(props: { marks: readonly TimelineMark[]; blankDeg: number }) {
+function TimelinePlot(props: { marks: readonly TimelineMark[]; blankDeg: number; cursorSeconds?: number }) {
   const times = props.marks.map((mark) => mark.t);
   const angles = props.marks.map((mark) => mark.thetaDeg);
   const xDomain = paddedDomain(times, times);
@@ -140,6 +141,15 @@ function TimelinePlot(props: { marks: readonly TimelineMark[]; blankDeg: number 
             y2={yOf(-props.blankDeg)}
             className="see-why-window-edge"
           />
+          {props.cursorSeconds !== undefined && Number.isFinite(props.cursorSeconds) ? (
+            <line
+              x1={xOf(props.cursorSeconds)}
+              x2={xOf(props.cursorSeconds)}
+              y1={yOf(yDomain[0])}
+              y2={yOf(yDomain[1])}
+              className="see-why-scrub"
+            />
+          ) : null}
           {props.marks.map((mark, index) =>
             mark.bracketsWindow ? (
               <rect

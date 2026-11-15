@@ -228,3 +228,7 @@ These disagreements are recorded on purpose. They are not treated as one number.
 - `hardware-docs-review.md`, section "Physics sanity (rough, my numbers)", still shows the first-pass ribbon and stiffness estimates. Later analysis replaced the working torque and the working frequency band. That review section was left as the first pass.
 - `gemini-revision-deviations.md`, section "Nov 15 2026 step 1 status", still says item 7 "NEEDS CALEB". The 11:01, 11:42, and 11:44 sections below it are the later status. Item 7 is WORKING as of 11:44 CT.
 - Solver endpoint 11.643676832 Hz and analysis endpoint 11.64 Hz at 8.5 mm are the same law, rounded differently. Analysis 11.46 Hz is the 8.78 mm stress floor, not a second law. [C]
+
+## 2026-11-15 viewer
+
+The cinematic stage, quality tiers, see-why panels, and replay scrubber are a simulator presentation. The Decision index above is unchanged: no ID was added and no status moved. Scene dimensions come from the existing solver constants and the open envelopes already recorded here. They are not hardware measurements. Exploded view stays D-39 OPEN. Ray-trace stays D-35 OPEN. A decision-ID map is not part of this view.

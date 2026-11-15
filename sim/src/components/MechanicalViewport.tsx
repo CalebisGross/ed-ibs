@@ -19,6 +19,7 @@ import {
   smoothstep,
   type MotionSample,
 } from "../stage/motion";
+import { createQualityPipeline, markLaserBloom, type QualityTier } from "../post/createQualityPipeline";
 import { addStudioKeyFill, configureRenderer, mountStudio } from "../stage/studio";
 import { createLockTick } from "../stage/tick";
 import type { FramePacket } from "../sim/useSimulator";
@@ -41,13 +42,17 @@ const PUSH_TO = {
 
 export function MechanicalViewport({
   subscribe,
+  tier,
 }: {
   subscribe: (listener: (packet: FramePacket) => void) => () => void;
+  tier: QualityTier;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const presetRef = useRef<PresetName>("coaxial");
   const sectionRef = useRef(false);
   const tickRef = useRef(createLockTick());
+  const tierRef = useRef(tier);
+  tierRef.current = tier;
   const [preset, setPreset] = useState<PresetName>("coaxial");
   const [section, setSection] = useState(false);
   const [tick, setTick] = useState(false);
@@ -89,6 +94,7 @@ export function MechanicalViewport({
     controls.target.set(0, 0, 0);
     addStudioKeyFill(scene);
     const releaseStudio = mountStudio(renderer, scene);
+    const pipeline = createQualityPipeline({ renderer, scene, camera, tier: tierRef.current });
     const mechanism = createMechanism();
     scene.add(mechanism.group);
     const laser = createLaserRig(18, CHANNELS.map((channel) => channel.css), {
@@ -97,6 +103,7 @@ export function MechanicalViewport({
       spot: 0.0014,
     });
     scene.add(laser.beams, laser.haze);
+    markLaserBloom(laser.beams);
 
     const latest = { packet: null as FramePacket | null };
     let motion: MotionSample[] = [];
@@ -130,6 +137,7 @@ export function MechanicalViewport({
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
+      pipeline.setSize(width, height);
     };
     const observer = new ResizeObserver(resize);
     observer.observe(host);
@@ -199,7 +207,11 @@ export function MechanicalViewport({
           pose.angularBlank,
         );
       }
-      renderer.render(scene, camera);
+      pipeline.setTier(tierRef.current);
+      pipeline.setMacroDof(wanted === "macro" || wanted === "orbit" || wanted === "push" || wanted === "impulse");
+      const focus = camera.position.distanceTo(controls.target);
+      pipeline.setFocusDistance(focus > 0 ? focus : null);
+      pipeline.render(frameDt);
       raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
@@ -216,6 +228,7 @@ export function MechanicalViewport({
       observer.disconnect();
       renderer.domElement.removeEventListener("webglcontextlost", onLost);
       controls.dispose();
+      pipeline.dispose();
       releaseStudio();
       disposeObject3D(scene);
       renderer.dispose();
@@ -267,7 +280,7 @@ export function MechanicalViewport({
         <p className={webgl === "ready" ? "sr" : "legend"} data-testid="webgl-status">
           {webgl === "ready" ? "WebGL viewport ready" : webgl}
         </p>
-        <p className="legend">
+        <p className="legend mech-notes">
           Solid: balance ring inner 28 mm, outer 36 mm, Ti-6Al-4V. Axial thickness is the illustrative CAD value. Leaf length follows the curb. Width and bow are illustrative. {ghosts.join(" ")} No drawn part is specified as brass. Short beams are direction markers, not the throw. Haze here is a fixed display value. Impulse slows the picture only. Tick stays off until enabled and marks a valid beat, not a contact microphone.
         </p>
       </div>

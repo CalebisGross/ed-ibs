@@ -67,7 +67,14 @@ select {
 .workbench {
   height: 100%;
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr) 168px;
+}
+
+.viewer-tools {
+  min-height: 0;
+  overflow: auto;
+  border-top: 1px solid #2a3444;
+  background: #10151c;
 }
 
 .topbar {
@@ -196,6 +203,12 @@ details p {
 .legend {
   padding: 6px 8px;
   border-top: 1px solid #243044;
+}
+
+.mech-notes {
+  max-height: 4.6em;
+  overflow: auto;
+  flex: 0 0 auto;
 }
 
 .console {
@@ -344,6 +357,11 @@ details p {
   .workbench {
     height: auto;
     min-height: 100%;
+    grid-template-rows: auto auto auto auto;
+  }
+
+  .viewer-tools {
+    overflow: visible;
   }
 
   .bench.narrow {
