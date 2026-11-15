@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
+import { heavyDisplayFor, type QualityTier } from "../post/limits";
 import studioUrl from "./assets/studio-neutral.hdr?url";
 
 /**
@@ -100,7 +101,41 @@ export function configureRenderer(renderer: THREE.WebGLRenderer): void {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NoToneMapping;
   renderer.toneMappingExposure = 1;
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = false;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+}
+
+const HELD_ENV = "tierHeldEnvironment";
+
+export function applyTierSceneCost(
+  renderer: THREE.WebGLRenderer,
+  scene: THREE.Scene,
+  tier: QualityTier,
+  hazeRoot: THREE.Object3D | null,
+  fog: THREE.FogExp2 | null,
+  hazeDensity: number,
+): void {
+  const cost = heavyDisplayFor(tier);
+  if (renderer.shadowMap.enabled !== cost.shadows) {
+    renderer.shadowMap.enabled = cost.shadows;
+    renderer.shadowMap.needsUpdate = true;
+  }
+  if (hazeRoot) hazeRoot.visible = cost.haze;
+  const shell = scene.getObjectByName("scenery-shell");
+  if (shell) shell.visible = cost.shadows;
+  if (!cost.haze) {
+    scene.fog = null;
+    if (scene.environment) {
+      scene.userData[HELD_ENV] = scene.environment;
+      scene.environment = null;
+    }
+    return;
+  }
+  if (fog) {
+    scene.fog = fog;
+    fog.density = hazeDensity;
+  }
+  const held = scene.userData[HELD_ENV] as THREE.Texture | undefined;
+  if (!scene.environment && held) scene.environment = held;
 }

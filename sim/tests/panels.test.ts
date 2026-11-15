@@ -267,8 +267,13 @@ describe("SeeWhyPanels", () => {
     expect(html).toContain("Q 350 tail is not in solver output yet");
     expect(html).toContain("frequency (Hz)");
     expect(html).toContain("amplitude (deg)");
-    expect(html).toContain("angle (deg)");
-    expect(html).toContain("angular velocity (rad/s)");
+    expect(html).toContain("angle (rad)");
+    expect(html).toContain("rad/s");
+    const phase = html.slice(html.indexOf('data-testid="see-why-phase"'));
+    const plotEnd = phase.indexOf("</svg>");
+    const legendAt = phase.indexOf("see-why-phase-legend");
+    expect(plotEnd).toBeGreaterThan(-1);
+    expect(legendAt).toBeGreaterThan(plotEnd);
     expect(html).toContain("data-outcome=\"holds\"");
     expect(html).toContain("data-outcome=\"inside\"");
     expect(html).toContain("data-brackets=\"true\"");

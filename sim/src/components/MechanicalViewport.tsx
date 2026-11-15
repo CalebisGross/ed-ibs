@@ -20,7 +20,7 @@ import {
   type MotionSample,
 } from "../stage/motion";
 import { createQualityPipeline, markLaserBloom, type QualityTier } from "../post/createQualityPipeline";
-import { addMacroBackdrop, addStudioKeyFill, configureRenderer, mountStudio } from "../stage/studio";
+import { addMacroBackdrop, addStudioKeyFill, applyTierSceneCost, configureRenderer, mountStudio } from "../stage/studio";
 import { createLockTick } from "../stage/tick";
 import type { FramePacket } from "../sim/useSimulator";
 import { visualShafts, type LiveBeam, type VisualShaft } from "../stage/stageGeometry";
@@ -93,7 +93,8 @@ export function MechanicalViewport({
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x4a5156, 0.55);
+    const fog = new THREE.FogExp2(0x4a5156, 0.55);
+    scene.fog = fog;
     const camera = new THREE.PerspectiveCamera(26, 1, 0.001, 4);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -229,6 +230,7 @@ export function MechanicalViewport({
         );
       }
       pipeline.setTier(tierRef.current);
+      applyTierSceneCost(renderer, scene, tierRef.current, laser.haze, fog, 0.55);
       const macro = wanted === "macro";
       pipeline.setMacroDof(macro);
       const focusPoint = macro ? CONTACT : controls.target;

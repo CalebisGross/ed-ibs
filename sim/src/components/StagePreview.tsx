@@ -35,7 +35,7 @@ import {
   type TrailPoint,
 } from "../stage/stageGeometry";
 import { createQualityPipeline, markLaserBloom, type QualityTier } from "../post/createQualityPipeline";
-import { addStudioKeyFill, configureRenderer, mountStudio } from "../stage/studio";
+import { addStudioKeyFill, applyTierSceneCost, configureRenderer, mountStudio } from "../stage/studio";
 import { createLockTick } from "../stage/tick";
 
 type StageView = StageCameraName | "orbit" | "screen" | "wheel" | "impulse";
@@ -244,7 +244,6 @@ export function StagePreview({
         const feet = figureFeet(packet.throwM);
         person.position.set(feet.x, feet.y, feet.z);
         const haze = hazeRef.current;
-        fog.density = 0.003 + 0.01 * haze;
         const fallback = poseFromPacket(packet);
         const end = motion[motion.length - 1] ?? fallback;
         displayT = advanceDisplayTime({
@@ -294,11 +293,10 @@ export function StagePreview({
         }
       }
       if (controls.enabled) controls.update();
+      applyTierSceneCost(renderer, scene, tierRef.current, laser.haze, fog, 0.003 + 0.01 * hazeRef.current);
       pipeline.setTier(tierRef.current);
-      const macro = view === "wheel" || view === "impulse";
-      pipeline.setMacroDof(macro);
-      const focus = macro ? camera.position.distanceTo(wheelTarget) : camera.position.distanceTo(controls.target);
-      pipeline.setFocusDistance(focus > 0 ? focus : null);
+      pipeline.setMacroDof(false);
+      pipeline.setFocusDistance(null);
       pipeline.render(frameDt);
       raf = requestAnimationFrame(draw);
     };

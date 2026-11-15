@@ -219,3 +219,18 @@ Frame times, measured on the same dev server after the look pass. Method: 35 `re
 - High, escapement macro: median 149.9 ms, mean 140.47 ms, min 16.7 ms, max 183.2 ms.
 
 Replacement stills, not the rejected set, are the `review-*.png` files under `/opt/cursor/artifacts/`. They are not committed.
+
+## Frame-time pass, 2026-11-15
+
+Same branch, after the look-pass frame times above. The solver was not edited. Decision index IDs and statuses were not moved. This is still a simulator presentation, not a hardware measurement.
+
+Low now skips the shadow map, the haze volume, SSAO, and depth of field. It also skips the room shell and the environment map, which the closer framing had made expensive on the software GPU. Medium and high keep the shell, the environment map, shadows, and haze. Depth of field stays on the escapement macro preset only, with a smaller aperture so the contact stays readable. The phase legend sits under the plot. The axes are angle in rad and rad/s. The blank window draws one line through the RK4 samples. No drawn part is brass. A Gemini prototype note lists brass as an alternate for the escape wheel beside silicon nitride. The wheel in this view stays the silicon nitride ghost.
+
+Frame times, one session, same method as the rows above: 35 `requestAnimationFrame` gaps after a 400 ms settle, viewport 1440x900. Audience rows use the audience camera. The last row is Engineering, Escapement macro, high tier. GPU string: `ANGLE (Mesa, llvmpipe (LLVM 20.1.2 256 bits), OpenGL 4.5)`. CPU from `/proc/cpuinfo`: `Intel(R) Xeon(R) Processor`, 4 processors. The gaps include the solver and the render. They are not a GPU fence.
+
+- Low, audience: median 33.3 ms, mean 34.76 ms, min 16.6 ms, max 50.1 ms.
+- Medium, audience: median 66.7 ms, mean 65.71 ms, min 49.9 ms, max 83.5 ms.
+- High, audience: median 83.4 ms, mean 84.28 ms, min 50.0 ms, max 116.6 ms.
+- High, escapement macro: median 83.3 ms, mean 83.80 ms, min 33.3 ms, max 100.1 ms.
+
+Three earlier low-tier samples, same method and same GPU, had medians 33.3 ms, 33.4 ms, and 33.4 ms. Stills from after the layout fix are the `pass3-*.png` files under `/opt/cursor/artifacts/`. They are not committed.

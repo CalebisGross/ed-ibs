@@ -1,5 +1,5 @@
 import type { Sample } from "../sim/useSimulator";
-import { radToDeg } from "../physics/units";
+import { degToRad, radToDeg } from "../physics/units";
 import type { PowerLatch } from "../physics/powerCut";
 import { cutElapsedSeconds } from "./escapementReading";
 import type { IllustrativePhaseSeries, SolverPhaseSeries } from "./phaseSeries";
@@ -27,8 +27,7 @@ export function PhasePortrait(props: {
   return (
     <section className="see-why-panel" data-testid="see-why-phase">
       <header className="see-why-panel-head">
-        <h2>Phase portrait</h2>
-        <p>Angle against angular velocity.</p>
+        <h2 title="Angle against angular velocity. The legend sits under the plot.">Phase portrait</h2>
       </header>
       {props.error ? <p className="see-why-empty">{props.error}</p> : null}
       {!hasCurve && !props.error ? (
@@ -36,40 +35,41 @@ export function PhasePortrait(props: {
           No phase samples yet.
         </p>
       ) : null}
-      {hasCurve ? (
-        <PhasePlot session={plotted} decay={props.decay} unwind={props.unwind} illustrative={props.illustrative} />
-      ) : null}
-      <ul className="see-why-legend">
-        <li>
-          <span className="see-why-swatch see-why-swatch-session" />
-          Session samples. <SolverSampleTag />
-        </li>
-        <li>
-          <span className="see-why-swatch see-why-swatch-decay" />
-          {props.decay ? (
-            <>
-              Headless decay, Q {props.decay.q}. <ProvenanceBadge id="q-factor" />
-            </>
-          ) : (
-            <span data-testid="see-why-phase-tail-empty">Q 350 tail is not in solver output yet.</span>
-          )}
-        </li>
-        <li>
-          <span className="see-why-swatch see-why-swatch-unwind" />
-          {props.unwind ? "Retained-source unwind." : "Power-cut unwind is not in solver output yet."}
-        </li>
-        <li>
-          <span className="see-why-swatch see-why-swatch-illustrative" />
-          {props.illustrative ? "Illustrative envelope." : "Illustrative envelope is hidden until the solver tail exists."}
-        </li>
-      </ul>
-      <details className="see-why-more">
-        <summary>Tail notes</summary>
-        <p>
-          {sessionTrailLabel(props.power, props.simTime, props.unwindSeconds)} Damping is c = sqrt(K I) / Q{" "}
-          <ProvenanceBadge id="viscous-c" />. Stride {props.decay?.stride ?? 40} steps.
-        </p>
-      </details>
+      <div className="see-why-phase-layout">
+        <div className="see-why-plot-slot">
+          {hasCurve ? (
+            <PhasePlot session={plotted} decay={props.decay} unwind={props.unwind} illustrative={props.illustrative} />
+          ) : null}
+        </div>
+        <ul
+          className="see-why-legend"
+          data-testid="see-why-phase-legend"
+          title={`${sessionTrailLabel(props.power, props.simTime, props.unwindSeconds)} Damping is c = sqrt(K I) / Q. Stride ${props.decay?.stride ?? 40} steps.`}
+        >
+          <li>
+            <span className="see-why-swatch see-why-swatch-session" />
+            Session <SolverSampleTag />
+          </li>
+          <li>
+            <span className="see-why-swatch see-why-swatch-decay" />
+            {props.decay ? (
+              <>
+                Decay Q {props.decay.q} <ProvenanceBadge id="q-factor" />
+              </>
+            ) : (
+              <span data-testid="see-why-phase-tail-empty">Q 350 tail is not in solver output yet.</span>
+            )}
+          </li>
+          <li>
+            <span className="see-why-swatch see-why-swatch-unwind" />
+            {props.unwind ? "Unwind" : "Power-cut unwind is not in solver output yet."}
+          </li>
+          <li>
+            <span className="see-why-swatch see-why-swatch-illustrative" />
+            {props.illustrative ? "Envelope" : "Illustrative envelope is hidden until the solver tail exists."}
+          </li>
+        </ul>
+      </div>
     </section>
   );
 }
@@ -106,19 +106,19 @@ function PhasePlot(props: {
     ...(props.unwind?.points ?? []),
     ...(props.illustrative?.points ?? []),
   ];
-  const xDomain = paddedDomain(series.map((point) => point.thetaDeg));
+  const xDomain = paddedDomain(series.map((point) => degToRad(point.thetaDeg)));
   const yDomain = paddedDomain(series.map((point) => point.omegaRadPerS));
   const mapLine = (
     points: readonly { thetaDeg: number; omegaRadPerS: number }[],
     xOf: (value: number) => number,
     yOf: (value: number) => number,
-  ) => polyline(points.map((point) => ({ x: xOf(point.thetaDeg), y: yOf(point.omegaRadPerS) })));
+  ) => polyline(points.map((point) => ({ x: xOf(degToRad(point.thetaDeg)), y: yOf(point.omegaRadPerS) })));
   return (
     <PlotFrame
       width={640}
       height={280}
-      xLabel="angle (deg)"
-      yLabel="angular velocity (rad/s)"
+      xLabel="angle (rad)"
+      yLabel="rad/s"
       xDomain={xDomain}
       yDomain={yDomain}
       xTicks={linearTicks(xDomain[0], xDomain[1], 5)}
@@ -140,7 +140,7 @@ function PhasePlot(props: {
           ) : null}
           {props.session.length > 0 ? (
             <circle
-              cx={xOf(props.session[props.session.length - 1].thetaDeg)}
+              cx={xOf(degToRad(props.session[props.session.length - 1].thetaDeg))}
               cy={yOf(props.session[props.session.length - 1].omegaRadPerS)}
               r={3}
               className="see-why-series-session-now"

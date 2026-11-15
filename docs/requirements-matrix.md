@@ -160,7 +160,7 @@ Added after Caleb asked for a live-environment view. The source specification di
 | S.4 | Same | Afterglow is time accumulation | assumption | code-built, tested | `nextTrail` |
 | S.5 | Same | Haze and brightness are not photometry or a safety rating | constraint | disclosed on the stage view | `STAGE_COPY` |
 | S.6 | Same | Engineering panes and controls remain | target | code-built. Stage and Engineering are modes of one simulator | header tabs |
-| S.7 | Same | Quality tiers, read-only see-why panels, and a replay scrubber | presentation | code-built. The scrubber reads recorded samples and does not step the solver. The default tier is medium. The panels sit in their own row and do not cover the engineering panes. This does not add a decision ID and does not move a Decision index status | `sim/src/post/`, `sim/src/panels/`, `sim/src/replay/` |
+| S.7 | Same | Quality tiers, read-only see-why panels, and a replay scrubber | presentation | code-built. The scrubber reads recorded samples and does not step the solver. The default tier is medium. Low skips shadows, haze, SSAO, and depth of field. The panels sit in their own row and do not cover the engineering panes. This does not add a decision ID and does not move a Decision index status | `sim/src/post/`, `sim/src/panels/`, `sim/src/replay/` |
 
 ## Nov 15 2026 working revision
 

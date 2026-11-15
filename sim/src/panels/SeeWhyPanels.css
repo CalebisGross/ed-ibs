@@ -80,6 +80,45 @@
   padding: calc(var(--see-space) * 3);
 }
 
+.see-why-panel[data-testid="see-why-phase"] {
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.see-why-phase-layout {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+  min-width: 0;
+  gap: 4px;
+}
+
+.see-why-plot-slot {
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.see-why-plot-slot > .see-why-plot {
+  height: 100%;
+  overflow: hidden;
+}
+
+.see-why-phase-layout .see-why-legend {
+  background: var(--see-surface);
+  display: grid;
+  gap: 2px 8px;
+  grid-template-columns: 1fr 1fr;
+  position: static;
+}
+
+.see-why-phase-layout .see-why-legend li {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  white-space: nowrap;
+}
+
 .see-why-panel-head {
   display: grid;
   gap: var(--see-space);
@@ -239,6 +278,12 @@
 
 .see-why-mark {
   fill: var(--see-muted);
+}
+
+.see-why-timeline {
+  fill: none;
+  stroke: var(--see-muted);
+  stroke-width: 1.25;
 }
 
 .see-why-mark-inside,

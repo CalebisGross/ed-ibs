@@ -1,68 +1,68 @@
 import * as THREE from "three";
 
-/** Oxide layer, not a bare conductor. Black hard anodize, 6061-T6. */
+/** 6061-T6, type III hard anodize. Dark satin so the bench is not a flat gray. */
 export function anodized6061(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
-    color: 0x2c3136,
-    metalness: 0.02,
-    roughness: 0.48,
-    envMapIntensity: 0.55,
+    color: 0x243038,
+    metalness: 0.42,
+    roughness: 0.5,
+    envMapIntensity: 0.9,
   });
 }
 
-/** Clear anodize on 7075. Dielectric oxide over a light alloy. */
+/** 7075 satin anodize. Warm aluminum, distinct from polished steel. */
 export function anodized7075(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
-    color: 0xb7bcc2,
-    metalness: 0.04,
+    color: 0xc6b08a,
+    metalness: 0.78,
     roughness: 0.4,
-    envMapIntensity: 0.55,
+    envMapIntensity: 1.15,
   });
 }
 
-/** Ti-6Al-4V, brushed. The source modulus is this alloy. */
+/** Ti-6Al-4V. Warm gray, still reflective. The source modulus is this alloy. */
 export function brushedTitanium(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
-    color: 0x8e939a,
+    color: 0x8a7568,
     metalness: 1,
-    roughness: 0.32,
+    roughness: 0.36,
     roughnessMap: brushMap(6, 1),
-    envMapIntensity: 1.8,
+    envMapIntensity: 1.6,
   });
 }
 
-/** Ground hardened steel. */
+/** Polished hardened steel. No brush map, so the studio reflection stays readable. */
 export function hardenedSteel(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
-    color: 0xa7adb4,
+    color: 0xd2d8e0,
     metalness: 1,
-    roughness: 0.18,
-    roughnessMap: brushMap(10, 1),
-    envMapIntensity: 1.7,
+    roughness: 0.1,
+    envMapIntensity: 2.1,
   });
 }
 
 /**
- * Brushed brass. No part in the current specification is assigned brass,
- * so the assemblies do not use this material.
+ * Brushed brass. The locked specification does not assign brass to a drawn part.
+ * A Gemini prototype note lists C36000 as an alternate for the escape wheel beside
+ * silicon nitride. The wheel in this view stays silicon nitride, so nothing calls this.
  */
 export function brushedBrass(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
     color: 0xb08d57,
     metalness: 1,
-    roughness: 0.38,
+    roughness: 0.34,
     roughnessMap: brushMap(8, 1),
-    envMapIntensity: 1,
+    envMapIntensity: 1.3,
   });
 }
 
-/** Silicon nitride. Ceramic, not a metal. */
+/** Silicon nitride. Ceramic, not a metal. Warm stone so it does not match the steels. */
 export function siliconNitride(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
-    color: 0x6a6e68,
-    metalness: 0,
-    roughness: 0.38,
-    envMapIntensity: 0.4,
+    color: 0x9a9470,
+    metalness: 0.08,
+    roughness: 0.34,
+    envMapIntensity: 0.55,
   });
 }
 

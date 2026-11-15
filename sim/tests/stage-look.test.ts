@@ -41,6 +41,7 @@ import {
   rubyJewel,
 } from "../src/stage/materials";
 import { HAZE_GROUP, LASER_BEAM, LASER_SPOT } from "../src/stage/laserRig";
+import { heavyDisplayFor } from "../src/post/limits";
 import { IMPULSE_DISPLAY_RATE, ORBIT_RAD_PER_S, advanceDisplayTime, poseAt, type MotionSample } from "../src/stage/motion";
 import { tickOnBeat } from "../src/stage/tick";
 
@@ -69,18 +70,34 @@ describe("documented stage sizes", () => {
 });
 
 describe("surface response", () => {
-  it("uses dielectric anodize, metallic titanium and steel, and a non-emissive ruby", () => {
-    expect(anodized6061().metalness).toBeLessThan(0.1);
-    expect(anodized7075().metalness).toBeLessThan(0.1);
-    expect(anodized6061().roughness).toBeGreaterThan(0.4);
-    expect(brushedTitanium().metalness).toBe(1);
-    expect(hardenedSteel().metalness).toBe(1);
-    expect(hardenedSteel().roughness).toBeLessThan(0.3);
+  it("keeps polished steel, satin anodize, and titanium distinct and reflective", () => {
+    const steel = hardenedSteel();
+    const black = anodized6061();
+    const satin = anodized7075();
+    const titanium = brushedTitanium();
+    expect(steel.metalness).toBe(1);
+    expect(steel.roughness).toBeLessThan(0.16);
+    expect(steel.envMapIntensity).toBeGreaterThan(1);
+    expect(black.roughness).toBeGreaterThan(steel.roughness);
+    expect(satin.roughness).toBeGreaterThan(steel.roughness);
+    expect(black.metalness).toBeGreaterThan(0.2);
+    expect(black.metalness).toBeLessThan(steel.metalness);
+    expect(satin.metalness).toBeGreaterThan(black.metalness);
+    expect(satin.envMapIntensity).toBeGreaterThan(0.5);
+    expect(titanium.metalness).toBe(1);
+    expect(titanium.roughness).toBeGreaterThan(steel.roughness);
+    expect(new Set([steel.color.getHex(), black.color.getHex(), satin.color.getHex(), titanium.color.getHex()]).size).toBe(4);
     expect(brushedBrass().metalness).toBe(1);
     expect(rubyJewel().metalness).toBe(0);
     expect(rubyJewel().emissiveIntensity).toBe(0);
     expect(hazeMaterial("#cccccc").emissiveIntensity).toBe(0);
     expect(laserCoreMaterial("#cccccc").emissiveIntensity).toBeGreaterThan(0);
+  });
+
+  it("drops shadows and haze on the low tier only", () => {
+    expect(heavyDisplayFor("low")).toEqual({ shadows: false, haze: false });
+    expect(heavyDisplayFor("medium")).toEqual({ shadows: true, haze: true });
+    expect(heavyDisplayFor("high")).toEqual({ shadows: true, haze: true });
   });
 });
 

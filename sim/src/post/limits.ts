@@ -21,8 +21,8 @@ export const POST_LIMITS = {
   ssaoMaxGapFactor: 3,
   ssaoRadiusMinM: 0.001,
   ssaoRadiusMaxM: 0.5,
-  dofAperture: 0.02,
-  dofMaxBlur: 0.006,
+  dofAperture: 0.004,
+  dofMaxBlur: 0.0018,
 } as const;
 
 export interface QualityEffects {
@@ -50,6 +50,21 @@ export function qualityEffectsFor(tier: QualityTier, macroDof: boolean): Quality
       return { aces: true, ssao: false, depthOfField: false, grain: false, bloom: true };
     case "high":
       return { aces: true, ssao: true, depthOfField: macroDof, grain: true, bloom: true };
+    default: {
+      const exhaustive: never = tier;
+      throw new Error(`Unhandled quality tier: ${String(exhaustive)}`);
+    }
+  }
+}
+
+/** Low skips the shadow map and the haze volume. SSAO and depth of field are already off for that tier. */
+export function heavyDisplayFor(tier: QualityTier): { shadows: boolean; haze: boolean } {
+  switch (tier) {
+    case "low":
+      return { shadows: false, haze: false };
+    case "medium":
+    case "high":
+      return { shadows: true, haze: true };
     default: {
       const exhaustive: never = tier;
       throw new Error(`Unhandled quality tier: ${String(exhaustive)}`);

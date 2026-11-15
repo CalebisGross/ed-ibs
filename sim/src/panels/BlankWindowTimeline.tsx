@@ -6,7 +6,7 @@ import { activeAnalyticHz, type Settings } from "../sim/settings";
 import type { TimelineMark } from "./blankTimeline";
 import { countBrackets } from "./blankTimeline";
 import { ProvenanceBadge, SolverSampleTag, TaggedNumber } from "./ProvenanceBadges";
-import { linearTicks, paddedDomain, PlotFrame } from "./plot";
+import { linearTicks, paddedDomain, PlotFrame, polyline } from "./plot";
 
 export function BlankWindowTimeline(props: {
   marks: readonly TimelineMark[];
@@ -20,7 +20,7 @@ export function BlankWindowTimeline(props: {
     <section className="see-why-panel" data-testid="see-why-blank-timeline">
       <header className="see-why-panel-head">
         <h2>Blank window</h2>
-        <p>Balance angle against time. Each mark is one RK4 sample. The band is the blank half-angle.</p>
+        <p>Balance angle against time. The line joins RK4 samples. The band is the blank half-angle.</p>
       </header>
       {props.marks.length === 0 ? (
         <p className="see-why-empty" data-testid="see-why-timeline-empty">
@@ -150,6 +150,10 @@ function TimelinePlot(props: { marks: readonly TimelineMark[]; blankDeg: number;
               className="see-why-scrub"
             />
           ) : null}
+          <polyline
+            points={polyline(props.marks.map((mark) => ({ x: xOf(mark.t), y: yOf(mark.thetaDeg) })))}
+            className="see-why-timeline"
+          />
           {props.marks.map((mark, index) =>
             mark.bracketsWindow ? (
               <rect
@@ -160,15 +164,7 @@ function TimelinePlot(props: { marks: readonly TimelineMark[]; blankDeg: number;
                 height={5}
                 className="see-why-mark see-why-mark-bracket"
               />
-            ) : (
-              <circle
-                key={`${mark.t}-${index}`}
-                cx={xOf(mark.t)}
-                cy={yOf(mark.thetaDeg)}
-                r={mark.angularBlank ? 2.2 : 1.4}
-                className={mark.angularBlank ? "see-why-mark see-why-mark-inside" : "see-why-mark"}
-              />
-            ),
+            ) : null,
           )}
         </>
       )}

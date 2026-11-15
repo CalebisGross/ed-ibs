@@ -49,7 +49,7 @@ export function PlotFrame(props: {
   yDomain: readonly [number, number];
   children: (xOf: (value: number) => number, yOf: (value: number) => number) => ReactNode;
 }) {
-  const margin = { top: 12, right: 12, bottom: 36, left: 52 };
+  const margin = { top: 12, right: 10, bottom: 36, left: 58 };
   const innerW = props.width - margin.left - margin.right;
   const innerH = props.height - margin.top - margin.bottom;
   const xOf = scaleLinear(props.xDomain, [margin.left, margin.left + innerW]);
