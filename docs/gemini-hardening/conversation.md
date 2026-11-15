@@ -56,7 +56,7 @@ Here is a rigorous engineering overhaul to harden the ED-IBS architecture for ma
 - The Vulnerability: If a DMX control glitch or physical jam stalls the escapement train while the primary actuator continues to drive torque, gear teeth will shear instantly.
 - The Fix:
 
-- Integrated Magnetic Slip Clutch (Hysteresis Torque Limiter): Insert a precision micro-clutch on the primary drive shaft between the actuator motor and the remontoire winding train. Set the breakaway torque to 1.5x maximum operational load—allowing slip during a physical jam to save the gear train from catastrophic failure.
+- Integrated Magnetic Slip Clutch (Hysteresis Torque Limiter): Insert a precision micro-clutch on the primary drive shaft between the actuator motor and the remontoire winding train. Set the breakaway torque to 1.5x maximum operational load, allowing slip during a physical jam to save the gear train from catastrophic failure.
 - Closed-Loop Absolute Optical Encoders: Couple a miniature magnetic absolute encoder (such as an IC-House or AMS rotary encoder) directly to the output axis of the beam splitter rather than relying solely on open-loop stepper step counts, ensuring instant error correction and zero drift over long run times.
 
 ### Implementation Next Steps
@@ -103,12 +103,12 @@ Once the kinematics are dialed in, move to real materials to test weight, balanc
 
 - The Board: Design a compact custom PCB centered around a robust MCU (such as an STM32 or ESP32 industrial variant) handling DMX512/RDM parsing.
 - Sensors: Couple an absolute magnetic rotary encoder (e.g., AMS iC-Haus) to the main output axis. Use closed-loop feedback so the firmware can automatically correct for micro-slips in the remontoire winding train or adjust phase timing dynamically.
-- Motor Drive: Implement a micro-stepping gearmotor or coreless DC motor with a planetary gearbox solely for rewinding the remontoire spring—decoupling the raw drive motor from the optical shutter modulation entirely.
+- Motor Drive: Implement a micro-stepping gearmotor or coreless DC motor with a planetary gearbox solely for rewinding the remontoire spring, decoupling the raw drive motor from the optical shutter modulation entirely.
 
 ### Phase 5: Road-Case & Shaker Validation (The Tour Test)
 
 - Flight Case Integration: Mount the fixture inside a standard half-inch tour-grade flight case with high-density EVA foam isolation blocks.
-- Vibration/Drop Testing: Before hanging it on a rig, put the fixture through a simulated transport test—or better yet, bolt it into the truck pack for a local run. Check the crossed-flexure balance cage, optical alignment, and gear mesh after transit to identify vibration fatigue points.
+- Vibration/Drop Testing: Before hanging it on a rig, put the fixture through a simulated transport test, or better yet, bolt it into the truck pack for a local run. Check the crossed-flexure balance cage, optical alignment, and gear mesh after transit to identify vibration fatigue points.
 
 ## Caleb
 
@@ -126,7 +126,7 @@ All custom parts are designed around a Coaxial Optical Axis (Z-axis) with a 150 
 - Datum B: Coaxial optical bore centerline (X = 0.00 mm, Y = 0.00 mm).
 - Datum C: Yoke trunnion pivot axis (Z = 140.00 mm, X = ± 85.00 mm).
 
-### 2. Complete Bill of Materials (BOM) — "Nothing Left Out"
+### 2. Complete Bill of Materials (BOM): "Nothing Left Out"
 
 #### A. Custom Machined Mechanical Parts
 
@@ -215,7 +215,7 @@ All custom parts are designed around a Coaxial Optical Axis (Z-axis) with a 150 
 
 ### 4. Ready-to-Run CNC G-Code & Parametric CAD Scripts
 
-#### A. CNC Milling G-Code — Part ED-03 (Sub-Plate Bearing Bores & Perimeter)
+#### A. CNC Milling G-Code: Part ED-03 (Sub-Plate Bearing Bores & Perimeter)
 
 Machine Setup: 3-Axis CNC Mill (Fanuc/Haas/LinuxCNC dialect). Origin (X0, Y0) at center of workpiece, Z0 at top surface. Tool 1: ∅ 6.0 mm 3-Flute Carbide Endmill (AlTiN coated).
 
@@ -302,7 +302,7 @@ M30
 
 ```
 
-#### B. CNC Lathe Turning G-Code — Part ED-07 (Coaxial Dove Prism Carrier)
+#### B. CNC Lathe Turning G-Code: Part ED-07 (Coaxial Dove Prism Carrier)
 
 Machine Setup: 2-Axis CNC Lathe (Fanuc Type A). Stock: ∅ 55.0 mm 303 Stainless Steel bar. Z0 at front face.
 
@@ -443,7 +443,7 @@ translate([24.5, 26.0, 5.0])
 
 ### 5. Step-by-Step Assembly & Calibration Protocol
 
-1. Dove Prism Preload Assembly: Slide the N-BK7 Dove prism into the 303 SS Carrier (ED-07) lined with 0.25 mm Kapton thermal interface strips. Thread the retaining bezel down against the 3 Belleville washers until compressed to 50% deflection (≈ 18 N axial clamping force)—enough to hold zero under 5G shock without inducing stress birefringence.
+1. Dove Prism Preload Assembly: Slide the N-BK7 Dove prism into the 303 SS Carrier (ED-07) lined with 0.25 mm Kapton thermal interface strips. Thread the retaining bezel down against the 3 Belleville washers until compressed to 50% deflection (≈ 18 N axial clamping force), enough to hold zero under 5G shock without inducing stress birefringence.
 2. Bearing Press & Sub-Plate Alignment: Press the two 6807 ceramic hybrid bearings into ED-03 and the front bulkhead (ED-02). Pin the sub-plates together using the four ∅ 3.00 mm hardened dowel pins before torquing the M3 perimeter bolts to 1.1 N·m.
 3. Escapement Drop & Lock Adjustment: Install the ruby pallet stones into ED-06 using UV-cure optical epoxy (Norland NOA 61) under a stereo microscope. Adjust pallet depth until the escape wheel teeth exhibit 0.06 mm of drop and 1.5° of locking angle on both entry and exit pallets.
 4. Electronics & DMX Bench Burn-In: Wire the STM32G474 board to the AS5048A encoder and Maxon winding motor. Flash the closed-loop PID firmware to maintain a constant 45° wind-up angle on the Nivaflex remontoire spring, isolating the optical rotation frequency (1 Hz to 60 Hz variable via DMX Channel 1) from motor torque ripple.
@@ -457,16 +457,16 @@ Output all of this into a Google sheet or whatever else that I can share with ot
 
 ## Gemini
 
-I've compiled the entire ED-IBS engineering package—including the system datums, full categorized BOM, precision dimensional callouts, ready-to-run CNC G-code, OpenSCAD parametric scripts, and assembly/calibration SOP—into a structured, shareable Google Sheet:
+I've compiled the entire ED-IBS engineering package, including the system datums, full categorized BOM, precision dimensional callouts, ready-to-run CNC G-code, OpenSCAD parametric scripts, and assembly/calibration SOP, into a structured, shareable Google Sheet:
 
 ED-IBS Engineering Blueprints & Master BOM
 
 ### What's Inside
 
-- Tab 1 — System Overview & Datums: Optical barrel envelope specifications, Datums A/B/C reference frames, and the 5-stage assembly and calibration protocol.
-- Tab 2 — Master BOM: All 32 line items (122 total parts) broken down across custom machined parts (`ED-01`–`ED-10`), optics, horological/drive hardware, and rigging/electronics/fasteners with dynamic roll-up totals.
-- Tab 3 — Dimensional Blueprints: Exact stock sizes, H7 bore tolerances, true-position coordinates, and tooth/flexure geometry for `ED-03`, `ED-04`, and `ED-05`.
-- Tab 4 — CNC G-Code & CAD Scripts: Side-by-side blocks containing the Fanuc milling G-code (`O1001`), lathe turning G-code (`O2001`), and the OpenSCAD + BOSL2 generator script for Wire EDM DXF export.
+- Tab 1: System Overview & Datums: Optical barrel envelope specifications, Datums A/B/C reference frames, and the 5-stage assembly and calibration protocol.
+- Tab 2: Master BOM: All 32 line items (122 total parts) broken down across custom machined parts (`ED-01`–`ED-10`), optics, horological/drive hardware, and rigging/electronics/fasteners with dynamic roll-up totals.
+- Tab 3: Dimensional Blueprints: Exact stock sizes, H7 bore tolerances, true-position coordinates, and tooth/flexure geometry for `ED-03`, `ED-04`, and `ED-05`.
+- Tab 4: CNC G-Code & CAD Scripts: Side-by-side blocks containing the Fanuc milling G-code (`O1001`), lathe turning G-code (`O2001`), and the OpenSCAD + BOSL2 generator script for Wire EDM DXF export.
 
 ## Caleb
 

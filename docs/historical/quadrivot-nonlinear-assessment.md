@@ -1,4 +1,4 @@
-# QEXT-200 nonlinear static assessment — reject reference qualification
+# QEXT-200 nonlinear static assessment: reject reference qualification
 
 ## Terminal engineering decision
 **Reject unchanged QEXT-200 for the specified reference42g gravity qualification; do not advance it as a passing suspension to3D validation.** Finite-stroke elastic compatibility is solvable in the planar model, but lateral support collapses as the main leaves bow. With the reference gravity force present BEFORE rotation, center shift reaches **1.952mm at+18°** and **1.792mm at-18°**, versus the approved0.25mm maximum. These are stable, converged sampled planar equilibria, not an extrapolation of neutral stiffness. One in-plane mounting direction is already a counterexample to the any-orientation reference gate.
