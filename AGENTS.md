@@ -41,6 +41,16 @@ npm run dev
 
 `npm run dev` binds port 43117 (`vite --host 0.0.0.0 --port 43117 --strictPort`).
 
+## State charts (TLC)
+
+When you change `sim/src/physics/EscapementSolver.ts`, `sim/src/physics/powerCut.ts`, `sim/src/sim/useSimulator.ts`, or the TLA under `docs/statecharts/`, rerun the hold-only TLC check:
+
+```bash
+bash scripts/check-statecharts.sh
+```
+
+That script downloads a pinned `tla2tools` jar (1.7.4) into `$HOME/.cache/ed-ibs` on first use and needs Java 11+. The project-local skill `.cursor/skills/ed-ibs-statecharts/SKILL.md` says which invariants must hold, which source-claim invariants are expected to break, and how to update the models with the code. CI runs the same hold-only script. Chart redraws still use the external pstack `statechart` checker described in `docs/statecharts/README.md`.
+
 ## Docs sync
 
 One decision change is one pull request. Update the decision log `docs/gemini-revision-deviations.md`, `docs/requirements-matrix.md`, `docs/decisions-and-deviations.md`, and any affected file under `docs/analysis/`. The Decision index in those three docs must show the same ID and the same status. Run `node scripts/check-docs.mjs` before opening the pull request. Do not edit `docs/user-specification.md`. Caleb merges.
