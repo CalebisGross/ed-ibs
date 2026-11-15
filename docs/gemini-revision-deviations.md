@@ -86,3 +86,25 @@ Prism carrier: Light carrier
 Carousel park: Add a driven winding ring
 Visible flicker from stepping: Flicker is a flaw to reduce
 Status: item 7 = spring-swing indexer with cam-notch lock, stationary optical sensor plus voice-coil latch release (next coil size up), 15 ms step, light carrier; carousel optional with driven winding ring; 15 s decay is a powered DMX effect. Flicker reduction is an open design task. All values remain calculated predictions, not validated.
+
+## Nov 15 2026 12:03 CT flicker reduction study (flicker-study.md / .py / -results.txt)
+Trigger: Caleb's 11:44 CT answer "Flicker is a flaw to reduce". Analysis only, nothing validated. Tags as in the study.
+- Baseline (settled item 7, 15 ms step, light carrier): 26.1% / 39.4% full-dark at 8.00 / 11.46 Hz, Mod 100% at 16-23 Hz, Pst LM 118-131, SVM 6.1-7.3, IEEE 1789 low-risk allows 0.40-0.57% [C, S limits]. The chop sits in the 15-25 Hz photosensitive band [S Fisher 2005]. Risk flag only, no safety claim.
+- NEW finding, timing B: fire the step centred on the beam's crossing of the pattern centre (theta = -7.5 deg) instead of the balance zero crossing. Peak smear drops from 2.8 m to 0.36-0.55 m at 50 m [C]. With beam divergence at least 2.4 deg (0.25-spot tolerance [T]), no blanking is needed at full amplitude: 0% dark, Pst 0 [C]. Needs amplitude at least 8.3 / 9.2 deg [C]. Costs: arm speed profile (about 1.4 N m extra at the arm, rough) and an off-centre reaction drain (about 22 mdeg per beat on a light rig, rough). PROPOSED as the new ch 15 default with zero-crossing fallback. Pending Caleb.
+- Smear-tolerant partial blanking (timing A, 3 deg beam): 12-18% dark, Pst 56-58 [C]. Fades alone change nothing. Faster steps: 10 ms strains the latch (56 N), 7 ms puts the motor and gearhead over, and at 5 ms the latch opens in 8.3 ms [C]. Keep 15 ms. Dual path: does not fit (168-186 mm vs 102 mm tube), and 0.7% path mismatch already gives Pst 1 [C]. Continuous rotation plus strobe: 72-96% dark [C]. Rejected. No blank: streak at 47-49% of spoke exposure [C], a look not a default. Dip: Pst 1 needs the floor at about 98% [C].
+- LED: Gemini package names no LED driver [S BP/MAN]. Recommend a constant-current shunt-FET driver, PWM at 25 kHz or above [S TI]. PWM does not fix the beat-rate chop. Lit-time boost up to 1.46x within the CLU048 4.14 A DC rating [S] holding 150 W average. Revises item 7's "can't drive harder"; thermal unchecked.
+- Flagged: item 7 spring table lists Nivaflex at t 1.5-2.0 mm, but strip is cited only up to 0.70 mm [S step 1]. Use the carbon-steel column.
+- Honest limit: beat-rate modulation is eliminated only with timing B, a wide beam and amplitude above about 9-10 deg. Otherwise it is reduced, not removed.
+- Decisions pending Caleb: timing B default; beam divergence target (item 15); smear tolerance; full blank vs dip (DMX blank depth); LED driver plus boost; keep 15 ms; drop dual path and strobe; keep Raw Smear mode.
+
+## 2026-11-15 12:10 CT: Caleb's flicker decisions (verbatim widget answers)
+
+- Step timing default: "Step at pattern centre, zero crossing as fallback"
+- Beam divergence target: "At least 2.4° (no flicker)"
+- Smear tolerance before blanking: "Decide with a look test" (quarter spot width stays a placeholder until then, not a decision)
+- Any blanking that remains: "DMX blank depth control"
+- LED driver: "Constant current, fast PWM, lit-time boost" (junction temperature effect still unchecked)
+- Step speed and dropped options: "Revisit" (scope being clarified with Caleb; 15 ms, dual path and strobe all stay open, none dropped yet)
+- Raw Smear DMX look: "No, drop it"
+
+Status: working decisions, design targets only. Nothing here is validated or a photosensitivity safety finding.

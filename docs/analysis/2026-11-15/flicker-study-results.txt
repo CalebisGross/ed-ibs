@@ -1,0 +1,217 @@
+
+## 0 metric implementation checks (not validation of ED-IBS, only of my metric code)
+[S] IEC TR 61547-1 Table 1 reference waveforms (rectangular, peak-to-peak dE) should read Pst LM = 1.000
+[C] with gain set from the 8.8 Hz sine (max Pinst = 1): 0.325 Hz 0.922, 0.9167 Hz 0.922, 8.8 Hz 0.922, 13.5 Hz 0.923, 33.3 Hz 0.926
+[C]   the five agree with each other to <0.5%, so the filter shape is right; the absolute scale is 8% low. I rescale Pinst by a single factor so the standard's own reference set reads 1.00:
+[C] after rescale: 0.325 Hz 0.999, 0.9167 Hz 0.999, 8.8 Hz 0.999, 13.5 Hz 1.000, 33.3 Hz 1.004
+[C] SVM check Sin-2 100 Hz, m 0.25628: 1.004 (reference 1.000 [S IEC TR 63158 test set via Mantela 2023 Table 3])
+[C] SVM check Sqr-1 99 Hz, m 0.20049: 1.004 (reference 1.000 [S IEC TR 63158 test set via Mantela 2023 Table 3])
+
+## 1 baseline: settled item 7 (15 ms step, light carrier, electric latch, hard blanking)
+[C] 8.00 Hz: beat 62.5 ms, step 14.11 ms + settle 2 + 2 x jitter 0.1 = dark = 16.31 ms
+[C] baseline hard blank, 8.00 Hz: full-dark 26.1% of beat, mean light 73.9%, Mod 100.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 118.07, SVM 6.08; rolling-shutter band contrast 1/48 s: 64%, 1/60 s: 96%, 1/250 s: 100%, 1/1000 s: 100%; 0.26 bands per 16 ms readout
+[C] 11.46 Hz: beat 43.6 ms, step 15.00 ms + settle 2 + 2 x jitter 0.1 = dark = 17.2 ms
+[C] baseline hard blank, 11.46 Hz: full-dark 39.4% of beat, mean light 60.6%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 130.95, SVM 7.33; rolling-shutter band contrast 1/48 s: 70%, 1/60 s: 100%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+[S] photosensitive seizure band (flash frequencies 15-25 Hz most provocative; 1-65 Hz possible), Fisher et al. 2005 Epilepsia 46(9) = 15 -25 Hz
+
+## 2 projection geometry, spot size and how much smear is tolerable at 50 m
+[S] spec radial angle phi = Phi0 + 2 theta, Phi0 = 15 deg
+[C] phi range at +/-18 deg = -21 deg
+[C]   to = 51 deg
+[C] spoke radius at rest (theta 0) at 50 m = 13.4 m
+[C] spoke outer end at 50 m (phi 51 deg) = 61.74 m
+[C] spoke inner end at 50 m (phi -21 deg, opposite side of centre) = -19.19 m
+[C] spoke-to-spoke arc at the rest radius (24 deg optical) = 5.612 m
+[C] 8.00 Hz: radial beam speed where it crosses the pattern centre at 50 m = 1436 m/s
+[C] 11.46 Hz: radial beam speed where it crosses the pattern centre at 50 m = 2056 m/s
+[C] etendue check: 22 mm LES [S], captured NA 0.1 [T] (~1% of a Lambertian source), 75 mm exit [S BP]: full divergence ~3.4 deg -> spot ~2.9 m at 50 m; inside the 25 mm prism ~10 deg
+[C] etendue check: 22 mm LES [S], captured NA 0.2 [T] (~4% of a Lambertian source), 75 mm exit [S BP]: full divergence ~6.7 deg -> spot ~5.9 m at 50 m; inside the 25 mm prism ~20 deg
+[C] etendue check: 22 mm LES [S], captured NA 0.5 [T] (~25% of a Lambertian source), 75 mm exit [S BP]: full divergence ~16.8 deg -> spot ~14.8 m at 50 m; inside the 25 mm prism ~50 deg
+[T] item 15 (optics) is not designed, so spot size is a parameter here: full divergence 1, 3 and 7 deg
+[C] spot diameter at 50 m, 1 deg full divergence = 0.9477 m
+[C] spot diameter at 50 m, 3 deg full divergence = 2.694 m
+[C] spot diameter at 50 m, 7 deg full divergence = 6.191 m
+-- step timing A: step centred on the balance zero crossing (item 7 default, kills reaction-torque asymmetry)
+[C] 8.00 Hz, swing +: wall radius during step +2.2 m -> +26.0 m, peak smear off-spoke 2.78 m
+[C] 8.00 Hz, swing -: wall radius during step +26.0 m -> +2.2 m, peak smear off-spoke 2.78 m
+[C] 8.00 Hz: catch residual 6.55 mJ -> stop travel 0.26 mm -> carrier 0.37 deg mech -> 0.33 m off-spoke at |R| 26.0 m during settle
+[C] 8.00 Hz, spot 0.95 m (1 deg), tolerance 0.25 x spot = 0.24 m: blank 9.9 ms of the 15 ms step, settle dark -> dark 12.1 ms = 19.4% (baseline 26.1%)
+[C] 8.00 Hz, spot 0.95 m (1 deg), tolerance 0.50 x spot = 0.47 m: blank 8.4 ms of the 15 ms step, settle lit -> dark 8.6 ms = 13.8% (baseline 26.1%)
+[C] 8.00 Hz, spot 2.69 m (3 deg), tolerance 0.25 x spot = 0.67 m: blank 7.5 ms of the 15 ms step, settle lit -> dark 7.7 ms = 12.3% (baseline 26.1%)
+[C] 8.00 Hz, spot 2.69 m (3 deg), tolerance 0.50 x spot = 1.35 m: blank 4.9 ms of the 15 ms step, settle lit -> dark 5.1 ms = 8.2% (baseline 26.1%)
+[C] 8.00 Hz, spot 6.19 m (7 deg), tolerance 0.25 x spot = 1.55 m: blank 4.3 ms of the 15 ms step, settle lit -> dark 4.5 ms = 7.2% (baseline 26.1%)
+[C] 8.00 Hz, spot 6.19 m (7 deg), tolerance 0.50 x spot = 3.10 m: blank 0.0 ms of the 15 ms step, settle lit -> dark 0.0 ms = 0.0% (baseline 26.1%)
+[C] 11.46 Hz, swing +: wall radius during step -3.1 m -> +33.1 m, peak smear off-spoke 2.79 m
+[C] 11.46 Hz, swing -: wall radius during step +33.1 m -> -3.1 m, peak smear off-spoke 2.79 m
+[C] 11.46 Hz: catch residual 5.48 mJ -> stop travel 0.23 mm -> carrier 0.34 deg mech -> 0.39 m off-spoke at |R| 33.1 m during settle
+[C] 11.46 Hz, spot 0.95 m (1 deg), tolerance 0.25 x spot = 0.24 m: blank 10.0 ms of the 15 ms step, settle dark -> dark 12.2 ms = 28.0% (baseline 39.4%)
+[C] 11.46 Hz, spot 0.95 m (1 deg), tolerance 0.50 x spot = 0.47 m: blank 8.6 ms of the 15 ms step, settle lit -> dark 8.8 ms = 20.3% (baseline 39.4%)
+[C] 11.46 Hz, spot 2.69 m (3 deg), tolerance 0.25 x spot = 0.67 m: blank 7.7 ms of the 15 ms step, settle lit -> dark 7.9 ms = 18.2% (baseline 39.4%)
+[C] 11.46 Hz, spot 2.69 m (3 deg), tolerance 0.50 x spot = 1.35 m: blank 5.3 ms of the 15 ms step, settle lit -> dark 5.5 ms = 12.7% (baseline 39.4%)
+[C] 11.46 Hz, spot 6.19 m (7 deg), tolerance 0.25 x spot = 1.55 m: blank 4.7 ms of the 15 ms step, settle lit -> dark 4.9 ms = 11.3% (baseline 39.4%)
+[C] 11.46 Hz, spot 6.19 m (7 deg), tolerance 0.50 x spot = 3.10 m: blank 0.0 ms of the 15 ms step, settle lit -> dark 0.0 ms = 0.0% (baseline 39.4%)
+-- step timing B: step centred on the moment the beam crosses the pattern centre (theta = -Phi0/2 = -7.5 deg)
+[C] why it works: the Dove prism turns the image about the optical axis, which is the pattern centre. A beam that is AT the centre does not move when the image turns, so a step taken while the beam passes through the centre barely smears
+[C] needs amplitude above = 7.5 deg
+[C] 8.00 Hz: beam on axis 8.55 ms from the zero crossing; step spacing alternates 45.4 / 79.6 ms (needs > step + settle + jitter: OK); wall radius during step -9.2 -> +10.9 m; peak smear off-spoke 0.36 m; settle wobble 0.14 m off-spoke
+[C] 8.00 Hz, 1 deg spot, tol 0.25 x spot: one blank 8.6 ms = 13.8%; split blanks 2 x = 6.8 ms = 10.8% (timing A: 19.4%, baseline 26.1%)
+[C] 8.00 Hz, 1 deg spot, tol 0.50 x spot: one blank 0.0 ms = 0.0%; split blanks 0 x = 0.0 ms = 0.0% (timing A: 13.8%, baseline 26.1%)
+[C] 8.00 Hz, 3 deg spot, tol 0.25 x spot: one blank 0.0 ms = 0.0%; split blanks 0 x = 0.0 ms = 0.0% (timing A: 12.3%, baseline 26.1%)
+[C] 8.00 Hz, 3 deg spot, tol 0.50 x spot: one blank 0.0 ms = 0.0%; split blanks 0 x = 0.0 ms = 0.0% (timing A: 8.2%, baseline 26.1%)
+[C] 8.00 Hz, 7 deg spot, tol 0.25 x spot: one blank 0.0 ms = 0.0%; split blanks 0 x = 0.0 ms = 0.0% (timing A: 7.2%, baseline 26.1%)
+[C] 8.00 Hz, 7 deg spot, tol 0.50 x spot: one blank 0.0 ms = 0.0%; split blanks 0 x = 0.0 ms = 0.0% (timing A: 0.0%, baseline 26.1%)
+[C] 11.46 Hz: beam on axis 5.97 ms from the zero crossing; step spacing alternates 31.7 / 55.6 ms (needs > step + settle + jitter: OK); wall radius during step -13.1 -> +17.2 m; peak smear off-spoke 0.55 m; settle wobble 0.20 m off-spoke
+[C] 11.46 Hz, 1 deg spot, tol 0.25 x spot: one blank 10.6 ms = 24.3%; split blanks 2 x = 9.5 ms = 21.8% (timing A: 28.0%, baseline 39.4%)
+[C] 11.46 Hz, 1 deg spot, tol 0.50 x spot: one blank 7.3 ms = 16.8%; split blanks 2 x = 4.0 ms = 9.2% (timing A: 20.3%, baseline 39.4%)
+[C] 11.46 Hz, 3 deg spot, tol 0.25 x spot: one blank 0.0 ms = 0.0%; split blanks 0 x = 0.0 ms = 0.0% (timing A: 18.2%, baseline 39.4%)
+[C] 11.46 Hz, 3 deg spot, tol 0.50 x spot: one blank 0.0 ms = 0.0%; split blanks 0 x = 0.0 ms = 0.0% (timing A: 12.7%, baseline 39.4%)
+[C] 11.46 Hz, 7 deg spot, tol 0.25 x spot: one blank 0.0 ms = 0.0%; split blanks 0 x = 0.0 ms = 0.0% (timing A: 11.3%, baseline 39.4%)
+[C] 11.46 Hz, 7 deg spot, tol 0.50 x spot: one blank 0.0 ms = 0.0%; split blanks 0 x = 0.0 ms = 0.0% (timing A: 0.0%, baseline 39.4%)
+-- smallest beam divergence that needs NO blanking (smear and spot both scale with throw, so this holds at any throw, less the 75 mm exit term)
+[C] 8.00 Hz, timing A: peak smear 2.78 m at 50 m -> spot >= 11.14 m for tol 0.25 -> full divergence >= 12.6 deg
+[C] 8.00 Hz, timing A: peak smear 2.78 m at 50 m -> spot >= 5.57 m for tol 0.50 -> full divergence >= 6.3 deg
+[C] 8.00 Hz, timing B: peak smear 0.36 m at 50 m -> spot >= 1.44 m for tol 0.25 -> full divergence >= 1.6 deg
+[C] 8.00 Hz, timing B: peak smear 0.36 m at 50 m -> spot >= 0.72 m for tol 0.50 -> full divergence >= 0.7 deg
+[C] 11.46 Hz, timing A: peak smear 2.79 m at 50 m -> spot >= 11.14 m for tol 0.25 -> full divergence >= 12.6 deg
+[C] 11.46 Hz, timing A: peak smear 2.79 m at 50 m -> spot >= 5.57 m for tol 0.50 -> full divergence >= 6.3 deg
+[C] 11.46 Hz, timing B: peak smear 0.55 m at 50 m -> spot >= 2.21 m for tol 0.25 -> full divergence >= 2.4 deg
+[C] 11.46 Hz, timing B: peak smear 0.55 m at 50 m -> spot >= 1.10 m for tol 0.50 -> full divergence >= 1.2 deg
+-- timing B vs amplitude (DMX amplitude moves A all the time)
+[C] 8.00 Hz: smallest amplitude where the two centre crossings are far enough apart for a 17.2 ms step = 8.26 deg
+[C] 8.00 Hz, A 18 deg: spacing 45.4 ms (OK), peak smear 0.36 m, dark 0.0% (3 deg spot) / 13.8% (1 deg spot)
+[C] 8.00 Hz, A 14 deg: spacing 40.0 ms (OK), peak smear 0.26 m, dark 0.0% (3 deg spot) / 10.4% (1 deg spot)
+[C] 8.00 Hz, A 11 deg: spacing 32.6 ms (OK), peak smear 0.18 m, dark 0.0% (3 deg spot) / 0.0% (1 deg spot)
+[C] 8.00 Hz, A 9.5 deg: spacing 26.3 ms (OK), peak smear 0.13 m, dark 0.0% (3 deg spot) / 0.0% (1 deg spot)
+[C] 11.46 Hz: smallest amplitude where the two centre crossings are far enough apart for a 17.2 ms step = 9.209 deg
+[C] 11.46 Hz, A 18 deg: spacing 31.7 ms (OK), peak smear 0.55 m, dark 0.0% (3 deg spot) / 24.3% (1 deg spot)
+[C] 11.46 Hz, A 14 deg: spacing 27.9 ms (OK), peak smear 0.40 m, dark 0.0% (3 deg spot) / 21.7% (1 deg spot)
+[C] 11.46 Hz, A 11 deg: spacing 22.8 ms (OK), peak smear 0.28 m, dark 0.0% (3 deg spot) / 5.9% (1 deg spot)
+[C] 11.46 Hz, A 9.5 deg: spacing 18.4 ms (OK), peak smear 0.21 m, dark 0.0% (3 deg spot) / 0.0% (1 deg spot)
+[C] reaction torque, 8.00 Hz, light carrier, light rig 0.05 kg m2 [T], rough (half-period model from item 7): timing A one-beat shift +0.059 ms, amplitude change +0.1 mdeg; timing B beats +0.053 / -0.053 ms, amplitude change -22.1 / -22.1 mdeg (~97 mm radial at 50 m)
+[C] timing B costs: uneven step spacing means the arm cannot run at constant speed (cock would alternate); it needs a speed profile at the balance frequency. Reflected motor inertia at 186:1 is J x 186^2:
+[C]   reflected rotor inertia at the arm = 0.0192 kg m2
+[C]   8.00 Hz: arm must gain/lose 1.6 deg per beat vs constant speed -> speed swing ~0.72 rad/s, peak accel 36 rad/s2 -> 0.70 N m at the arm from rotor inertia alone (5.8 mN m at the motor) [C rough]
+[C]   11.46 Hz: arm must gain/lose 1.6 deg per beat vs constant speed -> speed swing ~1.03 rad/s, peak accel 74 rad/s2 -> 1.43 N m at the arm from rotor inertia alone (11.8 mN m at the motor) [C rough]
+
+## 3 options: modulation, Pst LM, SVM, IEEE 1789, camera
+-- 8.00 Hz
+[C] O0 baseline hard blank 16.3 ms: full-dark 26.1% of beat, mean light 73.9%, Mod 100.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 118.07, SVM 6.08; rolling-shutter band contrast 1/48 s: 64%, 1/60 s: 96%, 1/250 s: 100%, 1/1000 s: 100%; 0.26 bands per 16 ms readout
+[C] O1a same dark window + 0.5 ms raised-cosine fades outside it: full-dark 26.1% of beat, mean light 73.5%, Mod 100.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 119.59, SVM 6.18; rolling-shutter band contrast 1/48 s: 66%, 1/60 s: 99%, 1/250 s: 100%, 1/1000 s: 100%; 0.26 bands per 16 ms readout
+[C] O1b smear-tolerant blank, spot 1 deg, tol 0.25 spot: dark 12.1 ms: full-dark 19.4% of beat, mean light 80.2%, Mod 100.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 88.59, SVM 4.52; rolling-shutter band contrast 1/48 s: 42%, 1/60 s: 59%, 1/250 s: 100%, 1/1000 s: 100%; 0.26 bands per 16 ms readout
+[C] O1b smear-tolerant blank, spot 3 deg, tol 0.25 spot: dark 7.7 ms: full-dark 12.3% of beat, mean light 87.3%, Mod 100.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 55.54, SVM 2.83; rolling-shutter band contrast 1/48 s: 24%, 1/60 s: 31%, 1/250 s: 100%, 1/1000 s: 100%; 0.26 bands per 16 ms readout
+[C] O1b smear-tolerant blank, spot 7 deg, tol 0.25 spot: dark 4.5 ms: full-dark 7.2% of beat, mean light 92.4%, Mod 100.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 32.77, SVM 1.67; rolling-shutter band contrast 1/48 s: 13%, 1/60 s: 17%, 1/250 s: 100%, 1/1000 s: 100%; 0.26 bands per 16 ms readout
+[C] O7 dip to 10% (not off) over the O1b 3-deg window 7.7 ms: full-dark 12.3% of beat, mean light 88.6%, Mod 81.8% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 49.26, SVM 2.51; rolling-shutter band contrast 1/48 s: 21%, 1/60 s: 27%, 1/250 s: 82%, 1/1000 s: 82%; 0.26 bands per 16 ms readout
+[C] O7 dip to 30% (not off) over the O1b 3-deg window 7.7 ms: full-dark 12.3% of beat, mean light 91.1%, Mod 53.8% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 37.25, SVM 1.90; rolling-shutter band contrast 1/48 s: 15%, 1/60 s: 20%, 1/250 s: 54%, 1/1000 s: 54%; 0.26 bands per 16 ms readout
+[C] O7 dip to 60% (not off) over the O1b 3-deg window 7.7 ms: full-dark 12.3% of beat, mean light 94.9%, Mod 25.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 20.43, SVM 1.04; rolling-shutter band contrast 1/48 s: 8%, 1/60 s: 11%, 1/250 s: 25%, 1/1000 s: 25%; 0.26 bands per 16 ms readout
+[C] O7 dip to 90% (not off) over the O1b 3-deg window 7.7 ms: full-dark 12.3% of beat, mean light 98.7%, Mod 5.3% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 4.91, SVM 0.25; rolling-shutter band contrast 1/48 s: 2%, 1/60 s: 2%, 1/250 s: 5%, 1/1000 s: 5%; 0.26 bands per 16 ms readout
+[C] O4 no blanking (steady LED, streak visible): full-dark 0.0% of beat, mean light 100.0%, Mod 0.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 0.00, SVM 0.00; rolling-shutter band contrast 1/48 s: 0%, 1/60 s: 0%, 1/250 s: 0%, 1/1000 s: 0%; 0.26 bands per 16 ms readout
+[C] O1c timing B (step at pattern centre), spot 1 deg, tol 0.25: dark 8.6 ms: full-dark 13.8% of beat, mean light 85.8%, Mod 100.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 62.69, SVM 3.19; rolling-shutter band contrast 1/48 s: 27%, 1/60 s: 36%, 1/250 s: 100%, 1/1000 s: 100%; 0.26 bands per 16 ms readout
+[C] O1c timing B (step at pattern centre), spot 3 deg, tol 0.25: dark 0.0 ms: full-dark 0.0% of beat, mean light 100.0%, Mod 0.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 0.00, SVM 0.00; rolling-shutter band contrast 1/48 s: 0%, 1/60 s: 0%, 1/250 s: 0%, 1/1000 s: 0%; 0.26 bands per 16 ms readout
+[C] O1c timing B, 1 deg spot, split blanks 3.5, 3.3 ms: full-dark 10.8% of beat, mean light 87.9%, Mod 100.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 51.53, SVM 2.61; rolling-shutter band contrast 1/48 s: 22%, 1/60 s: 29%, 1/250 s: 89%, 1/1000 s: 100%; 0.26 bands per 16 ms readout
+[C] O1c + O7 timing B, 1 deg spot, dip to 60% over 8.6 ms: full-dark 13.8% of beat, mean light 94.3%, Mod 25.0% at 16.00 Hz (IEEE 1789 low-risk limit 0.40%, NOEL 0.16%), Pst LM 22.80, SVM 1.16; rolling-shutter band contrast 1/48 s: 9%, 1/60 s: 12%, 1/250 s: 25%, 1/1000 s: 25%; 0.26 bands per 16 ms readout
+[C] 8.00 Hz: with timing A and the 3-deg window, Pst LM scales with (1 - dip level); Pst 1 needs the dip to stay above ~98.0% of full light, i.e. the step streak would be almost fully visible
+-- 11.46 Hz
+[C] O0 baseline hard blank 17.2 ms: full-dark 39.4% of beat, mean light 60.6%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 130.95, SVM 7.33; rolling-shutter band contrast 1/48 s: 70%, 1/60 s: 100%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+[C] O1a same dark window + 0.5 ms raised-cosine fades outside it: full-dark 39.4% of beat, mean light 60.0%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 132.90, SVM 7.44; rolling-shutter band contrast 1/48 s: 72%, 1/60 s: 100%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+[C] O1b smear-tolerant blank, spot 1 deg, tol 0.25 spot: dark 12.2 ms: full-dark 28.0% of beat, mean light 71.4%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 92.11, SVM 5.20; rolling-shutter band contrast 1/48 s: 43%, 1/60 s: 60%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+[C] O1b smear-tolerant blank, spot 3 deg, tol 0.25 spot: dark 7.9 ms: full-dark 18.2% of beat, mean light 81.2%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 57.71, SVM 3.33; rolling-shutter band contrast 1/48 s: 24%, 1/60 s: 33%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+[C] O1b smear-tolerant blank, spot 7 deg, tol 0.25 spot: dark 4.9 ms: full-dark 11.3% of beat, mean light 88.2%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 34.81, SVM 2.07; rolling-shutter band contrast 1/48 s: 14%, 1/60 s: 18%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+[C] O7 dip to 10% (not off) over the O1b 3-deg window 7.9 ms: full-dark 18.2% of beat, mean light 83.1%, Mod 81.8% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 50.77, SVM 2.93; rolling-shutter band contrast 1/48 s: 21%, 1/60 s: 28%, 1/250 s: 82%, 1/1000 s: 82%; 0.37 bands per 16 ms readout
+[C] O7 dip to 30% (not off) over the O1b 3-deg window 7.9 ms: full-dark 18.2% of beat, mean light 86.9%, Mod 53.8% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 37.78, SVM 2.18; rolling-shutter band contrast 1/48 s: 16%, 1/60 s: 21%, 1/250 s: 54%, 1/1000 s: 54%; 0.37 bands per 16 ms readout
+[C] O7 dip to 60% (not off) over the O1b 3-deg window 7.9 ms: full-dark 18.2% of beat, mean light 92.5%, Mod 25.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 20.27, SVM 1.17; rolling-shutter band contrast 1/48 s: 9%, 1/60 s: 11%, 1/250 s: 25%, 1/1000 s: 25%; 0.37 bands per 16 ms readout
+[C] O7 dip to 90% (not off) over the O1b 3-deg window 7.9 ms: full-dark 18.2% of beat, mean light 98.1%, Mod 5.3% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 4.78, SVM 0.28; rolling-shutter band contrast 1/48 s: 2%, 1/60 s: 3%, 1/250 s: 5%, 1/1000 s: 5%; 0.37 bands per 16 ms readout
+[C] O4 no blanking (steady LED, streak visible): full-dark 0.0% of beat, mean light 100.0%, Mod 0.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 0.00, SVM 0.00; rolling-shutter band contrast 1/48 s: 0%, 1/60 s: 0%, 1/250 s: 0%, 1/1000 s: 0%; 0.37 bands per 16 ms readout
+[C] O1c timing B (step at pattern centre), spot 1 deg, tol 0.25: dark 10.6 ms: full-dark 24.3% of beat, mean light 75.1%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 79.01, SVM 4.49; rolling-shutter band contrast 1/48 s: 35%, 1/60 s: 48%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+[C] O1c timing B (step at pattern centre), spot 3 deg, tol 0.25: dark 0.0 ms: full-dark 0.0% of beat, mean light 100.0%, Mod 0.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 0.00, SVM 0.00; rolling-shutter band contrast 1/48 s: 0%, 1/60 s: 0%, 1/250 s: 0%, 1/1000 s: 0%; 0.37 bands per 16 ms readout
+[C] O1c timing B, 1 deg spot, split blanks 4.9, 4.6 ms: full-dark 21.8% of beat, mean light 76.4%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 72.92, SVM 4.14; rolling-shutter band contrast 1/48 s: 33%, 1/60 s: 45%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+[C] O1c + O7 timing B, 1 deg spot, dip to 60% over 10.6 ms: full-dark 24.3% of beat, mean light 90.0%, Mod 25.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 26.36, SVM 1.50; rolling-shutter band contrast 1/48 s: 12%, 1/60 s: 15%, 1/250 s: 25%, 1/1000 s: 25%; 0.37 bands per 16 ms readout
+[C] 11.46 Hz: with timing A and the 3-deg window, Pst LM scales with (1 - dip level); Pst 1 needs the dip to stay above ~97.9% of full light, i.e. the step streak would be almost fully visible
+
+## 4 faster step on the light carrier: 15 / 10 / 7 / 5 ms (same item-7 design rule)
+[C] 15 ms: dark 26.1% (8.00 Hz) / 39.4% (11.46 Hz); k 12.5 N m/rad; cocked torque 1.03 N m; latch load 26 N; spring energy 43 mJ; catch residual 6.6 mJ; missed-catch hit 49 mJ
+[C]   spring (carbon steel, t 2.0 mm, 500 MPa reversed [T]): L 41.8 mm, b 3.8 mm; voice coil on rolling sear: sear friction 0.26 N, open 2.46 ms, coil 0.54 W at 11.46 Hz vs 0.40 W rating; via 1 cascade stage friction 0.039 N
+[C]   8.00 Hz, DCX 22 S + GPX 22 HP 186:1: arm peak 1.05 / rms 0.65 N m, motor rms 5.4 mN m, power 2.6 W -> OK
+[C]   11.46 Hz, DCX 22 S + GPX 22 HP 186:1: arm peak 0.91 / rms 0.63 N m, motor rms 5.2 mN m, power 3.5 W -> OK
+[C]   reaction torque, light rig 0.05 kg m2 [T], step centred: frame accel 21 rad/s2, beat error 0.118 ms (Gemini target 0.15 ms [S MAN])
+[C] 10 ms: dark 19.0% (8.00 Hz) / 28.0% (11.46 Hz); k 24.9 N m/rad; cocked torque 2.22 N m; latch load 56 N; spring energy 99 mJ; catch residual 11.0 mJ; missed-catch hit 111 mJ
+[C]   spring (carbon steel, t 2.0 mm, 500 MPa reversed [T]): L 44.5 mm, b 8.1 mm; voice coil on rolling sear: sear friction 0.56 N, open 2.63 ms, coil 0.58 W at 11.46 Hz vs 0.40 W rating; via 1 cascade stage friction 0.083 N
+[C]   8.00 Hz, DCX 22 S + GPX 22 HP 186:1: arm peak 2.24 / rms 1.30 N m, motor rms 10.7 mN m, power 5.5 W -> OK
+[C]   11.46 Hz, DCX 22 S + GPX 22 HP 186:1: arm peak 2.06 / rms 1.29 N m, motor rms 10.7 mN m, power 7.5 W -> OK
+[C]   reaction torque, light rig 0.05 kg m2 [T], step centred: frame accel 44 rad/s2, beat error 0.113 ms (Gemini target 0.15 ms [S MAN])
+[C] 7 ms: dark 14.5% (8.00 Hz) / 21.1% (11.46 Hz); k 47.7 N m/rad; cocked torque 4.46 N m; latch load 112 N; spring energy 209 mJ; catch residual 19.0 mJ; missed-catch hit 227 mJ
+[C]   spring (carbon steel, t 2.0 mm, 500 MPa reversed [T]): L 46.3 mm, b 16.1 mm; voice coil on rolling sear: sear friction 1.12 N, open 3.10 ms, coil 0.68 W at 11.46 Hz vs 0.40 W rating; via 1 cascade stage friction 0.167 N
+[C]   8.00 Hz, DCX 22 S + GPX 22 HP 186:1: arm peak 4.48 / rms 2.51 N m, motor rms 20.8 mN m, power 12.3 W -> motor rms over nominal, gearhead peak over 3.3 N m continuous
+[C]   11.46 Hz, DCX 22 S + GPX 22 HP 186:1: arm peak 4.23 / rms 2.47 N m, motor rms 20.5 mN m, power 15.9 W -> motor rms over nominal, gearhead peak over 3.3 N m continuous
+[C]   reaction torque, light rig 0.05 kg m2 [T], step centred: frame accel 89 rad/s2, beat error 0.112 ms (Gemini target 0.15 ms [S MAN])
+[C] 5 ms: dark 11.4% (8.00 Hz) / 16.5% (11.46 Hz); k 89.5 N m/rad; cocked torque 8.66 N m; latch load 216 N; spring energy 419 mJ; catch residual 33.9 mJ; missed-catch hit 445 mJ
+[C]   spring (carbon steel, t 2.0 mm, 500 MPa reversed [T]): L 47.5 mm, b 31.1 mm; voice coil on rolling sear: sear friction 2.16 N, open 8.33 ms, coil 1.83 W at 11.46 Hz vs 0.40 W rating; via 1 cascade stage friction 0.325 N
+[C]   8.00 Hz, DCX 22 S + GPX 22 HP 186:1: arm peak 8.67 / rms 4.81 N m, motor rms 39.8 mN m, power 31.0 W -> motor rms over nominal, gearhead rms over 3.3 N m, gearhead peak over 3.3 N m continuous
+[C]   11.46 Hz, DCX 22 S + GPX 22 HP 186:1: arm peak 8.34 / rms 4.70 N m, motor rms 38.9 mN m, power 36.8 W -> motor rms over nominal, gearhead rms over 3.3 N m, gearhead peak over 3.3 N m continuous
+[C]   reaction torque, light rig 0.05 kg m2 [T], step centred: frame accel 173 rad/s2, beat error 0.111 ms (Gemini target 0.15 ms [S MAN])
+[C] O3 10 ms step hard blank, 11.46 Hz: full-dark 28.0% of beat, mean light 72.0%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 89.95, SVM 5.08; rolling-shutter band contrast 1/48 s: 41%, 1/60 s: 58%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+[C] O3 7 ms step hard blank, 11.46 Hz: full-dark 21.1% of beat, mean light 78.9%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 65.69, SVM 3.76; rolling-shutter band contrast 1/48 s: 28%, 1/60 s: 38%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+[C] O3 5 ms step hard blank, 11.46 Hz: full-dark 16.5% of beat, mean light 83.5%, Mod 100.0% at 22.92 Hz (IEEE 1789 low-risk limit 0.57%, NOEL 0.23%), Pst LM 50.14, SVM 2.92; rolling-shutter band contrast 1/48 s: 21%, 1/60 s: 28%, 1/250 s: 100%, 1/1000 s: 100%; 0.37 bands per 16 ms readout
+
+## 5 dual optical path (two prisms, alternate beats)
+[T] each path holds its star position for one beat while the other path is lit, then steps two positions (24 deg mech) in the next beat
+[C] 8.00 Hz: time for a path to step 59.3 ms; spring-swing k ~0.58 N m/rad, cocked torque ~0.12 N m (scaling estimate, light carrier; item 7 15 ms: 1.03 N m)
+[C] 11.46 Hz: time for a path to step 40.4 ms; spring-swing k ~1.24 N m/rad, cocked torque ~0.26 N m (scaling estimate, light carrier; item 7 15 ms: 1.03 N m)
+[C] two parallel carriers, SKF 61813 housing [step 1] 93.0 mm OD each: side by side need >= 186 mm inside the tube vs 102 mm [S MAN]: does not fit
+[C] two parallel carriers, Kaydon KA025 housing [step 1] 84.2 mm OD each: side by side need >= 168 mm inside the tube vs 102 mm [S MAN]: does not fit
+[C] coaxial in series does not work: two Dove prisms in series rotate the image by 2(theta2 - theta1), so any step of either moves the image; a bypass around prism 2 would have to pass through the 10 mm corner gap and its rotating mount
+[C/T] NPBS split + NPBS recombine (output always from one path): about 25% of the light that reaches the prism, continuous (coating losses [T])
+[C/T] PBS split + PBS recombine with co-rotating half-wave plates, one path blanked (output from one path): about 40% of the light that reaches the prism, continuous (coating losses [T])
+[C/T] polarization conversion + fast FLC switch + PBS router (all light into the lit path): about 59% of the light that reaches the prism, continuous (coating losses [T])
+[S] Padgett & Lesso 1999, J. Mod. Opt. 46(2): a Dove prism rotates polarization with the image and adds TIR retardance; a PBS recombine therefore needs a co-rotating half-wave plate per carrier or the output swings with star position
+[C] 8.00 Hz: two paths 1% different in brightness flicker at 8.00 Hz with Pst LM 1.37; Pst 1 at about 0.73% mismatch (Pst is linear in modulation)
+[C] 11.46 Hz: two paths 1% different in brightness flicker at 11.46 Hz with Pst LM 1.44; Pst 1 at about 0.70% mismatch (Pst is linear in modulation)
+[C] pattern co-registration of the two paths to 0.25 spot at 50 m (1 deg): 4.7 mrad, held through touring
+[C] pattern co-registration of the two paths to 0.25 spot at 50 m (3 deg): 13.5 mrad, held through touring
+[C] pattern co-registration of the two paths to 0.25 spot at 50 m (7 deg): 31.0 mrad, held through touring
+
+## 6 LED drive: high-frequency PWM and lit-period current boost
+[S] Gemini BOM: Mean Well LRS-200-24 (24 V constant-voltage PSU) and a DRV8833 (motor driver) on the controller; no constant-current LED driver part is named; the manual refers to an 'LED driver PCB' and its current limit
+[S] TI SNVA605 / TIDA-01415 (LM3409 + shunt FET): shunt-FET PWM dimming above 30 kHz with sub-microsecond edges; TPS92641 shunt drive delay 29-100 ns
+[S] IEEE 1789: no restriction above 3 kHz (NOEL) / 1.25 kHz (low risk). Flickermeter band ends ~35-80 Hz; SVM threshold defined to 2 kHz
+[C] PWM at >= 25 kHz inside lit periods adds nothing the metrics or the eye see, and keeps cameras clean at short shutters. It does NOT touch the beat-rate chop: the 16-23 Hz envelope is unchanged by definition.
+[C] COB current at 150 W = 2.83 A
+[C] max lit-period boost ratio by the DC current rating = 1.463
+[C] 8.00 Hz, baseline: dark 26.1%; hold mean electrical power at 150 W -> lit current x1.35; time-average light 74% -> ~97% of continuous [T droop]
+[C] 8.00 Hz, O1b 3 deg: dark 12.3%; hold mean electrical power at 150 W -> lit current x1.14; time-average light 88% -> ~99% of continuous [T droop]
+[C] 11.46 Hz, baseline: dark 39.4%; hold mean electrical power at 150 W -> lit current x1.46; time-average light 61% -> ~85% of continuous [T droop]
+[C] 11.46 Hz, O1b 3 deg: dark 18.2%; hold mean electrical power at 150 W -> lit current x1.22; time-average light 82% -> ~98% of continuous [T droop]
+[C] boost raises lit brightness but also raises the on/off contrast, so it does not lower Mod%, Pst or camera banding
+
+## 7 continuous prism rotation plus a short strobe (step-1 option 3)
+[C] O6 8.00 Hz, spot 0.95 m: gate 2.6 ms = 4.2% lit, dark 95.8%, spoke drawn over 5 of 72 deg radial; Mod 100%, Pst LM 405.4, SVM 20.97, mean light 4%
+[C] O6 8.00 Hz, spot 2.69 m: gate 7.5 ms = 12.0% lit, dark 88.0%, spoke drawn over 13 of 72 deg radial; Mod 100%, Pst LM 384.4, SVM 19.59, mean light 12%
+[C] O6 8.00 Hz, spot 6.19 m: gate 17.3 ms = 27.6% lit, dark 72.4%, spoke drawn over 30 of 72 deg radial; Mod 100%, Pst LM 328.0, SVM 16.96, mean light 27%
+[C] O6 11.46 Hz, spot 0.95 m: gate 1.8 ms = 4.2% lit, dark 95.8%, spoke drawn over 5 of 72 deg radial; Mod 100%, Pst LM 271.6, SVM 16.83, mean light 4%
+[C] O6 11.46 Hz, spot 2.69 m: gate 5.2 ms = 12.0% lit, dark 88.0%, spoke drawn over 13 of 72 deg radial; Mod 100%, Pst LM 259.8, SVM 15.48, mean light 12%
+[C] O6 11.46 Hz, spot 6.19 m: gate 12.1 ms = 27.6% lit, dark 72.4%, spoke drawn over 30 of 72 deg radial; Mod 100%, Pst LM 232.7, SVM 13.16, mean light 27%
+[C] O6 needs no indexer, spring or latch, but crisp spokes need >80% dark and the spokes shrink to short dashes; long gates draw spirals
+
+## 8 how bright is the step streak if it is not blanked
+[C] exposure per metre of wall = 1 / beam speed. A spoke is crossed twice per beat by the radial sweep; the streak once.
+[C] 8.00 Hz, swing +: where the streak is off-spoke (>0.25 x 2.69 m), its exposure is 47% (median) / 46-49% of the spoke at the same radius
+[C] 8.00 Hz, swing -: where the streak is off-spoke (>0.25 x 2.69 m), its exposure is 47% (median) / 46-49% of the spoke at the same radius
+[C] 11.46 Hz, swing +: where the streak is off-spoke (>0.25 x 2.69 m), its exposure is 48% (median) / 48-50% of the spoke at the same radius
+[C] 11.46 Hz, swing -: where the streak is off-spoke (>0.25 x 2.69 m), its exposure is 48% (median) / 48-50% of the spoke at the same radius
+[S] Stevens brightness power law, exponent ~0.33 for a target in the dark: a streak at 40% luminance looks ~74% as bright; at 4% ~35%
+[C] relative luminance 40% -> apparent brightness ~74%
+[C] relative luminance 10% -> apparent brightness ~47%
+[C] relative luminance 4% -> apparent brightness ~35%
+[C] relative luminance 1% -> apparent brightness ~22%
+
+## 9 summary (11.46 Hz worst case, 3 deg spot, tol 0.25 spot)
+[C] O0 baseline 15 ms hard blank: full-dark 39.4%, mean 61%, Mod 100%, Pst LM 130.95, SVM 7.33, 1/48 s band 70%, 1/1000 s band 100%
+[C] O1a + fades: full-dark 39.4%, mean 60%, Mod 100%, Pst LM 132.90, SVM 7.44, 1/48 s band 72%, 1/1000 s band 100%
+[C] O1b smear-tolerant blank (3 deg spot): full-dark 18.2%, mean 81%, Mod 100%, Pst LM 57.71, SVM 3.33, 1/48 s band 24%, 1/1000 s band 100%
+[C] O7 O1b + dip to 30%: full-dark 18.2%, mean 87%, Mod 54%, Pst LM 37.78, SVM 2.18, 1/48 s band 16%, 1/1000 s band 54%
+[C] O7 O1b + dip to 60%: full-dark 18.2%, mean 92%, Mod 25%, Pst LM 20.27, SVM 1.17, 1/48 s band 9%, 1/1000 s band 25%
+[C] O7 O1b + dip to 90%: full-dark 18.2%, mean 98%, Mod 5%, Pst LM 4.78, SVM 0.28, 1/48 s band 2%, 1/1000 s band 5%
+[C] O4 no blank: full-dark 0.0%, mean 100%, Mod 0%, Pst LM 0.00, SVM 0.00, 1/48 s band 0%, 1/1000 s band 0%
+[C] O1c timing B, 3 deg spot: full-dark 0.0%, mean 100%, Mod 0%, Pst LM 0.00, SVM 0.00, 1/48 s band 0%, 1/1000 s band 0%
+[C] O1c timing B, 1 deg spot: full-dark 24.3%, mean 75%, Mod 100%, Pst LM 79.01, SVM 4.49, 1/48 s band 35%, 1/1000 s band 100%
+[C] O1c timing B, 1 deg spot, split blanks: full-dark 21.8%, mean 76%, Mod 100%, Pst LM 72.92, SVM 4.14, 1/48 s band 33%, 1/1000 s band 100%
+[C] O1c+O7 timing B, 1 deg spot, dip 60%: full-dark 24.3%, mean 90%, Mod 25%, Pst LM 26.36, SVM 1.50, 1/48 s band 12%, 1/1000 s band 25%
