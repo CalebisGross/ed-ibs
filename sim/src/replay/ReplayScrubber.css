@@ -1,0 +1,141 @@
+/* Replay scrubber. Neutral panel, one accent. */
+
+.replay-scrubber {
+  --replay-accent: #79d0cb;
+  --replay-fg: #d7dee8;
+  --replay-muted: #8b97a6;
+  --replay-bg: #10151c;
+  --replay-inset: #0c1016;
+  --replay-line: #2a3444;
+  --replay-control: #1b2430;
+  box-sizing: border-box;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--replay-bg);
+  color: var(--replay-fg);
+  border: 1px solid var(--replay-line);
+  border-radius: 4px;
+  color-scheme: dark;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.replay-scrubber * {
+  box-sizing: border-box;
+}
+
+.replay-heading {
+  margin: 0;
+  color: var(--replay-muted);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.replay-note {
+  margin: 0;
+  color: var(--replay-muted);
+}
+
+.replay-field {
+  display: grid;
+  gap: 4px;
+}
+
+.replay-field-label {
+  color: var(--replay-fg);
+}
+
+.replay-scrubber input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--replay-accent);
+}
+
+.replay-scrubber input[type="range"]:disabled {
+  opacity: 0.45;
+}
+
+.replay-time {
+  color: var(--replay-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.replay-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.replay-metrics div {
+  display: grid;
+  gap: 2px;
+  min-width: 7rem;
+}
+
+.replay-metrics dt {
+  color: var(--replay-muted);
+}
+
+.replay-metrics dd {
+  margin: 0;
+  color: var(--replay-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.replay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.replay-scrubber button {
+  background: var(--replay-control);
+  color: var(--replay-fg);
+  border: 1px solid #334155;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.replay-scrubber button:hover {
+  border-color: var(--replay-accent);
+}
+
+.replay-scrubber button[aria-pressed="true"] {
+  background: #1d3a38;
+  border-color: var(--replay-accent);
+  color: #d9fffb;
+}
+
+.replay-scrubber button:focus-visible,
+.replay-scrubber input:focus-visible {
+  outline: 2px solid var(--replay-accent);
+  outline-offset: 2px;
+}
+
+.replay-share {
+  display: grid;
+  gap: 4px;
+}
+
+.replay-scrubber input[type="text"] {
+  width: 100%;
+  background: var(--replay-inset);
+  color: var(--replay-fg);
+  border: 1px solid #334155;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font: inherit;
+}
+
+.replay-status {
+  min-height: 1.4em;
+  margin: 0;
+  color: var(--replay-accent);
+}
