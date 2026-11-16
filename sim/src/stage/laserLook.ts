@@ -1,21 +1,21 @@
 import { STAGE } from "./stageGeometry";
 
 /** Display radii. Not a measured beam diameter. The core is a hairline. The sheath is the haze. */
-export const CORE_RADIUS_M = 0.006;
-export const SHEATH_RADIUS_M = 0.018;
-export const SPOT_RADIUS_M = 0.01;
+export const CORE_RADIUS_M = 0.00028;
+export const SHEATH_RADIUS_M = 0.0011;
+export const SPOT_RADIUS_M = 0.008;
 
 /** Fixed display haze for the mechanical close-up, which has no haze slider. */
 export const MECHANICAL_HAZE = 0.4;
 
 export function coreOpacity(intensity: number, haze: number): number {
   if (!(intensity > 0) || !(haze > 0)) return 0;
-  return Math.min(0.7, 0.28 + 0.32 * Math.min(1, intensity));
+  return Math.min(0.95, 0.62 + 0.3 * Math.min(1, intensity));
 }
 
 export function sheathOpacity(intensity: number, haze: number): number {
   if (!(intensity > 0) || !(haze > 0)) return 0;
-  return Math.min(0.1, intensity * (0.025 + 0.05 * Math.min(1, haze)));
+  return Math.min(0.1, intensity * (0.03 + 0.05 * Math.min(1, haze)));
 }
 
 /** The volume needs haze. The spot on the card does not. A blank turns both off. */

@@ -45,7 +45,7 @@ export function ProvenanceList(props: { ids: readonly string[] }) {
         {props.ids.map((id) => {
           const row = requireProvenance(id);
           return (
-            <li key={row.id}>
+            <li key={row.id} title={row.source}>
               <span className="see-why-prov-name">{row.name}</span>
               <span className="see-why-prov-value">{row.valueLabel}</span>
               <ProvenanceBadge id={row.id} />

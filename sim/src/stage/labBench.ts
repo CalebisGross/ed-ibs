@@ -22,7 +22,7 @@ export function buildLabBench(): LabBench {
   group.name = "lab-bench";
 
   const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x6a6f73,
+    color: 0x4a5054,
     metalness: 0,
     roughness: 0.88,
     roughnessMap: plaster(0.08),
@@ -72,7 +72,7 @@ export function buildLabBench(): LabBench {
   const wall = new THREE.Mesh(
     new THREE.PlaneGeometry(STAGE.surroundWidthM, STAGE.surroundHeightM),
     new THREE.MeshStandardMaterial({
-      color: 0x8a9094,
+      color: 0x555c61,
       roughness: 0.92,
       metalness: 0,
       roughnessMap: plaster(0.06),
@@ -143,7 +143,7 @@ function targetGrid(screen: THREE.Mesh): THREE.LineSegments {
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
   const lines = new THREE.LineSegments(
     geometry,
-    new THREE.LineBasicMaterial({ color: 0x6e6a62, transparent: true, opacity: 0.45 }),
+    new THREE.LineBasicMaterial({ color: 0x2c3236, transparent: true, opacity: 0.12 }),
   );
   lines.position.copy(screen.position);
   lines.position.z -= 0.02;
@@ -155,7 +155,7 @@ function roomShell(): THREE.Group {
   const shell = new THREE.Group();
   shell.name = "scenery-shell";
   const wallMat = new THREE.MeshStandardMaterial({
-    color: 0x7e8589,
+    color: 0x3c4348,
     roughness: 0.9,
     metalness: 0,
     roughnessMap: plaster(0.05),
@@ -172,7 +172,7 @@ function roomShell(): THREE.Group {
   right.receiveShadow = true;
   const ceiling = new THREE.Mesh(
     new THREE.PlaneGeometry(18, 28),
-    new THREE.MeshStandardMaterial({ color: 0x9aa0a4, roughness: 0.94, metalness: 0 }),
+    new THREE.MeshStandardMaterial({ color: 0x484e53, roughness: 0.94, metalness: 0 }),
   );
   ceiling.rotation.x = Math.PI / 2;
   ceiling.position.set(0, 7.2, 8);

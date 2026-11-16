@@ -70,8 +70,8 @@ export function createMechanism(): Mechanism {
   steel.name = "ghost-steel-ring";
   steel.position.z = -0.008;
   steel.castShadow = false;
-  const steelTag = ghostLabel(0.004);
-  steelTag.position.set(0, STEEL_RING_OD_M / 2 + 0.008, 0);
+  const steelTag = ghostLabel(0.0026);
+  steelTag.position.set(0.02, -0.028, 0.01);
   steel.add(steelTag);
   group.add(steel);
 
@@ -101,8 +101,8 @@ export function createMechanism(): Mechanism {
   const wheel = new THREE.Group();
   wheel.name = "ghost-wheel";
   wheel.position.set(WHEEL_STATION_M.x, WHEEL_STATION_M.y, WHEEL_STATION_M.z);
-  const wheelTag = ghostLabel(0.0032);
-  wheelTag.position.set(0, WHEEL_OD_M / 2 + 0.004, 0.002);
+  const wheelTag = ghostLabel(0.0034);
+  wheelTag.position.set(0.006, 0.001, 0.008);
   wheel.add(wheelTag);
   group.add(wheel);
   let wheelCount = -1;

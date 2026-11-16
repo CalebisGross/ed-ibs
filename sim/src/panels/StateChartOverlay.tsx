@@ -1,8 +1,6 @@
-import { SOURCE_BLANK_DEG, SOURCE_LIFT_DEG } from "../physics/constants";
 import type { SolverState } from "../physics/EscapementSolver";
-import { radToDeg } from "../physics/units";
 import type { PowerLatch } from "../physics/powerCut";
-import { defaultSettings, type Settings } from "../sim/settings";
+import type { Settings } from "../sim/settings";
 import {
   CHART_REGIONS,
   geometricSwingLabel,
@@ -10,8 +8,6 @@ import {
   type EscapementReading,
   type SwingLabel,
 } from "./escapementReading";
-import { SolverSampleTag, TaggedNumber } from "./ProvenanceBadges";
-
 export function StateChartOverlay(props: {
   state: SolverState;
   settings: Settings;
@@ -23,16 +19,15 @@ export function StateChartOverlay(props: {
   return (
     <section className="see-why-panel" data-testid="see-why-statechart">
       <header className="see-why-panel-head">
-        <h2>Escapement chart</h2>
-        <p title="Boxes crossed in the sample window keep a dim border.">The lit box is the current sample.</p>
+        <h2 title="The lit box is the current sample. Boxes crossed in the sample window keep a dim border.">Escapement chart</h2>
       </header>
       {reading.unmappedReason ? <p className="see-why-empty" data-testid="see-why-state-empty">{reading.unmappedReason}</p> : null}
       <div className="see-why-regions">
-        {CHART_REGIONS.map((region) => (
+        {CHART_REGIONS.filter((region) => region.id !== "blank").map((region) => (
           <div key={region.id} className="see-why-region">
             <h3>{region.title}</h3>
             <ul>
-              {region.labels.map((label) => {
+              {(region.id === "supply" ? region.labels.slice(0, 3) : region.labels).map((label) => {
                 const current = currentLabel(reading, region.id) === label;
                 const lit = current ? "current" : recent.has(label as SwingLabel) && region.id === "swing" ? "recent" : "off";
                 return (
@@ -51,66 +46,33 @@ export function StateChartOverlay(props: {
           </div>
         ))}
       </div>
-      {reading.clockLate && reading.geometricSwing ? (
-        <p className="see-why-note">Geometric zone at this sample: {reading.geometricSwing}.</p>
-      ) : null}
-      <dl className="see-why-readouts">
-        <div>
-          <dt>Angle</dt>
-          <dd>
-            {radToDeg(props.state.theta).toFixed(2)} deg <SolverSampleTag />
-          </dd>
-        </div>
-        <div>
-          <dt>Angular velocity</dt>
-          <dd>
-            {props.state.omega.toFixed(3)} rad/s <SolverSampleTag />
-          </dd>
-        </div>
-        <div>
-          <dt>Time</dt>
-          <dd>
-            {props.state.t.toFixed(3)} s <SolverSampleTag />
-          </dd>
-        </div>
-        <div>
-          <dt>Blank half-angle</dt>
-          <dd>
-            <TaggedNumber
-              id="blank-half-angle"
-              text={`${props.settings.blankDeg.toFixed(2)} deg`}
-              matchesTable={props.settings.blankDeg === SOURCE_BLANK_DEG}
-            />
-          </dd>
-        </div>
-        <div>
-          <dt>Lift half-angle</dt>
-          <dd>
-            <TaggedNumber
-              id="lift-half-angle"
-              text={`${props.settings.liftDeg.toFixed(2)} deg`}
-              matchesTable={props.settings.liftDeg === SOURCE_LIFT_DEG}
-            />
-          </dd>
-        </div>
-        <div>
-          <dt>omega epsilon</dt>
-          <dd>
-            <TaggedNumber
-              id="omega-epsilon"
-              text={`${props.settings.omegaEpsilon.toExponential(0)} rad/s`}
-              matchesTable={props.settings.omegaEpsilon === defaultSettings.omegaEpsilon}
-            />
-          </dd>
-        </div>
-      </dl>
-      {reading.notes.length > 0 ? (
-        <ul className="see-why-notes">
-          {reading.notes.map((note) => (
-            <li key={note}>{note}</li>
-          ))}
+      <details className="see-why-more">
+        <summary>Later supply, blank, and notes</summary>
+        <ul>
+          {[
+            ...(CHART_REGIONS.find((region) => region.id === "supply")?.labels.slice(3) ?? []),
+            ...(CHART_REGIONS.find((region) => region.id === "blank")?.labels ?? []),
+          ].map((label) => {
+            const current = currentLabel(reading, "blank") === label || currentLabel(reading, "supply") === label;
+            const lit = current ? "current" : "off";
+            return (
+              <li key={label} className="see-why-box" data-lit={lit} aria-current={current ? "true" : undefined}>
+                {label}
+              </li>
+            );
+          })}
         </ul>
-      ) : null}
+        {reading.clockLate && reading.geometricSwing ? (
+          <p className="see-why-note">Geometric zone at this sample: {reading.geometricSwing}.</p>
+        ) : null}
+        {reading.notes.length > 0 ? (
+          <ul className="see-why-notes">
+            {reading.notes.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
+        ) : null}
+      </details>
     </section>
   );
 }

@@ -90,6 +90,135 @@ async function assertPanelsDisjoint(page, label) {
   if (hits.length > 0) throw new Error(`Overlapping panels at ${label}: ${hits.join("; ")}`);
 }
 
+/**
+ * Panel boxes can be disjoint while the words inside them collide, sit on a plot,
+ * or render too small to read. This checks the ink, not the panel chrome.
+ */
+async function assertReadableCopy(page, label) {
+  const hits = await page.evaluate(() => {
+    const hosts = [
+      ...document.querySelectorAll(
+        [
+          ".see-why-box",
+          ".see-why-readouts dt",
+          ".see-why-readouts dd",
+          ".see-why-heat-col",
+          ".see-why-heat-row",
+          ".see-why-heat-corner",
+          ".see-why-cell",
+          ".see-why-tick",
+          ".see-why-axis-label",
+          ".see-why-legend li",
+          ".see-why h2",
+          ".see-why h3",
+          ".see-why-panel-head p",
+          ".plot-caption",
+          ".readouts dt",
+          ".readouts dd",
+        ].join(", "),
+      ),
+    ];
+    const overlap = (a, b) => {
+      const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+      const h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      return w > 1 && h > 1;
+    };
+    const inkOf = (node) => {
+      const found = [];
+      const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const value = walker.currentNode.textContent ?? "";
+        if (!value.trim()) continue;
+        const range = document.createRange();
+        range.selectNodeContents(walker.currentNode);
+        for (const rect of range.getClientRects()) {
+          if (rect.width > 1 && rect.height > 1) found.push(rect);
+        }
+      }
+      return found;
+    };
+    const onScreen = (rect) =>
+      rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth;
+    const clipAmount = (rect, node) => {
+      let worst = 0;
+      let parent = node.parentElement;
+      while (parent) {
+        const style = getComputedStyle(parent);
+        const clips = ["hidden", "clip", "auto", "scroll"].includes(style.overflowX) || ["hidden", "clip", "auto", "scroll"].includes(style.overflowY);
+        if (clips) {
+          const box = parent.getBoundingClientRect();
+          if (overlap(rect, box)) {
+            const past = Math.max(box.left - rect.left, rect.right - box.right, box.top - rect.top, rect.bottom - box.bottom, 0);
+            if (past > worst) worst = past;
+          }
+        }
+        parent = parent.parentElement;
+      }
+      return worst;
+    };
+    const items = hosts.map((node) => ({
+      node,
+      label: (node.textContent ?? "").trim().replace(/\s+/g, " ").slice(0, 48),
+      ink: inkOf(node).filter((rect) => onScreen(rect) && clipAmount(rect, node) <= 2),
+    }));
+    const found = [];
+    for (let i = 0; i < items.length; i += 1) {
+      for (let j = i + 1; j < items.length; j += 1) {
+        const a = items[i];
+        const b = items[j];
+        if (a.node.contains(b.node) || b.node.contains(a.node)) continue;
+        const hit = a.ink.some((left) => b.ink.some((right) => overlap(left, right)));
+        if (hit) found.push(`overlap "${a.label}" x "${b.label}"`);
+      }
+    }
+    const plots = [...document.querySelectorAll(".see-why-plot-frame, .plot-host canvas")];
+    for (const item of items) {
+      if (item.node.classList.contains("see-why-tick") || item.node.classList.contains("see-why-axis-label")) {
+        for (const plot of document.querySelectorAll(".see-why-plot-frame")) {
+          const frame = plot.getBoundingClientRect();
+          if (item.ink.some((rect) => overlap(rect, frame))) found.push(`on plot "${item.label}"`);
+        }
+        continue;
+      }
+      for (const plot of plots) {
+        const frame = plot.getBoundingClientRect();
+        if (item.ink.some((rect) => overlap(rect, frame))) found.push(`on plot "${item.label}"`);
+      }
+    }
+    for (const tick of document.querySelectorAll(".see-why-tick")) {
+      for (const rect of inkOf(tick)) {
+        if (!onScreen(rect) || clipAmount(rect, tick) > 2) continue;
+        if (rect.height < 9) found.push(`tick ${rect.height.toFixed(1)}px "${(tick.textContent ?? "").trim()}"`);
+      }
+    }
+    const fullyOutside = (rect, node) => {
+      let parent = node.parentElement;
+      while (parent) {
+        const style = getComputedStyle(parent);
+        const clipsY = ["hidden", "clip", "auto", "scroll"].includes(style.overflowY);
+        const clipsX = ["hidden", "clip", "auto", "scroll"].includes(style.overflowX);
+        if (clipsY) {
+          const box = parent.getBoundingClientRect();
+          if (box.width > 2 && box.height > 2 && onScreen(box) && !overlap(rect, box)) {
+            const verticalMiss = rect.bottom < box.top + 1 || rect.top > box.bottom - 1;
+            if (verticalMiss) return true;
+          }
+        }
+        parent = parent.parentElement;
+      }
+      return false;
+    };
+    for (const item of items) {
+      const rects = inkOf(item.node);
+      const past = rects.some((rect) => onScreen(rect) && clipAmount(rect, item.node) > 2);
+      const buried = rects.some((rect) => fullyOutside(rect, item.node));
+      if (past || buried) found.push(`clipped "${item.label}"`);
+    }
+    return found.slice(0, 10);
+  });
+  if (hits.length > 0) throw new Error(`Unreadable copy at ${label}: ${hits.join("; ")}`);
+}
+
 async function clickButton(label) {
   await page.evaluate((name) => {
     const button = [...document.querySelectorAll("button")].find((item) => item.textContent?.trim() === name);
@@ -114,9 +243,11 @@ await page.waitForFunction(() => (document.querySelector('[data-testid="stage-st
   timeout: 8000,
 });
 await assertPanelsDisjoint(page, "stage 1440x900");
+await assertReadableCopy(page, "stage 1440x900");
 await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
 await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 await assertPanelsDisjoint(page, "stage 1280x800");
+await assertReadableCopy(page, "stage 1280x800");
 await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 
@@ -167,9 +298,11 @@ await page.waitForSelector('[data-testid="pane-mechanical"]');
 await page.waitForFunction(() => document.querySelectorAll("section.pane h2").length >= 4);
 const engineeringPanes = await page.$$eval("section.pane h2", (nodes) => nodes.map((node) => node.textContent));
 await assertPanelsDisjoint(page, "engineering 1440x900");
+await assertReadableCopy(page, "engineering 1440x900");
 await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
 await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 await assertPanelsDisjoint(page, "engineering 1280x800");
+await assertReadableCopy(page, "engineering 1280x800");
 await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 await page.screenshot({ path: `${outDir}/workbench-desktop.png`, fullPage: false });

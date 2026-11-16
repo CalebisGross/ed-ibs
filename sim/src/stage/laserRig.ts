@@ -107,7 +107,7 @@ export function updateLaser(
 
 function nearWhite(css: string): string {
   const color = new THREE.Color(css);
-  color.lerp(new THREE.Color(0xf4f7f8), 0.84);
+  color.lerp(new THREE.Color(0xf4f7f8), 0.35);
   return `#${color.getHexString()}`;
 }
 

@@ -33,8 +33,8 @@ const STILL: Record<Exclude<PresetName, "orbit" | "push" | "impulse">, { positio
   coaxial: { position: [0, 0.002, 0.09], target: [0, 0, 0], fov: 26 },
   isometric: { position: [0.055, 0.048, 0.055], target: [0, 0, 0], fov: 24 },
   macro: {
-    position: [CONTACT.x + 0.01, CONTACT.y + 0.012, CONTACT.z + 0.034],
-    target: [CONTACT.x, CONTACT.y, CONTACT.z],
+    position: [CONTACT.x + 0.007, CONTACT.y + 0.0015, CONTACT.z + 0.024],
+    target: [CONTACT.x - 0.001, CONTACT.y - 0.001, CONTACT.z],
     fov: 24,
   },
   stage: { position: [0.07, 0.055, 0.07], target: [0, 0, 0], fov: 26 },
@@ -305,11 +305,8 @@ export function MechanicalViewport({
         <p className={webgl === "ready" ? "sr" : "legend"} data-testid="webgl-status">
           {webgl === "ready" ? "WebGL viewport ready" : webgl}
         </p>
-        <p className="legend mech-notes" title={ghosts.join(" ")}>
-          Solid Ti-6Al-4V ring, 28 to 36 mm. Ghost tags mark illustrative parts.
-        </p>
         <details className="legend mech-notes">
-          <summary>Part notes</summary>
+          <summary title={`Solid Ti-6Al-4V ring, 28 to 36 mm. Ghost tags mark illustrative parts. ${ghosts.join(" ")}`}>Part notes</summary>
           <p>
             Axial thickness and leaf width are illustrative. {ghosts.join(" ")} No drawn part is brass. Beams are direction markers. Tick marks a valid beat, not a contact.
           </p>

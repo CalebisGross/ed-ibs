@@ -152,7 +152,7 @@ export function nextTrail(
 
 export function figureFeet(throwM: number): StageVec {
   const z = Math.min(3.4, Math.max(1.6, throwM * 0.42));
-  return { x: 2.55, y: 0, z };
+  return { x: 1.15, y: 0, z };
 }
 
 export interface FigurePart {
@@ -182,10 +182,11 @@ export function figureTopM(): number {
 }
 
 export function audienceCamera(throwM: number): CameraPose {
+  const lookZ = Math.min(0.35, Math.max(0.04, throwM * 0.01));
   return {
-    position: { x: -0.55, y: 1.45, z: -2.4 },
-    target: { x: 0, y: 1.85, z: Math.min(Math.max(throwM * 0.35, 1.5), 6) },
-    fov: 42,
+    position: { x: 0.16, y: 2.18, z: -0.42 },
+    target: { x: 0, y: 2.38, z: lookZ },
+    fov: 22,
   };
 }
 

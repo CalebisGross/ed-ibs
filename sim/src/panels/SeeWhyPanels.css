@@ -12,13 +12,14 @@
   background: var(--see-bg);
   color: var(--see-text);
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(5, calc((100% - 32px) / 4));
   grid-template-rows: auto minmax(0, 1fr);
+  overflow-x: auto;
+  overflow-y: hidden;
   gap: calc(var(--see-space) * 2);
   height: 100%;
   min-height: 0;
   min-width: 0;
-  overflow: hidden;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace;
   font-size: var(--see-font);
   line-height: 1.45;
@@ -68,6 +69,10 @@
   color: var(--see-text);
 }
 
+.see-why-more:not([open]) > :not(summary) {
+  display: none;
+}
+
 .see-why-panel {
   background: var(--see-surface);
   border: 1px solid var(--see-line);
@@ -76,13 +81,14 @@
   gap: calc(var(--see-space) * 2);
   min-width: 0;
   min-height: 0;
+  max-height: 100%;
   overflow: auto;
-  padding: calc(var(--see-space) * 3);
+  padding: calc(var(--see-space) * 2);
 }
 
 .see-why-panel[data-testid="see-why-phase"] {
-  grid-template-rows: auto minmax(0, 1fr);
-  overflow: hidden;
+  grid-template-rows: auto minmax(120px, 1fr);
+  overflow: auto;
 }
 
 .see-why-phase-layout {
@@ -94,9 +100,11 @@
 }
 
 .see-why-plot-slot {
-  min-height: 0;
+  height: 132px;
+  min-height: 132px;
   min-width: 0;
   overflow: hidden;
+  position: relative;
 }
 
 .see-why-plot-slot > .see-why-plot {
@@ -104,11 +112,16 @@
   overflow: hidden;
 }
 
+.see-why-phase-layout .see-why-plot-slot {
+  height: 100%;
+  min-height: 120px;
+}
+
 .see-why-phase-layout .see-why-legend {
   background: var(--see-surface);
   display: grid;
-  gap: 2px 8px;
-  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr);
   position: static;
 }
 
@@ -116,7 +129,7 @@
   align-items: center;
   display: flex;
   gap: 4px;
-  white-space: nowrap;
+  min-width: 0;
 }
 
 .see-why-panel-head {
@@ -131,21 +144,39 @@
 }
 
 .see-why-regions {
+  align-content: start;
   display: grid;
-  gap: calc(var(--see-space) * 2);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.see-why-region,
+.see-why-region ul,
+.see-why-region li,
+.see-why-box {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .see-why-region ul {
   display: grid;
-  gap: var(--see-space);
+  gap: 1px;
   list-style: none;
   padding: 0;
 }
 
+.see-why-region h3 {
+  font-size: 10px;
+  line-height: 1.2;
+  margin: 4px 0 2px;
+}
+
 .see-why-box {
   border: 1px solid var(--see-line);
-  padding: var(--see-space) calc(var(--see-space) * 2);
+  font-size: 10px;
+  line-height: 1.25;
+  padding: 0 4px;
+  white-space: normal;
 }
 
 .see-why-box[data-lit="current"] {
@@ -158,9 +189,15 @@
 }
 
 .see-why-readouts {
+  background: var(--see-surface);
   display: grid;
-  gap: calc(var(--see-space) * 2) calc(var(--see-space) * 3);
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: calc(var(--see-space) * 2);
+  grid-template-columns: minmax(0, 1fr);
+  position: relative;
+}
+
+.see-why-readouts div {
+  min-width: 0;
 }
 
 .see-why-readouts dt {
@@ -195,15 +232,34 @@
   padding: 0;
 }
 
+.see-why-provenance-list {
+  align-content: start;
+  align-items: start;
+  gap: 2px 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
 .see-why-provenance-list li {
   align-items: baseline;
   display: grid;
-  gap: calc(var(--see-space) * 2);
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  font-size: 10px;
+  gap: 0 4px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+.see-why-prov-name {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.see-why-provenance-list .see-why-badge {
+  margin-left: 0;
 }
 
 .see-why-source {
-  grid-column: 1 / -1;
+  display: none;
 }
 
 .see-why-legend li {
@@ -250,7 +306,7 @@
 .see-why-tick,
 .see-why-axis-label {
   fill: var(--see-muted);
-  font-size: 11px;
+  font-size: 24px;
 }
 
 .see-why-plot-frame {
@@ -333,6 +389,13 @@
 
 .see-why-heat-corner,
 .see-why-heat-col,
+.see-why-heat-row,
+.see-why-cell {
+  min-width: 0;
+}
+
+.see-why-heat-corner,
+.see-why-heat-col,
 .see-why-heat-row {
   color: var(--see-muted);
   font-size: var(--see-font-sm);
@@ -340,14 +403,22 @@
 
 .see-why-heat-corner {
   display: grid;
+  line-height: 1.2;
+}
+
+.see-why-heat-col,
+.see-why-heat-row {
+  align-self: end;
 }
 
 .see-why-cell {
   border: 1px solid var(--see-line);
   display: grid;
-  gap: var(--see-space);
-  min-height: 52px;
-  padding: var(--see-space);
+  font-size: 10px;
+  gap: 1px;
+  line-height: 1.2;
+  min-height: 0;
+  padding: 2px;
 }
 
 .see-why-cell[data-outcome="holds"] {

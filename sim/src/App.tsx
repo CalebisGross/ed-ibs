@@ -85,37 +85,63 @@ export function App() {
             <strong>ED-IBS prototype workbench</strong>
             <span>Reduced oscillator. Local only. Not a hardware twin.</span>
           </div>
-          <div className="row">
-            <button
-              type="button"
-              data-testid="mode-stage"
-              className={sim.settings.viewMode === "stage" ? "active" : ""}
-              onClick={() => sim.setSettings({ viewMode: "stage" })}
-            >
-              Stage
-            </button>
-            <button
-              type="button"
-              data-testid="mode-engineering"
-              className={sim.settings.viewMode === "engineering" ? "active" : ""}
-              onClick={() => sim.setSettings({ viewMode: "engineering" })}
-            >
-              Engineering
-            </button>
-            <button type="button" data-testid="btn-pause" className={sim.paused ? "active" : ""} onClick={() => sim.setPaused((value) => !value)}>
-              {sim.paused ? "Run" : "Pause"}
-            </button>
-            <button type="button" data-testid="btn-reset" onClick={sim.reset}>Reset</button>
-            <span data-testid="sim-state">{sim.paused ? "paused" : "running"}</span>
-            <span data-testid="readout-time">t {sim.readout.state.t.toFixed(3)} s</span>
-            <span data-testid="sim-step">step {sim.readout.state.step}</span>
-            <span data-testid="readout-frequency">
-              {sim.settings.stiffnessMode === "reference-law" ? "derived" : "prescribed"}{" "}
-              {activeAnalyticHz(sim.settings).toFixed(4)} Hz
-            </span>
-            <span data-testid="readout-amplitude">{amplitude.toFixed(2)} deg</span>
-            <span data-testid="readout-fps">{sim.readout.fps === null ? "FPS unmeasured" : `${sim.readout.fps.toFixed(0)} FPS this session`}</span>
-            <QualityToggle tier={tier} onChange={setTier} />
+          <div className="topbar-main">
+            <div className="topbar-controls">
+            <div className="mode-switch">
+              <button
+                type="button"
+                data-testid="mode-stage"
+                className={sim.settings.viewMode === "stage" ? "active" : ""}
+                onClick={() => sim.setSettings({ viewMode: "stage" })}
+              >
+                Stage
+              </button>
+              <button
+                type="button"
+                data-testid="mode-engineering"
+                className={sim.settings.viewMode === "engineering" ? "active" : ""}
+                onClick={() => sim.setSettings({ viewMode: "engineering" })}
+              >
+                Engineering
+              </button>
+              <button type="button" data-testid="btn-pause" className={sim.paused ? "active" : ""} onClick={() => sim.setPaused((value) => !value)}>
+                {sim.paused ? "Run" : "Pause"}
+              </button>
+              <button type="button" data-testid="btn-reset" onClick={sim.reset}>Reset</button>
+            </div>
+            <div className="quality-slot">
+              <QualityToggle tier={tier} onChange={setTier} />
+            </div>
+            </div>
+            <dl className="readouts">
+              <div>
+                <dt>State</dt>
+                <dd data-testid="sim-state">{sim.paused ? "paused" : "running"}</dd>
+              </div>
+              <div>
+                <dt>Time</dt>
+                <dd data-testid="readout-time">t {sim.readout.state.t.toFixed(3)} s</dd>
+              </div>
+              <div>
+                <dt>Step</dt>
+                <dd data-testid="sim-step">step {sim.readout.state.step}</dd>
+              </div>
+              <div>
+                <dt>Frequency</dt>
+                <dd data-testid="readout-frequency">
+                  {sim.settings.stiffnessMode === "reference-law" ? "derived" : "prescribed"}{" "}
+                  {activeAnalyticHz(sim.settings).toFixed(4)} Hz
+                </dd>
+              </div>
+              <div>
+                <dt>Amplitude</dt>
+                <dd data-testid="readout-amplitude">{amplitude.toFixed(2)} deg</dd>
+              </div>
+              <div>
+                <dt>Frame</dt>
+                <dd data-testid="readout-fps">{sim.readout.fps === null ? "FPS unmeasured" : `${sim.readout.fps.toFixed(0)} FPS this session`}</dd>
+              </div>
+            </dl>
           </div>
         </header>
         <p

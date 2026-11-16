@@ -17,7 +17,7 @@ export function BreakHeatmap(props: {
     <section className="see-why-panel" data-testid="see-why-heatmap">
       <header className="see-why-panel-head">
         <h2>What breaks the blank window</h2>
-        <p>Frequency against amplitude. Each cell is a headless solver run with torque 0.</p>
+        <p>Rows are frequency (Hz). Columns are amplitude (deg).</p>
       </header>
       {props.cells.length === 0 ? (
         <p className="see-why-empty" data-testid="see-why-heatmap-empty">
@@ -26,15 +26,15 @@ export function BreakHeatmap(props: {
       ) : (
         <div
           className="see-why-heat"
-          style={{ gridTemplateColumns: `auto repeat(${BLANK_HEATMAP_AMPLITUDES_DEG.length}, minmax(4.5rem, 1fr))` }}
+          style={{ gridTemplateColumns: `3.4rem repeat(${BLANK_HEATMAP_AMPLITUDES_DEG.length}, minmax(0, 1fr))` }}
         >
-          <div className="see-why-heat-corner">
-            <span>frequency (Hz)</span>
-            <span>amplitude (deg)</span>
+          <div className="see-why-heat-corner" title="Rows are frequency in hertz. Columns are amplitude in degrees.">
+            <span>Hz</span>
+            <span>deg</span>
           </div>
           {BLANK_HEATMAP_AMPLITUDES_DEG.map((amplitude) => (
             <div key={amplitude} className="see-why-heat-col">
-              {amplitude} deg
+              {amplitude}
             </div>
           ))}
           {BLANK_HEATMAP_FREQUENCIES_HZ.map((frequency) => (
@@ -42,6 +42,8 @@ export function BreakHeatmap(props: {
           ))}
         </div>
       )}
+      <details className="see-why-more">
+        <summary>Cell notes</summary>
       <dl className="see-why-readouts">
         <div>
           <dt>RK4 step</dt>
@@ -76,8 +78,6 @@ export function BreakHeatmap(props: {
           </dd>
         </div>
       </dl>
-      <details className="see-why-more">
-        <summary>Cell notes</summary>
         <p>
           Grid 4 Hz and 20 Hz <ProvenanceBadge id="frequency-band" />, 8 Hz <ProvenanceBadge id="base-frequency" />. Amplitudes include 18 deg <ProvenanceBadge id="amplitude-target" />. Torque is 0. An outline is the harmonic estimate, not a stored sample.
         </p>

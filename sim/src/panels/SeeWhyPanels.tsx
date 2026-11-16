@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { DT_S } from "../physics/constants";
 import { degToRad, radToDeg } from "../physics/units";
 import { solveCommand } from "../sim/parameters";
@@ -39,7 +39,7 @@ interface LiveView {
   blankDeg: number | null;
 }
 
-export function SeeWhyPanels(props: SeeWhyPanelsProps) {
+function SeeWhyPanelsComponent(props: SeeWhyPanelsProps) {
   const live = useLiveView(props.subscribe);
   const state = live.state ?? props.readout.state;
   const blankDeg = live.blankDeg ?? props.settings.blankDeg;
@@ -119,6 +119,16 @@ export function SeeWhyPanels(props: SeeWhyPanelsProps) {
   );
 }
 
+export const SeeWhyPanels = memo(SeeWhyPanelsComponent, (prev, next) => {
+  return (
+    prev.subscribe === next.subscribe &&
+    prev.settings === next.settings &&
+    prev.power === next.power &&
+    prev.paused === next.paused &&
+    prev.scrubTimeSeconds === next.scrubTimeSeconds
+  );
+});
+
 function sampleAtOrBefore(samples: FramePacket["samples"], t: number | undefined): FramePacket["samples"][number] | null {
   if (t === undefined || !Number.isFinite(t)) return null;
   let found: FramePacket["samples"][number] | null = null;
@@ -129,42 +139,55 @@ function sampleAtOrBefore(samples: FramePacket["samples"], t: number | undefined
   return found;
 }
 
+const PANEL_COMMIT_MS = 150;
+
 function useLiveView(subscribe: SeeWhyPanelsProps["subscribe"]): LiveView {
   const [view, setView] = useState<LiveView>({ marks: [], samples: [], state: null, blankDeg: null });
   const samplesRef = useRef<FramePacket["samples"]>([]);
   const marksRef = useRef<TimelineMark[]>([]);
   useEffect(() => {
     let frame = 0;
+    let timer = 0;
+    let lastCommit = 0;
     let pending: FramePacket | null = null;
+    const publish = () => {
+      frame = 0;
+      const next = pending;
+      if (!next) return;
+      const now = performance.now();
+      if (!next.reset && now - lastCommit < PANEL_COMMIT_MS) {
+        timer = window.setTimeout(() => {
+          timer = 0;
+          frame = requestAnimationFrame(publish);
+        }, PANEL_COMMIT_MS - (now - lastCommit));
+        return;
+      }
+      lastCommit = performance.now();
+      setView({
+        marks: marksRef.current,
+        samples: samplesRef.current,
+        state: next.state,
+        blankDeg: next.blankDeg,
+      });
+    };
     const unsubscribe = subscribe((packet) => {
       pending = packet;
-      if (frame) return;
-      frame = requestAnimationFrame(() => {
-        frame = 0;
-        const next = pending;
-        if (!next) return;
-        if (next.reset) {
-          samplesRef.current = [];
-          marksRef.current = [];
-          setView({ marks: [], samples: [], state: next.state, blankDeg: next.blankDeg });
-          return;
-        }
-        if (next.samples.length === 0) return;
+      if (packet.reset) {
+        samplesRef.current = [];
+        marksRef.current = [];
+      } else if (packet.samples.length > 0) {
         const predecessor = samplesRef.current.length > 0 ? samplesRef.current[samplesRef.current.length - 1].theta : null;
-        const added = timelineMarks(next.samples, degToRad(next.blankDeg), predecessor);
-        samplesRef.current = samplesRef.current.concat(next.samples).slice(-SAMPLE_CAP);
+        const added = timelineMarks(packet.samples, degToRad(packet.blankDeg), predecessor);
+        samplesRef.current = samplesRef.current.concat(packet.samples).slice(-SAMPLE_CAP);
         marksRef.current = marksRef.current.concat(added).slice(-SAMPLE_CAP);
-        setView({
-          marks: marksRef.current,
-          samples: samplesRef.current,
-          state: next.state,
-          blankDeg: next.blankDeg,
-        });
-      });
+      }
+      if (frame || timer) return;
+      frame = requestAnimationFrame(publish);
     });
     return () => {
       unsubscribe();
       if (frame) cancelAnimationFrame(frame);
+      if (timer) window.clearTimeout(timer);
     };
   }, [subscribe]);
   return view;

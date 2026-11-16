@@ -102,13 +102,13 @@ export function laserCoreMaterial(css: string): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
     color: 0x000000,
     emissive: color,
-    emissiveIntensity: 0.85,
+    emissiveIntensity: 4,
     metalness: 0,
     roughness: 1,
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.95,
     depthWrite: false,
-    toneMapped: true,
+    toneMapped: false,
   });
 }
 
@@ -137,8 +137,9 @@ export function hazeMaterial(css: string): THREE.MeshStandardMaterial {
     metalness: 0,
     roughness: 1,
     transparent: true,
-    opacity: 0.12,
+    opacity: 0.16,
     depthWrite: false,
+    toneMapped: false,
     side: THREE.DoubleSide,
   });
 }
@@ -153,7 +154,7 @@ export function sceneryCloth(): THREE.MeshStandardMaterial {
 
 export function targetCard(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
-    color: 0xb7b4ae,
+    color: 0x3a4044,
     metalness: 0,
     roughness: 0.94,
     side: THREE.DoubleSide,

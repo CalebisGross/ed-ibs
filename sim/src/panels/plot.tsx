@@ -49,7 +49,7 @@ export function PlotFrame(props: {
   yDomain: readonly [number, number];
   children: (xOf: (value: number) => number, yOf: (value: number) => number) => ReactNode;
 }) {
-  const margin = { top: 12, right: 10, bottom: 36, left: 58 };
+  const margin = { top: 32, right: 16, bottom: 68, left: 112 };
   const innerW = props.width - margin.left - margin.right;
   const innerH = props.height - margin.top - margin.bottom;
   const xOf = scaleLinear(props.xDomain, [margin.left, margin.left + innerW]);
@@ -67,33 +67,34 @@ export function PlotFrame(props: {
       {props.yTicks.map((tick) => (
         <g key={`y-${tick}`}>
           <line x1={margin.left} x2={margin.left + innerW} y1={yOf(tick)} y2={yOf(tick)} className="see-why-grid" />
-          <text x={margin.left - 6} y={yOf(tick)} className="see-why-tick" textAnchor="end">
+          <text x={margin.left - 10} y={yOf(tick)} className="see-why-tick" textAnchor="end">
             {formatTick(tick)}
           </text>
         </g>
       ))}
-      {props.xTicks.map((tick) => (
-        <text key={`x-${tick}`} x={xOf(tick)} y={margin.top + innerH + 16} className="see-why-tick" textAnchor="middle">
-          {formatTick(tick)}
-        </text>
-      ))}
+      {props.xTicks.map((tick) => {
+        const x = xOf(tick);
+        const nearLeft = x < margin.left + 40;
+        const nearRight = x > margin.left + innerW - 40;
+        const anchor = nearLeft ? "start" : nearRight ? "end" : "middle";
+        const labelX = nearLeft ? margin.left : nearRight ? margin.left + innerW : x;
+        return (
+          <text key={`x-${tick}`} x={labelX} y={margin.top + innerH + 26} className="see-why-tick" textAnchor={anchor}>
+            {formatTick(tick)}
+          </text>
+        );
+      })}
       {y0 >= margin.top && y0 <= margin.top + innerH ? (
         <line x1={margin.left} x2={margin.left + innerW} y1={y0} y2={y0} className="see-why-axis" />
       ) : null}
       {x0 >= margin.left && x0 <= margin.left + innerW ? (
         <line x1={x0} x2={x0} y1={margin.top} y2={margin.top + innerH} className="see-why-axis" />
       ) : null}
-      <text x={margin.left + innerW / 2} y={props.height - 6} className="see-why-axis-label" textAnchor="middle">
-        {props.xLabel}
-      </text>
-      <text
-        x={14}
-        y={margin.top + innerH / 2}
-        className="see-why-axis-label"
-        textAnchor="middle"
-        transform={`rotate(-90 14 ${margin.top + innerH / 2})`}
-      >
+      <text x={margin.left} y={14} className="see-why-axis-label" textAnchor="start">
         {props.yLabel}
+      </text>
+      <text x={margin.left + innerW / 2} y={props.height - 8} className="see-why-axis-label" textAnchor="middle">
+        {props.xLabel}
       </text>
       <g data-plot-origin={`${xOf(0).toFixed(2)},${yOf(0).toFixed(2)}`}>{props.children(xOf, yOf)}</g>
     </svg>

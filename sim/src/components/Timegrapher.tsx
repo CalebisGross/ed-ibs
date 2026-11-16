@@ -63,6 +63,7 @@ export function Timegrapher({
       <header className="pane-head">
         <h2>Pane 3 · Phase and timegrapher</h2>
         <p className="note">Orbit from the solver samples. Impulse is drawn at the center, where speed peaks.</p>
+        <p className="plot-caption" data-testid="strip-caption">0.6 s strip. Ticks are valid beats. Band is the blank angle.</p>
       </header>
       <div className="pane-body">
         <div className="plots">
@@ -192,6 +193,10 @@ function paintStrip(canvas: HTMLCanvasElement | null, trace: TracePoint[], blank
   ctx.strokeRect(left, top, plotW, plotH);
   ctx.fillStyle = "rgba(143, 206, 120, 0.08)";
   ctx.fillRect(left, yOf(blankDeg), plotW, yOf(-blankDeg) - yOf(blankDeg));
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(left, top, plotW, plotH);
+  ctx.clip();
   ctx.strokeStyle = "#79d0cb";
   ctx.beginPath();
   let started = false;
@@ -205,6 +210,7 @@ function paintStrip(canvas: HTMLCanvasElement | null, trace: TracePoint[], blank
     } else ctx.lineTo(x, y);
   }
   ctx.stroke();
+  ctx.restore();
   ctx.strokeStyle = "#e0a45a";
   let previousBeat = trace.find((point) => point.t >= t0)?.beat ?? 0;
   for (const point of trace) {
@@ -219,7 +225,6 @@ function paintStrip(canvas: HTMLCanvasElement | null, trace: TracePoint[], blank
   }
   ctx.fillStyle = "#8b97a8";
   ctx.font = "11px ui-monospace, monospace";
-  ctx.fillText("0.6 s strip · ticks are valid beats · band is the blank angle", left, height - 6);
   if (trace.length === 0) ctx.fillText("Waiting for samples.", left + 8, top + 18);
 }
 

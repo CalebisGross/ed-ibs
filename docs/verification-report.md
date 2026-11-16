@@ -234,3 +234,26 @@ Frame times, one session, same method as the rows above: 35 `requestAnimationFra
 - High, escapement macro: median 83.3 ms, mean 83.80 ms, min 33.3 ms, max 100.1 ms.
 
 Three earlier low-tier samples, same method and same GPU, had medians 33.3 ms, 33.4 ms, and 33.4 ms. Stills from after the layout fix are the `pass3-*.png` files under `/opt/cursor/artifacts/`. They are not committed.
+
+## Round 4 look pass, 2026-11-15
+
+Same branch, after the frame-time pass above. The solver was not edited. Decision index IDs and statuses were not moved. This is still a simulator presentation, not a hardware measurement.
+
+The see-why strip keeps four cards on screen and scrolls sideways for the fifth. Chart notes that do not fit the short row sit in a closed disclosure. Plot captions sit in HTML, off the canvas. The audience camera stays downstage of the aperture. Beam cores are hairlines with a faint sheath. The escapement macro keeps a small depth of field on the pallet contact, and the Ghost tag sits on the wheel. See-why plots commit about every 150 ms so the software GPU can keep the low-tier median. Low still skips the shadow map, the haze volume, SSAO, depth of field, the room shell, and the environment map.
+
+Gates, one session:
+
+- `npm test` (`vitest run`, Vitest v2.1.9) exited 0. Start 23:57:14, duration 1.85 s. 10 files, 91 tests, all passed.
+- `npm run typecheck` (`tsc --noEmit`) exited 0.
+- `node scripts/check-docs.mjs` printed `ok` and exited 0.
+- `bash scripts/check-statecharts.sh` printed `escapement ok (74 distinct states)`, `simrun ok (320 distinct states)`, and `check-statecharts: ok`.
+- `node scripts/browser-verify.mjs` exited 0. Headless Chrome 157. `consoleErrors` was empty. `pageErrors` was empty. The readable-copy check, including text buried outside a vertical clip, passed at 1440x900 and at 1280x800.
+
+Frame times, one unloaded session after those gates, same method: 35 `requestAnimationFrame` gaps after a 400 ms settle, viewport 1440x900. Audience rows use the audience camera. The last row is Engineering, Escapement macro, high tier. GPU string: `ANGLE (Mesa, llvmpipe (LLVM 20.1.2 256 bits), OpenGL 4.5)`. CPU from `/proc/cpuinfo`: `Intel(R) Xeon(R) Processor`, 4 processors. The gaps include the solver and the render. They are not a GPU fence.
+
+- Low, audience: median 33.3 ms, mean 40.47 ms, min 16.5 ms, max 100 ms. The frame-time pass above was median 33.3 ms, mean 34.76 ms, min 16.6 ms, max 50.1 ms.
+- Medium, audience: median 50 ms, mean 62.86 ms, min 33.3 ms, max 116.7 ms. The frame-time pass above was median 66.7 ms, mean 65.71 ms, min 49.9 ms, max 83.5 ms.
+- High, audience: median 66.7 ms, mean 88.57 ms, min 49.9 ms, max 150 ms. The frame-time pass above was median 83.4 ms, mean 84.28 ms, min 50.0 ms, max 116.6 ms.
+- High, escapement macro: median 83.4 ms, mean 100 ms, min 50 ms, max 150 ms. The frame-time pass above was median 83.3 ms, mean 83.80 ms, min 33.3 ms, max 100.1 ms.
+
+Stills from this pass are the `round4-*.png` files under `/opt/cursor/artifacts/`. They are not committed.

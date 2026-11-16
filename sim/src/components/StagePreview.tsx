@@ -21,12 +21,10 @@ import {
   smoothstep,
   type MotionSample,
 } from "../stage/motion";
-import { sceneryCloth } from "../stage/materials";
 import {
   STAGE,
   STAGE_COPY,
   figureFeet,
-  figureParts,
   liveBeams,
   nextTrail,
   stageCamera,
@@ -85,11 +83,11 @@ export function StagePreview({
     }
     setWebgl("ready");
     configureRenderer(renderer);
-    renderer.setClearColor(0x8a9094, 1);
+    renderer.setClearColor(0x4e5559, 1);
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const fog = new THREE.FogExp2(0x8a9094, 0.012);
+    const fog = new THREE.FogExp2(0x4e5559, 0.012);
     scene.fog = fog;
     const camera = new THREE.PerspectiveCamera(42, 1, 0.02, 80);
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -118,14 +116,28 @@ export function StagePreview({
 
     const person = new THREE.Group();
     person.name = "scale-figure";
-    const bodyMat = sceneryCloth();
-    for (const part of figureParts()) {
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(part.w, part.h, part.d), bodyMat);
-      mesh.position.set(part.x, part.y, part.z);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      person.add(mesh);
-    }
+    const silhouette = new THREE.Shape();
+    silhouette.moveTo(-0.1, 0);
+    silhouette.lineTo(-0.1, 0.86);
+    silhouette.lineTo(-0.2, 0.9);
+    silhouette.lineTo(-0.2, 1.32);
+    silhouette.lineTo(-0.11, 1.46);
+    silhouette.lineTo(-0.1, 1.56);
+    silhouette.bezierCurveTo(-0.12, STAGE.figureHeightM, 0.12, STAGE.figureHeightM, 0.1, 1.56);
+    silhouette.lineTo(0.11, 1.46);
+    silhouette.lineTo(0.2, 1.32);
+    silhouette.lineTo(0.2, 0.9);
+    silhouette.lineTo(0.1, 0.86);
+    silhouette.lineTo(0.1, 0);
+    silhouette.closePath();
+    const figureMesh = new THREE.Mesh(
+      new THREE.ExtrudeGeometry(silhouette, { depth: 0.02, bevelEnabled: false }),
+      new THREE.MeshStandardMaterial({ color: 0x1a1e22, metalness: 0, roughness: 0.94 }),
+    );
+    figureMesh.position.z = -0.01;
+    figureMesh.castShadow = true;
+    figureMesh.receiveShadow = true;
+    person.add(figureMesh);
     scene.add(person);
 
     const trailPositions = new Float32Array(MAX_TRAIL * 3);
@@ -137,7 +149,7 @@ export function StagePreview({
     const trail = new THREE.Points(
       trailGeo,
       new THREE.PointsMaterial({
-        size: 0.035,
+        size: 0.004,
         vertexColors: true,
         transparent: true,
         opacity: 0.55,

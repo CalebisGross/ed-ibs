@@ -27,7 +27,9 @@ export function BlankWindowTimeline(props: {
           No RK4 steps yet. The timeline fills from solver samples.
         </p>
       ) : (
-        <TimelinePlot marks={props.marks} blankDeg={props.blankDeg} cursorSeconds={props.cursorSeconds} />
+        <div className="see-why-plot-slot">
+          <TimelinePlot marks={props.marks} blankDeg={props.blankDeg} cursorSeconds={props.cursorSeconds} />
+        </div>
       )}
       <dl className="see-why-readouts">
         <div>
@@ -46,6 +48,10 @@ export function BlankWindowTimeline(props: {
             />
           </dd>
         </div>
+      </dl>
+      <details className="see-why-more">
+        <summary>Mark notes</summary>
+        <dl className="see-why-readouts">
         <div>
           <dt>Blank duration claim</dt>
           <dd>
@@ -81,8 +87,6 @@ export function BlankWindowTimeline(props: {
           </dd>
         </div>
       </dl>
-      <details className="see-why-more">
-        <summary>Mark notes</summary>
         <p>
           A square mark brackets the blank half-angle. The harmonic blank uses 2 asin(blank/A) / omega and is undefined inside that half-angle.
         </p>
