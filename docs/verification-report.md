@@ -257,3 +257,30 @@ Frame times, one unloaded session after those gates, same method: 35 `requestAni
 - High, escapement macro: median 83.4 ms, mean 100 ms, min 50 ms, max 150 ms. The frame-time pass above was median 83.3 ms, mean 83.80 ms, min 33.3 ms, max 100.1 ms.
 
 Stills from this pass are the `round4-*.png` files under `/opt/cursor/artifacts/`. They are not committed.
+
+## Round 5 layout pass, 2026-11-16
+
+Same branch, after the round 4 look pass above. The solver was not edited. `docs/user-specification.md` and `docs/spec-audit.md` were not edited. Decision index IDs and statuses were not moved. This is still a simulator presentation, not a hardware measurement.
+
+Engineering scrolls with the page. Stage stays a fixed viewport: the workbench row for the see-why strip is still `minmax(420px, 46vh)`, and the browser gate measured the stage host at 1098 by 258. Replay is one row, 34 px tall. In Engineering the see-why strip is a disclosure, closed until opened. At 1440x900 with that disclosure closed, the mechanical viewport host is 714 by 357, the cyclorama wall is 280 px tall with its caption under the plot, the timegrapher pane is 546 px with plot hosts of 200 px and 180 px, and the console pane is 2909 px with overflow visible. The 75.0% and 0.0% fader readouts sit inside that pane. At 1280x800 the mechanical viewport host is 317 px, the wall is 280 px, and the plot hosts stay 200 px and 180 px. Nothing in those panes is clipped by overflow.
+
+The readable-copy check still flags overlapping ink, text on a plot, and ticks under 9 px. It now also flags bench text whose ink runs more than 2 px past an overflow ancestor, bench text buried outside a vertical clip, and a `.bench .viewport-host` under 200 px tall. The sideways scroll of the fifth see-why card is still allowed.
+
+Depth of field stays on only for the escapement macro preset. The aperture is 0.00018 and the max blur is 0.00008. The Ghost tag is 1.5 mm and sits off the pallet. Low still skips the shadow map, the haze volume, SSAO, depth of field, the room shell, and the environment map. That cost path was not edited.
+
+Gates, one session:
+
+- `npm test` (`vitest run`, Vitest v2.1.9) exited 0. Start 00:10:26, duration 1.80 s. 10 files, 91 tests, all passed.
+- `npm run typecheck` (`tsc --noEmit`) exited 0.
+- `node scripts/check-docs.mjs` printed `ok` and exited 0.
+- `bash scripts/check-statecharts.sh` printed `escapement ok (74 distinct states)`, `simrun ok (320 distinct states)`, and `check-statecharts: ok`.
+- `node scripts/browser-verify.mjs` exited 0. Headless Chrome 157. `consoleErrors` was empty. `pageErrors` was empty. The readable-copy check passed at stage 1440x900, stage 1280x800, engineering 1440x900, and engineering 1280x800. `stageHost` was `{ "width": 1098, "height": 258 }`.
+
+Frame times, one unloaded session, same method: 35 `requestAnimationFrame` gaps after a 400 ms settle, viewport 1440x900. Audience rows use the audience camera. The last row is Engineering, Escapement macro, high tier. GPU string: `ANGLE (Mesa, llvmpipe (LLVM 20.1.2 256 bits), OpenGL 4.5)`. CPU from `/proc/cpuinfo`: `Intel(R) Xeon(R) Processor`, 4 processors. The gaps include the solver and the render. They are not a GPU fence.
+
+- Low, audience: median 33.3 ms, mean 47.14 ms, min 16.6 ms, max 133.3 ms. Round 4 was median 33.3 ms, mean 40.47 ms, min 16.5 ms, max 100 ms.
+- Medium, audience: median 66.7 ms, mean 89.52 ms, min 33.3 ms, max 150 ms. Round 4 was median 50 ms, mean 62.86 ms, min 33.3 ms, max 116.7 ms.
+- High, audience: median 83.4 ms, mean 101.9 ms, min 16.7 ms, max 183.3 ms. Round 4 was median 66.7 ms, mean 88.57 ms, min 49.9 ms, max 150 ms.
+- High, escapement macro: median 133.3 ms, mean 128.57 ms, min 16.7 ms, max 283.3 ms. Round 4 was median 83.4 ms, mean 100 ms, min 50 ms, max 150 ms. The mechanical view is 357 px tall on this pass, and depth of field runs on that view.
+
+Stills from this pass are the `round5-*.png` files under `/opt/cursor/artifacts/`. They are not committed.

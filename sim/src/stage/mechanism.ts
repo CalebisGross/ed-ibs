@@ -101,8 +101,8 @@ export function createMechanism(): Mechanism {
   const wheel = new THREE.Group();
   wheel.name = "ghost-wheel";
   wheel.position.set(WHEEL_STATION_M.x, WHEEL_STATION_M.y, WHEEL_STATION_M.z);
-  const wheelTag = ghostLabel(0.0034);
-  wheelTag.position.set(0.006, 0.001, 0.008);
+  const wheelTag = ghostLabel(0.0015);
+  wheelTag.position.set(0.008, -0.0035, 0.006);
   wheel.add(wheelTag);
   group.add(wheel);
   let wheelCount = -1;

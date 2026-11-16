@@ -21,8 +21,8 @@ export const POST_LIMITS = {
   ssaoMaxGapFactor: 3,
   ssaoRadiusMinM: 0.001,
   ssaoRadiusMaxM: 0.5,
-  dofAperture: 0.00035,
-  dofMaxBlur: 0.00016,
+  dofAperture: 0.00018,
+  dofMaxBlur: 0.00008,
 } as const;
 
 export interface QualityEffects {

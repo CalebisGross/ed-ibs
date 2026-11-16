@@ -33,9 +33,9 @@ const STILL: Record<Exclude<PresetName, "orbit" | "push" | "impulse">, { positio
   coaxial: { position: [0, 0.002, 0.09], target: [0, 0, 0], fov: 26 },
   isometric: { position: [0.055, 0.048, 0.055], target: [0, 0, 0], fov: 24 },
   macro: {
-    position: [CONTACT.x + 0.007, CONTACT.y + 0.0015, CONTACT.z + 0.024],
-    target: [CONTACT.x - 0.001, CONTACT.y - 0.001, CONTACT.z],
-    fov: 24,
+    position: [CONTACT.x + 0.011, CONTACT.y + 0.004, CONTACT.z + 0.038],
+    target: [CONTACT.x, CONTACT.y - 0.001, CONTACT.z],
+    fov: 28,
   },
   stage: { position: [0.07, 0.055, 0.07], target: [0, 0, 0], fov: 26 },
 };

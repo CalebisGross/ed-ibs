@@ -79,7 +79,7 @@ export function App() {
         readout={sim.readout}
         onRestoreShareLink={(state) => sim.setSettings(state.settings)}
       >
-      <div className="workbench">
+      <div className="workbench" data-mode={sim.settings.viewMode}>
         <header className="topbar">
           <div className="brand">
             <strong>ED-IBS prototype workbench</strong>
@@ -224,7 +224,7 @@ export function App() {
                 ? undefined
                 : {
                     gridTemplateColumns: `minmax(0, ${split.x}fr) 8px minmax(0, ${1 - split.x}fr)`,
-                    gridTemplateRows: `minmax(0, ${split.y}fr) 8px minmax(0, ${1 - split.y}fr)`,
+                    gridTemplateRows: "auto 8px auto",
                   }
             }
           >
@@ -264,17 +264,38 @@ export function App() {
 
 function ViewerTools({ sim }: { sim: ReturnType<typeof useSimulator> }) {
   const replay = useReplayScrub();
+  const engineering = sim.settings.viewMode === "engineering";
+  const [seeWhyOpen, setSeeWhyOpen] = useState(false);
+  const [seenMode, setSeenMode] = useState(sim.settings.viewMode);
+  if (sim.settings.viewMode !== seenMode) {
+    setSeenMode(sim.settings.viewMode);
+    if (engineering) setSeeWhyOpen(false);
+  }
+  const panels = (
+    <SeeWhyPanels
+      readout={sim.readout}
+      subscribe={sim.subscribe}
+      settings={sim.settings}
+      power={sim.power}
+      paused={sim.paused}
+      scrubTimeSeconds={replay.followingLive ? undefined : replay.scrubTimeSeconds}
+    />
+  );
   return (
     <section className="viewer-tools" aria-label="Replay and see-why">
       <ReplayScrubber />
-      <SeeWhyPanels
-        readout={sim.readout}
-        subscribe={sim.subscribe}
-        settings={sim.settings}
-        power={sim.power}
-        paused={sim.paused}
-        scrubTimeSeconds={replay.followingLive ? undefined : replay.scrubTimeSeconds}
-      />
+      {engineering ? (
+        <details
+          className="see-why-fold"
+          open={seeWhyOpen}
+          onToggle={(event) => setSeeWhyOpen(event.currentTarget.open)}
+        >
+          <summary>See why</summary>
+          {panels}
+        </details>
+      ) : (
+        panels
+      )}
     </section>
   );
 }

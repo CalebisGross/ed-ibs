@@ -18,6 +18,7 @@ export function Cyclorama({
   const hostRef = useRef<HTMLDivElement>(null);
   const persistRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLCanvasElement>(null);
+  const captionRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -160,19 +161,14 @@ export function Cyclorama({
         }
       }
       octx.globalAlpha = 1;
-      octx.fillStyle = "#d7dee8";
-      octx.font = "12px ui-monospace, monospace";
       const rays = instantaneousRayCount(packet.facetCount);
       const mode = packet.chopperEnabled
         ? "Chopper on: wall samples pause inside the angle window. Dashed path is the geometric transition, not extra light."
         : "Chopper off: the spot is recorded through the transition, including the azimuth step at the beat.";
       const negative = live.some((ray) => ray.negativeRadial) ? " Negative radial angle flips the plotted azimuth." : "";
-      octx.fillText(
-        `${mode} Rays ${rays}. phi ${lastRadial.toFixed(2)} deg. Rest radius ${rest.toFixed(2)} m.`,
-        12,
-        18,
-      );
-      if (negative) octx.fillText(negative.trim(), 12, 34);
+      if (captionRef.current) {
+        captionRef.current.textContent = `${mode} Rays ${rays}. phi ${lastRadial.toFixed(2)} deg. Rest radius ${rest.toFixed(2)} m.${negative}`;
+      }
     });
 
     return () => {
@@ -228,6 +224,9 @@ export function Cyclorama({
               onChange={(event) => setSettings({ persistenceMs: Number(event.target.value) })}
             />
           </label>
+          <p ref={captionRef} data-testid="cyclorama-caption">
+            Wall samples appear as the solver runs. The line stays off the plot.
+          </p>
           <p>Wall map D tan(phi). The overlay grid is 1 m. A blanked step draws no live spot.</p>
           <details>
             <summary>Channel notes</summary>

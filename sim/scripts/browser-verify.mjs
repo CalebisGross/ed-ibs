@@ -115,6 +115,16 @@ async function assertReadableCopy(page, label) {
           ".plot-caption",
           ".readouts dt",
           ".readouts dd",
+          ".bench .fader > span",
+          ".bench .fader b",
+          ".bench .fader small",
+          ".bench .status-item b",
+          ".bench .status-item div",
+          ".bench .status-item small",
+          ".bench .pane-head p",
+          ".bench .legend p",
+          ".bench .conflict p",
+          ".bench .note",
         ].join(", "),
       ),
     ];
@@ -214,7 +224,12 @@ async function assertReadableCopy(page, label) {
       const buried = rects.some((rect) => fullyOutside(rect, item.node));
       if (past || buried) found.push(`clipped "${item.label}"`);
     }
-    return found.slice(0, 10);
+    for (const node of document.querySelectorAll(".bench .viewport-host")) {
+      const box = node.getBoundingClientRect();
+      if (box.width < 2) continue;
+      if (box.height < 200) found.push(`viewport ${Math.round(box.height)}px tall`);
+    }
+    return found.slice(0, 12);
   });
   if (hits.length > 0) throw new Error(`Unreadable copy at ${label}: ${hits.join("; ")}`);
 }

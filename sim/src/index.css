@@ -72,6 +72,78 @@ select {
   overflow: hidden;
 }
 
+.workbench[data-mode="engineering"] {
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+  grid-template-rows: auto auto auto auto;
+}
+
+html:has(.workbench[data-mode="engineering"]),
+body:has(.workbench[data-mode="engineering"]),
+#root:has(.workbench[data-mode="engineering"]) {
+  height: auto;
+  min-height: 100%;
+}
+
+.workbench[data-mode="engineering"] .bench {
+  height: auto;
+  min-height: 640px;
+}
+
+.workbench[data-mode="engineering"] .pane {
+  overflow: visible;
+  height: auto;
+  align-self: start;
+}
+
+.workbench[data-mode="engineering"] .plots {
+  flex: 0 0 auto;
+  grid-template-rows: 200px 180px;
+}
+
+.workbench[data-mode="engineering"] .viewport-host,
+.workbench[data-mode="engineering"] .wall-host {
+  flex: 1 1 auto;
+  min-height: 280px;
+  height: auto;
+}
+
+.workbench[data-mode="engineering"] .plot-host {
+  min-height: 160px;
+  height: 100%;
+}
+
+.workbench[data-mode="engineering"] .console {
+  overflow: visible;
+}
+
+.workbench[data-mode="engineering"] .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.see-why-fold {
+  min-width: 0;
+}
+
+.see-why-fold > summary {
+  cursor: pointer;
+  padding: 6px 12px;
+  color: #d7dee8;
+  background: #161d27;
+  border-top: 1px solid #2a3444;
+}
+
+.see-why-fold:not([open]) > :not(summary) {
+  display: none;
+}
+
+.pane details:not([open]) > :not(summary) {
+  display: none;
+}
+
 .viewer-tools {
   min-height: 0;
   min-width: 0;
