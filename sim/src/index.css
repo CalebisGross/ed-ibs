@@ -72,6 +72,12 @@ select {
   overflow: hidden;
 }
 
+.workbench[data-mode="stage"] {
+  height: 100%;
+  overflow: hidden;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
 .workbench[data-mode="engineering"] {
   height: auto;
   min-height: 100%;
@@ -197,6 +203,10 @@ details p {
   border-bottom: 1px solid #3d3424;
   font-size: 12px;
   line-height: 1.4;
+}
+
+.banner p {
+  margin: 0;
 }
 
 .bench {
@@ -454,17 +464,43 @@ details p {
   min-width: 0;
   height: 100%;
   overflow: hidden;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
+  display: block;
 }
 
 .stage-pane {
+  position: relative;
+  height: 100%;
   min-height: 0;
+  border: 0;
+  background: #07080c;
+}
+
+.workbench[data-mode="stage"] .stage-pane .pane-body {
+  position: absolute;
+  inset: 0;
+}
+
+.stage-presets {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: min(640px, calc(100% - 20px));
+}
+
+.stage-presets button {
+  background: rgba(12, 16, 22, 0.72);
+  border-color: rgba(51, 65, 85, 0.9);
+  padding: 3px 7px;
+  font-size: 11px;
 }
 
 .stage-host {
-  position: relative;
-  flex: 1;
+  position: absolute;
+  inset: 0;
   min-height: 0;
   background: #07080c;
 }
@@ -547,6 +583,10 @@ details p {
     min-height: 460px;
   }
 
+  .workbench[data-mode="stage"] .stage-pane {
+    min-height: 0;
+  }
+
   .gutter {
     display: none;
   }
@@ -557,18 +597,13 @@ details p {
     grid-template-columns: 1fr;
   }
 
-  .stage-layout {
-    display: flex;
-    flex-direction: column;
-    height: auto;
+  .workbench[data-mode="stage"] {
+    height: 100%;
+    overflow: hidden;
+    grid-template-rows: auto minmax(0, 1fr);
   }
 
-  .stage-host {
-    min-height: 68vh;
-  }
-
-  .stage-rail {
-    border-left: 0;
-    border-top: 1px solid #243044;
+  .workbench[data-mode="stage"] .stage-host {
+    min-height: 0;
   }
 }

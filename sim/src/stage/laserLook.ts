@@ -1,9 +1,12 @@
 import { STAGE } from "./stageGeometry";
 
-/** Display radii. Not a measured beam diameter. The core is a hairline. The sheath is the haze. */
-export const CORE_RADIUS_M = 0.00028;
-export const SHEATH_RADIUS_M = 0.0011;
-export const SPOT_RADIUS_M = 0.008;
+/**
+ * Display radii. Not a measured beam diameter.
+ * Thick enough to read from the audience camera, and still under the legacy 80 mm shaft.
+ */
+export const CORE_RADIUS_M = 0.022;
+export const SHEATH_RADIUS_M = 0.07;
+export const SPOT_RADIUS_M = 0.07;
 
 /** Fixed display haze for the mechanical close-up, which has no haze slider. */
 export const MECHANICAL_HAZE = 0.4;

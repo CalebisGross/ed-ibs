@@ -2,7 +2,7 @@ import { Component, useEffect, useRef, useState, type PointerEvent as ReactPoint
 import { ConsolePane } from "./components/ConsolePane";
 import { Cyclorama } from "./components/Cyclorama";
 import { MechanicalViewport } from "./components/MechanicalViewport";
-import { StagePreview } from "./components/StagePreview";
+import { StagePreview, StageStatusLine } from "./components/StagePreview";
 import { Timegrapher } from "./components/Timegrapher";
 import { SeeWhyPanels } from "./panels/SeeWhyPanels";
 import { QualityToggle } from "./post/QualityToggle";
@@ -24,6 +24,7 @@ export function App() {
   const ends = referenceEndpoints();
   const measured = measuredOscillationHz(sim.readout.state);
   const amplitude = radToDeg(displayedAmplitudeRad(sim.readout.state));
+  const engineering = sim.settings.viewMode === "engineering";
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 900px)");
@@ -83,7 +84,7 @@ export function App() {
         <header className="topbar">
           <div className="brand">
             <strong>ED-IBS prototype workbench</strong>
-            <span>Reduced oscillator. Local only. Not a hardware twin.</span>
+            {engineering ? <span>Reduced oscillator. Local only. Not a hardware twin.</span> : null}
           </div>
           <div className="topbar-main">
             <div className="topbar-controls">
@@ -113,7 +114,7 @@ export function App() {
               <QualityToggle tier={tier} onChange={setTier} />
             </div>
             </div>
-            <dl className="readouts">
+            {engineering ? <dl className="readouts">
               <div>
                 <dt>State</dt>
                 <dd data-testid="sim-state">{sim.paused ? "paused" : "running"}</dd>
@@ -141,79 +142,25 @@ export function App() {
                 <dt>Frame</dt>
                 <dd data-testid="readout-fps">{sim.readout.fps === null ? "FPS unmeasured" : `${sim.readout.fps.toFixed(0)} FPS this session`}</dd>
               </div>
-            </dl>
+            </dl> : null}
           </div>
         </header>
-        <p
-          className="banner"
-          title={`Directional lift-zone drive. Measured blanking is amplitude dependent. Spec SHA-256 ${PROVENANCE.userSpecificationSha256.slice(0, 12)}.`}
-        >
-          {sim.settings.stiffnessMode === "reference-law"
-            ? `Reference stiffness law. Curb endpoints derive ${ends.lowHz.toFixed(3)} Hz and ${ends.highHz.toFixed(3)} Hz.`
-            : "Prescribed frequency. K = I (2 pi f)^2. Not the curb law."}
-        </p>
+        {engineering ? (
+          <div
+            className="banner"
+            title={`Directional lift-zone drive. Measured blanking is amplitude dependent. Spec SHA-256 ${PROVENANCE.userSpecificationSha256.slice(0, 12)}.`}
+          >
+            <p>
+              {sim.settings.stiffnessMode === "reference-law"
+                ? `Reference stiffness law. Curb endpoints derive ${ends.lowHz.toFixed(3)} Hz and ${ends.highHz.toFixed(3)} Hz.`
+                : "Prescribed frequency. K = I (2 pi f)^2. Not the curb law."}
+            </p>
+            <StageStatusLine subscribe={sim.subscribe} />
+          </div>
+        ) : null}
         {sim.settings.viewMode === "stage" ? (
           <div className="stage-layout">
             <StagePreview settings={sim.settings} subscribe={sim.subscribe} tier={tier} />
-            <aside className="stage-rail">
-              <div className="stage-controls">
-                <label>
-                  Throw {sim.settings.throwM.toFixed(1)} m
-                  <input
-                    data-testid="throw-slider"
-                    type="range"
-                    min={5}
-                    max={50}
-                    step={0.5}
-                    value={sim.settings.throwM}
-                    onChange={(event) => sim.setSettings({ throwM: Number(event.target.value) })}
-                  />
-                </label>
-                <label>
-                  Persistence {sim.settings.persistenceMs.toFixed(0)} ms
-                  <input
-                    data-testid="persistence"
-                    type="range"
-                    min={1}
-                    max={2000}
-                    step={1}
-                    value={sim.settings.persistenceMs}
-                    onChange={(event) => sim.setSettings({ persistenceMs: Number(event.target.value) })}
-                  />
-                </label>
-                <label>
-                  Haze display {sim.settings.hazeDisplay.toFixed(2)}
-                  <input
-                    data-testid="haze-display"
-                    type="range"
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    value={sim.settings.hazeDisplay}
-                    onChange={(event) => sim.setSettings({ hazeDisplay: Number(event.target.value) })}
-                  />
-                </label>
-                <button
-                  type="button"
-                  data-testid="btn-chopper"
-                  className={sim.settings.chopperEnabled ? "active" : ""}
-                  onClick={() => sim.setSettings({ chopperEnabled: !sim.settings.chopperEnabled })}
-                >
-                  Chopper {sim.settings.chopperEnabled ? "on" : "off"}
-                </button>
-              </div>
-              <ConsolePane
-                settings={sim.settings}
-                setSettings={sim.setSettings}
-                power={sim.power}
-                state={sim.readout.state}
-                fps={sim.readout.fps}
-                cutPower={sim.cutPower}
-                restorePower={sim.restorePower}
-                setPowerMode={sim.setPowerMode}
-                restoreDefaults={sim.restoreDefaults}
-              />
-            </aside>
           </div>
         ) : (
           <div
@@ -255,7 +202,7 @@ export function App() {
             />
           </div>
         )}
-        <ViewerTools sim={sim} />
+        {engineering ? <ViewerTools sim={sim} /> : null}
       </div>
       </ReplayProvider>
     </ErrorBoundary>

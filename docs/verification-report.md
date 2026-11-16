@@ -284,3 +284,30 @@ Frame times, one unloaded session, same method: 35 `requestAnimationFrame` gaps 
 - High, escapement macro: median 133.3 ms, mean 128.57 ms, min 16.7 ms, max 283.3 ms. Round 4 was median 83.4 ms, mean 100 ms, min 50 ms, max 150 ms. The mechanical view is 357 px tall on this pass, and depth of field runs on that view.
 
 Stills from this pass are the `round5-*.png` files under `/opt/cursor/artifacts/`. They are not committed.
+
+## Round 6 stage hero, 2026-11-16
+
+Same branch, after the round 5 layout pass above. The solver was not edited. `docs/user-specification.md` and `docs/spec-audit.md` were not edited. Decision index IDs and statuses were not moved. This is still a simulator presentation, not a hardware measurement.
+
+Stage is the projection. Below a slim header (title, Stage, Engineering, Pause, Reset, Quality) the WebGL canvas fills the viewport. Camera presets sit on the canvas. The rail, chopper, replay row, see-why strip, status line, and scene notes are not on Stage. Throw, persistence, haze, chopper, the status line, replay, and see-why stay in Engineering. The engineering panes, the closed see-why disclosure, and the one-row replay are the round 5 layout. The audience camera is back at the wide pose from main, so the beams and the wall are in frame. Display beam radii are 22 mm, 70 mm, and 70 mm, still under the legacy 80 mm shaft. Low still skips the shadow map, the haze volume, SSAO, depth of field, the room shell, and the environment map.
+
+The browser gate now fails when the Stage canvas covers less than 85 percent of the viewport below the header, at 1440x900 and at 1280x800, and when a panel other than the header and the preset bar is on Stage. The earlier readable-copy and panel checks are unchanged. On this run the stage host was 1440 by 849.
+
+Gates, one session:
+
+- `npm test` (`vitest run`, Vitest v2.1.9) exited 0. Start 00:33:18, duration 1.84 s. 10 files, 91 tests, all passed.
+- `npm run typecheck` (`tsc --noEmit`) exited 0.
+- `node scripts/check-docs.mjs` printed `ok` and exited 0.
+- `bash scripts/check-statecharts.sh` printed `escapement ok (74 distinct states)`, `simrun ok (320 distinct states)`, and `check-statecharts: ok`.
+- `node scripts/browser-verify.mjs` exited 0. Headless Chrome 157. `consoleErrors` was empty. `pageErrors` was empty. `stageHost` was `{ "width": 1440, "height": 849 }`. `audienceStatus` was `9 live rays, source 85%, gate open, running, throw 12.0 m`.
+
+Frame times, one unloaded session, same method: 35 `requestAnimationFrame` gaps after a 400 ms settle, viewport 1440x900. Audience rows use the audience camera. The last row is Engineering, Escapement macro, high tier. GPU string: `ANGLE (Mesa, llvmpipe (LLVM 20.1.2 256 bits), OpenGL 4.5)`. CPU from `/proc/cpuinfo`: `Intel(R) Xeon(R) Processor`, 4 processors. The gaps include the solver and the render. They are not a GPU fence.
+
+- Low, audience: median 33.4 ms, mean 39.52 ms, min 16.6 ms, max 66.7 ms. Round 5 was median 33.3 ms, mean 47.14 ms, min 16.6 ms, max 133.3 ms.
+- Medium, audience: median 100 ms, mean 98.57 ms, min 66.7 ms, max 116.7 ms. Round 5 was median 66.7 ms, mean 89.52 ms, min 33.3 ms, max 150 ms.
+- High, audience: median 149.9 ms, mean 136.18 ms, min 16.6 ms, max 166.8 ms. Round 5 was median 83.4 ms, mean 101.9 ms, min 16.7 ms, max 183.3 ms.
+- High, escapement macro: median 133.3 ms, mean 126.19 ms, min 16.6 ms, max 249.9 ms. Round 5 was median 133.3 ms, mean 128.57 ms, min 16.7 ms, max 283.3 ms.
+
+Medium and high are slower because the stage canvas is the full viewport and the room is in frame. The low median stays 33.4 ms.
+
+Stills from this pass are the `round6-*.png` files under `/opt/cursor/artifacts/`. They are not committed. `round6-main-stage.png` is `origin/main` at `641913b`, served from a temporary worktree. This branch was not moved.

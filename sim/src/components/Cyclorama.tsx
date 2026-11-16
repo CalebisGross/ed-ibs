@@ -204,12 +204,25 @@ export function Cyclorama({
           <label>
             Throw {settings.throwM.toFixed(1)} m
             <input
+              data-testid="throw-slider"
               type="range"
               min={5}
               max={50}
               step={0.5}
               value={settings.throwM}
               onChange={(event) => setSettings({ throwM: Number(event.target.value) })}
+            />
+          </label>
+          <label>
+            Haze display {settings.hazeDisplay.toFixed(2)}
+            <input
+              data-testid="haze-display"
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={settings.hazeDisplay}
+              onChange={(event) => setSettings({ hazeDisplay: Number(event.target.value) })}
             />
           </label>
           <label>

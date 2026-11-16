@@ -6,7 +6,7 @@ import { CHANNELS } from "../physics/constants";
 import { degToRad } from "../physics/units";
 import type { Settings } from "../sim/settings";
 import type { FramePacket } from "../sim/useSimulator";
-import { ghostNotes, WHEEL_STATION_M } from "../stage/dimensions";
+import { WHEEL_STATION_M } from "../stage/dimensions";
 import { disposeObject3D } from "../stage/dispose";
 import { buildLabBench } from "../stage/labBench";
 import { createLaserRig, updateLaser } from "../stage/laserRig";
@@ -23,7 +23,6 @@ import {
 } from "../stage/motion";
 import {
   STAGE,
-  STAGE_COPY,
   figureFeet,
   liveBeams,
   nextTrail,
@@ -59,7 +58,6 @@ export function StagePreview({
   const [cameraName, setCameraName] = useState<StageView>("audience");
   const [tick, setTick] = useState(false);
   const [webgl, setWebgl] = useState("starting");
-  const [status, setStatus] = useState("Waiting for the solver.");
 
   useEffect(() => {
     cameraRef.current = cameraName;
@@ -168,7 +166,6 @@ export function StagePreview({
     let pushStart = 0;
     let orbitAngle = 0.2;
     let lastNow = performance.now();
-    let lastStatus = 0;
     const tickPlayer = tickRef.current;
     const wheelTarget = new THREE.Vector3(WHEEL_STATION_M.x - 0.002, STAGE.apertureHeightM + 0.0024, WHEEL_STATION_M.z);
     const wheelClose = new THREE.Vector3(wheelTarget.x + 0.018, wheelTarget.y + 0.016, wheelTarget.z - 0.05);
@@ -268,7 +265,6 @@ export function StagePreview({
         });
         const pose = poseAt(motion, displayT) ?? fallback;
         mechanism.update(packet, pose);
-        const liveOn = packet.intensity > 0 && !(packet.chopperEnabled && packet.state.angularBlank);
         const drawnOn = packet.intensity > 0 && !(packet.chopperEnabled && pose.angularBlank);
         const projection = {
           facetCount: packet.facetCount,
@@ -276,12 +272,6 @@ export function StagePreview({
           chromaticOffsetRad: packet.chromaticOffsetDeg.map((deg) => degToRad(deg)) as [number, number, number],
           facetTiltRad: DEFAULT_FACET_TILT_RAD,
         };
-        const liveCount = liveBeams({
-          ...projection,
-          theta: packet.state.theta,
-          opticalAngle: packet.state.opticalAngle,
-          beamVisible: liveOn,
-        }).length;
         const beams = liveBeams({
           ...projection,
           theta: pose.theta,
@@ -295,14 +285,6 @@ export function StagePreview({
         const close = view === "wheel" || view === "impulse";
         updateLaser(laser, drawn, packet.intensity, haze, packet.chopperEnabled, pose.angularBlank, close ? 0.02 : 1);
         trailPoints = paintTrail(trail, trailGeo, trailPositions, trailColors, trailPoints, packet, channelRgb, haze);
-
-        if (now - lastStatus > 120) {
-          lastStatus = now;
-          const source = packet.intensity <= 0 ? "source off" : `source ${Math.round(packet.intensity * 100)}%`;
-          const gate = packet.chopperEnabled && packet.state.angularBlank ? "chopper blanked" : "gate open";
-          const hold = packet.paused ? "paused" : "running";
-          setStatus(`${liveCount} live rays, ${source}, ${gate}, ${hold}, throw ${packet.throwM.toFixed(1)} m`);
-        }
       }
       if (controls.enabled) controls.update();
       applyTierSceneCost(renderer, scene, tierRef.current, laser.haze, fog, 0.003 + 0.01 * hazeRef.current);
@@ -327,15 +309,11 @@ export function StagePreview({
     };
   }, [subscribe]);
 
-  const coincident =
-    settings.chromaticOffsetDeg[0] === settings.chromaticOffsetDeg[1] &&
-    settings.chromaticOffsetDeg[1] === settings.chromaticOffsetDeg[2];
-
   return (
     <section className="pane stage-pane" data-testid="pane-stage">
-      <header className="pane-head">
-        <h2>Stage preview</h2>
-        <div className="toolbar">
+      <div className="pane-body">
+        <div className="stage-host" ref={hostRef} data-testid="stage-canvas-host" />
+        <div className="stage-presets" data-testid="stage-presets">
           <ViewButton name="audience" current={cameraName} setView={setCameraName} label="Audience" testId="cam-audience" />
           <ViewButton name="side" current={cameraName} setView={setCameraName} label="Side" testId="cam-side" />
           <ViewButton name="fixture" current={cameraName} setView={setCameraName} label="Fixture" testId="cam-fixture" />
@@ -356,27 +334,43 @@ export function StagePreview({
             Tick {tick ? "on" : "off"}
           </button>
         </div>
-      </header>
-      <div className="pane-body">
-        <div className="stage-host" ref={hostRef} data-testid="stage-canvas-host" />
-        <p className={webgl === "ready" ? "sr" : "legend"} data-testid="webgl-status">
+        <p className={webgl === "ready" ? "sr" : "legend stage-webgl"} data-testid="webgl-status">
           {webgl === "ready" ? "WebGL viewport ready" : webgl}
         </p>
-        <div className="stage-readout">
-          <p data-testid="stage-status">{status}</p>
-          <p>
-            {coincident ? "Equal color offsets share one path. " : "Color offsets are illustrative. "}
-            Afterglow is not more rays.
-          </p>
-          <details>
-            <summary>Scene notes</summary>
-            <p>{STAGE_COPY.disclosure} {STAGE_COPY.scenery}</p>
-            <p>{ghostNotes().map((part) => part.label).join(" ")}</p>
-          </details>
-        </div>
       </div>
     </section>
   );
+}
+
+export function StageStatusLine({ subscribe }: { subscribe: (listener: (packet: FramePacket) => void) => () => void }) {
+  const [status, setStatus] = useState("Waiting for the solver.");
+  useEffect(() => {
+    let last = 0;
+    return subscribe((packet) => {
+      const now = performance.now();
+      if (now - last < 150) return;
+      last = now;
+      setStatus(formatStageStatus(packet));
+    });
+  }, [subscribe]);
+  return <p data-testid="stage-status">{status}</p>;
+}
+
+function formatStageStatus(packet: FramePacket): string {
+  const liveOn = packet.intensity > 0 && !(packet.chopperEnabled && packet.state.angularBlank);
+  const liveCount = liveBeams({
+    facetCount: packet.facetCount,
+    throwM: packet.throwM,
+    chromaticOffsetRad: packet.chromaticOffsetDeg.map((deg) => degToRad(deg)) as [number, number, number],
+    facetTiltRad: DEFAULT_FACET_TILT_RAD,
+    theta: packet.state.theta,
+    opticalAngle: packet.state.opticalAngle,
+    beamVisible: liveOn,
+  }).length;
+  const source = packet.intensity <= 0 ? "source off" : `source ${Math.round(packet.intensity * 100)}%`;
+  const gate = packet.chopperEnabled && packet.state.angularBlank ? "chopper blanked" : "gate open";
+  const hold = packet.paused ? "paused" : "running";
+  return `${liveCount} live rays, ${source}, ${gate}, ${hold}, throw ${packet.throwM.toFixed(1)} m`;
 }
 
 function ViewButton({

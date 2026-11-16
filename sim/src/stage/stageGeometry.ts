@@ -182,28 +182,26 @@ export function figureTopM(): number {
 }
 
 export function audienceCamera(throwM: number): CameraPose {
-  const lookZ = Math.min(0.35, Math.max(0.04, throwM * 0.01));
   return {
-    position: { x: 0.16, y: 2.18, z: -0.42 },
-    target: { x: 0, y: 2.38, z: lookZ },
-    fov: 22,
+    position: { x: -1.5, y: 1.7, z: -8.2 },
+    target: { x: 0.3, y: 2.7, z: Math.min(throwM * 0.8, throwM) },
+    fov: 50,
   };
 }
 
 export function sideCamera(throwM: number): CameraPose {
   return {
-    position: { x: -3.6, y: 2.15, z: 2.4 },
-    target: { x: 0, y: 2.05, z: Math.min(Math.max(throwM * 0.4, 2), 7) },
-    fov: 38,
+    position: { x: -3.4, y: 1.85, z: 3.2 },
+    target: { x: 0.15, y: 2.55, z: Math.min(Math.max(throwM * 0.72, 4), 14) },
+    fov: 46,
   };
 }
 
 export function fixtureCamera(throwM: number): CameraPose {
-  const lookZ = Math.min(Math.max(throwM * 0.08, 0.4), 1.6);
   return {
-    position: { x: 0.72, y: 1.72, z: -1.15 },
-    target: { x: 0, y: 1.55, z: lookZ },
-    fov: 36,
+    position: { x: 2.2, y: 3.35, z: -2.1 },
+    target: { x: 0, y: STAGE.apertureHeightM, z: Math.min(throwM, 8) },
+    fov: 40,
   };
 }
 

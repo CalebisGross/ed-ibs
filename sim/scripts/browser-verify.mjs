@@ -54,6 +54,49 @@ async function setRange(testId, value) {
   );
 }
 
+async function assertStageHero(page, label) {
+  const hits = await page.evaluate(() => {
+    const header = document.querySelector(".topbar");
+    const canvas = document.querySelector('[data-testid="stage-canvas-host"] canvas');
+    const problems = [];
+    if (!header || !canvas) {
+      problems.push("missing header or canvas");
+      return problems;
+    }
+    const head = header.getBoundingClientRect();
+    const box = canvas.getBoundingClientRect();
+    const belowW = window.innerWidth;
+    const belowH = window.innerHeight - head.bottom;
+    const cover = belowW > 0 && belowH > 0 ? (box.width * box.height) / (belowW * belowH) : 0;
+    if (!(cover >= 0.85)) problems.push(`canvas covers ${(cover * 100).toFixed(1)}% below the header`);
+    const forbidden = [
+      ".stage-rail",
+      ".viewer-tools",
+      ".see-why",
+      ".see-why-fold",
+      ".replay-scrubber",
+      ".banner",
+      ".stage-readout",
+      ".readouts",
+      ".stage-controls",
+      '[data-testid="pane-console"]',
+      '[data-testid="pane-cyclorama"]',
+      '[data-testid="pane-mechanical"]',
+      '[data-testid="pane-timegrapher"]',
+    ];
+    for (const sel of forbidden) {
+      const node = document.querySelector(sel);
+      if (!node) continue;
+      const style = getComputedStyle(node);
+      if (style.display === "none" || style.visibility === "hidden") continue;
+      const rect = node.getBoundingClientRect();
+      if (rect.width > 2 && rect.height > 2) problems.push(`panel ${sel}`);
+    }
+    return problems;
+  });
+  if (hits.length > 0) throw new Error(`Stage is not the hero at ${label}: ${hits.join("; ")}`);
+}
+
 async function assertPanelsDisjoint(page, label) {
   const hits = await page.evaluate(() => {
     const nodes = [...document.querySelectorAll("section.pane, .see-why-panel, .replay-scrubber, .stage-rail")];
@@ -249,30 +292,23 @@ await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 await page.goto(url, { waitUntil: "load", timeout: 30000 });
 await page.waitForNetworkIdle({ idleTime: 500, timeout: 30000 });
 await page.waitForSelector('[data-testid="pane-stage"]');
-await page.waitForFunction(() => {
-  const step = document.querySelector('[data-testid="sim-step"]')?.textContent ?? "";
-  const match = step.match(/(\d+)/);
-  return match !== null && Number(match[1]) > 40;
-}, { timeout: 10000 });
-await page.waitForFunction(() => (document.querySelector('[data-testid="stage-status"]')?.textContent ?? "").includes("live rays"), {
-  timeout: 8000,
-});
+await page.waitForSelector('[data-testid="stage-canvas-host"] canvas');
+await assertStageHero(page, "stage 1440x900");
 await assertPanelsDisjoint(page, "stage 1440x900");
 await assertReadableCopy(page, "stage 1440x900");
 await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
 await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+await assertStageHero(page, "stage 1280x800");
 await assertPanelsDisjoint(page, "stage 1280x800");
 await assertReadableCopy(page, "stage 1280x800");
 await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 
-await setRange("persistence", 450);
-await new Promise((resolve) => setTimeout(resolve, 1200));
-const audienceStatus = await text("stage-status");
 const stageHost = await page.$eval('[data-testid="stage-canvas-host"]', (node) => ({
   width: node.clientWidth,
   height: node.clientHeight,
 }));
+const webgl = await text("webgl-status");
 await page.screenshot({ path: `${outDir}/stage-audience.png`, fullPage: false });
 await page.click('[data-testid="cam-side"]');
 await new Promise((resolve) => setTimeout(resolve, 500));
@@ -281,6 +317,31 @@ await page.click('[data-testid="cam-fixture"]');
 await new Promise((resolve) => setTimeout(resolve, 400));
 await page.screenshot({ path: `${outDir}/stage-fixture.png`, fullPage: false });
 await page.click('[data-testid="cam-audience"]');
+
+await page.click('[data-testid="mode-engineering"]');
+await page.waitForSelector('[data-testid="pane-mechanical"]');
+await page.waitForFunction(() => {
+  const step = document.querySelector('[data-testid="sim-step"]')?.textContent ?? "";
+  const match = step.match(/(\d+)/);
+  return match !== null && Number(match[1]) > 40;
+}, { timeout: 10000 });
+await page.waitForFunction(() => (document.querySelector('[data-testid="stage-status"]')?.textContent ?? "").includes("live rays"), {
+  timeout: 8000,
+});
+await page.waitForFunction(() => document.querySelectorAll("section.pane h2").length >= 4);
+const engineeringPanes = await page.$$eval("section.pane h2", (nodes) => nodes.map((node) => node.textContent));
+await assertPanelsDisjoint(page, "engineering 1440x900");
+await assertReadableCopy(page, "engineering 1440x900");
+await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
+await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+await assertPanelsDisjoint(page, "engineering 1280x800");
+await assertReadableCopy(page, "engineering 1280x800");
+await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
+await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+
+await setRange("persistence", 450);
+await new Promise((resolve) => setTimeout(resolve, 1200));
+const audienceStatus = await text("stage-status");
 
 await setRange("throw-slider", 22);
 await page.waitForFunction(() => (document.querySelector('[data-testid="stage-status"]')?.textContent ?? "").includes("throw 22.0 m"), {
@@ -308,18 +369,7 @@ await page.waitForFunction(() => {
   return status.includes("source") && !status.includes("source off");
 }, { timeout: 4000 });
 
-await page.click('[data-testid="mode-engineering"]');
-await page.waitForSelector('[data-testid="pane-mechanical"]');
-await page.waitForFunction(() => document.querySelectorAll("section.pane h2").length >= 4);
-const engineeringPanes = await page.$$eval("section.pane h2", (nodes) => nodes.map((node) => node.textContent));
-await assertPanelsDisjoint(page, "engineering 1440x900");
-await assertReadableCopy(page, "engineering 1440x900");
-await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
-await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-await assertPanelsDisjoint(page, "engineering 1280x800");
-await assertReadableCopy(page, "engineering 1280x800");
-await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
-await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+await page.evaluate(() => window.scrollTo(0, 0));
 await page.screenshot({ path: `${outDir}/workbench-desktop.png`, fullPage: false });
 
 const before = {
@@ -327,7 +377,7 @@ const before = {
   amplitude: await text("readout-amplitude"),
   step: await text("sim-step"),
   state: await text("sim-state"),
-  webgl: await text("webgl-status"),
+  webgl,
 };
 
 await setRange("fader-curb", 1000);
@@ -354,6 +404,7 @@ await page.waitForFunction(() => (document.querySelector('[data-testid="sim-step
 const afterReset = await text("sim-step");
 await page.click('[data-testid="btn-chopper"]');
 const chopper = await text("btn-chopper");
+const fps = await text("readout-fps");
 
 await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1 });
 await page.click('[data-testid="mode-stage"]');
@@ -365,7 +416,6 @@ const mobileHost = await page.$eval('[data-testid="stage-canvas-host"]', (node) 
 }));
 await page.screenshot({ path: `${outDir}/stage-mobile.png`, fullPage: false });
 
-const fps = await text("readout-fps");
 const errors = consoleMessages.filter((message) => message.type === "error");
 const report = {
   url,
